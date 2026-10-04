@@ -1,26 +1,281 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ------------------------------------------------------------------ *
+ *  Glorious Cars — design system
+ *  Palette: charcoal / white / metallic grey / performance blue
+ * ------------------------------------------------------------------ */
+
+@theme {
+  /* Surfaces & ink */
+  --color-ink: #0b0d0f;
+  --color-graphite: #171a1d;
+  --color-slate: #24282c;
+  --color-surface: #ffffff;
+  --color-mist: #f5f6f7;
+
+  /* Lines & secondary text */
+  --color-line: #e6e9ec;
+  --color-line-strong: #d4d9de;
+  --color-muted: #5b636c;
+  --color-silver: #aeb4ba;
+
+  /* Performance blue accent */
+  --color-accent: #1769ff;
+  --color-accent-strong: #0f52d6;
+  --color-accent-soft: #eaf1ff;
+
+  /* Status */
+  --color-positive: #1e8f57;
+
+  /* Type */
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* Soft, sophisticated shadows */
+  --shadow-xs: 0 1px 2px rgb(11 13 15 / 0.04);
+  --shadow-card: 0 1px 3px rgb(11 13 15 / 0.05), 0 14px 32px -18px rgb(11 13 15 / 0.18);
+  --shadow-lift: 0 2px 10px rgb(11 13 15 / 0.06), 0 32px 60px -22px rgb(11 13 15 / 0.24);
+  --shadow-nav: 0 1px 0 rgb(11 13 15 / 0.06), 0 12px 30px -18px rgb(11 13 15 / 0.16);
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Radius — moderate, never pill-everything */
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1.125rem;
+
+  /* Keyframe hooks */
+  --animate-marquee: marquee 34s linear infinite;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    background: var(--color-mist);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-accent) 24%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  /* Respect reduced-motion everywhere */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Consistent page gutter + max width */
+  .wrap {
+    margin-inline: auto;
+    width: 100%;
+    max-width: 80rem;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 640px) {
+    .wrap {
+      padding-inline: 2rem;
+    }
+  }
+
+  /* Generous vertical rhythm between sections */
+  .section-y {
+    padding-block: 5rem;
+  }
+  @media (min-width: 640px) {
+    .section-y {
+      padding-block: 6rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .section-y {
+      padding-block: 7.5rem;
+    }
+  }
+
+  /* Thin road-inspired divider */
+  .road-line {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--color-line-strong) 12%,
+      var(--color-line-strong) 88%,
+      transparent
+    );
+  }
+
+  /* Elevated but light card */
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Skeleton shimmer — light, for cards on light surfaces */
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--color-silver) 26%, var(--color-mist));
+    border-radius: var(--radius-lg);
+  }
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--color-surface) 70%, transparent),
+      transparent
+    );
+    animation: shimmer 1.6s var(--ease-soft) infinite;
+  }
+
+  /* Skeleton shimmer — dark, for hero / cinematic imagery */
+  .skeleton-dark {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-graphite);
+  }
+  .skeleton-dark::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(255 255 255 / 0.06),
+      transparent
+    );
+    animation: shimmer 1.8s var(--ease-soft) infinite;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Uppercase eyebrow label */
+  .eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes drive-across {
+  0% {
+    transform: translateX(-120%);
+  }
+  55% {
+    transform: translateX(420%);
+  }
+  100% {
+    transform: translateX(420%);
+  }
+}
+
+@keyframes road-dash {
+  to {
+    background-position: -48px 0;
+  }
+}
+
+@keyframes emptyBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes heart-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.35);
+  }
+  70% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
