@@ -19,6 +19,7 @@ const MIGRATIONS = [
   "20260908000000_initial_schema.sql",
   "20260920000000_staff_access_hardening.sql",
   "20260920010000_vehicle_images_storage.sql",
+  "20261006000000_simplify_vehicles.sql",
 ].map((name) => readFileSync(join(process.cwd(), "supabase/migrations", name), "utf8"));
 
 const PLATFORM = `
@@ -109,12 +110,11 @@ async function asOwner() {
 
 const vehicleRow = (id: string, status: string, extra = "") => `
   insert into public.vehicles
-    (id, reference, brand, model, year, price, fuel_type, transmission, engine,
-     horsepower, drive_type, body_type, color, seats, doors, condition, status,
-     location, description)
+    (id, reference, name, brand, year, price, fuel_type, transmission,
+     color, seats, doors, status, location, description)
   values
-    ('${id}', 'REF-${id}', 'BMW', 'X5', 2024, 68500000, 'Petrol', 'Automatic', '3.0',
-     335, 'AWD', 'SUV', 'White', 5, 5, 'Used', '${status}', 'Yaoundé', 'Test car' ${extra});
+    ('${id}', 'REF-${id}', 'BMW X5', 'BMW', 2024, 68500000, 'Petrol', 'Automatic',
+     'White', 5, 5, '${status}', 'Yaoundé', 'Test car' ${extra});
 `;
 
 async function seedVehicles() {
@@ -301,8 +301,11 @@ describe("photo storage", () => {
 
   it("does not let a visitor remove a photo", async () => {
     await as("anon");
-    const { rows } = await db.query("delete from storage.objects where name = 'vehicles/existing.jpg' returning id");
-    expect(rows).toHaveLength(0);
+    // Visitors have no delete privilege on storage objects at all, so the
+    // database refuses before row-level security is even consulted.
+    await expect(
+      db.query("delete from storage.objects where name = 'vehicles/existing.jpg' returning id"),
+    ).rejects.toThrow(/permission denied/);
   });
 });
 

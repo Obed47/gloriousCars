@@ -42,8 +42,8 @@ async function removeStoredImages(supabase: ServerClient, urls: string[]) {
   }
 }
 
-function newVehicleId(brand: string, model: string, trim: string | undefined, year: number) {
-  const slug = slugify(`${brand} ${model} ${trim ?? ""} ${year}`);
+function newVehicleId(name: string, year: number) {
+  const slug = slugify(`${name} ${year}`);
   return `v-${slug}-${crypto.randomUUID().slice(0, 6)}`;
 }
 
@@ -83,10 +83,10 @@ export async function saveVehicle(
       await removeStoredImages(supabase, previousUrls.filter((url) => !kept.has(url)));
     }
   } else {
-    const { brand, model, trim, year } = result.value;
+    const { name, year } = result.value;
     const res = await supabase
       .from("vehicles")
-      .insert({ id: newVehicleId(brand, model, trim, year), ...row });
+      .insert({ id: newVehicleId(name, year), ...row });
     error = res.error;
   }
 

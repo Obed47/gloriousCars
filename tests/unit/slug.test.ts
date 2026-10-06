@@ -37,14 +37,13 @@ describe("brand and vehicle slugs", () => {
     expect(brandSlug({ brand: "Land Rover" })).toBe("land-rover");
   });
 
-  it("omits a missing trim without leaving a double hyphen", () => {
+  it("builds the vehicle slug from name, year and reference", () => {
     const v = makeVehicle({
-      model: "Golf",
-      trim: undefined,
+      name: "Volkswagen Golf",
       year: 2019,
       reference: "PC-VW-GOLF-0007",
     });
-    expect(vehicleSlug(v)).toBe("golf-2019-pc-vw-golf-0007");
+    expect(vehicleSlug(v)).toBe("volkswagen-golf-2019-pc-vw-golf-0007");
   });
 
   it("builds readable titles", () => {
@@ -57,7 +56,7 @@ describe("brand and vehicle slugs", () => {
 describe("vehiclePath", () => {
   it("builds a clean, readable detail URL that includes the stock reference", () => {
     const v = makeVehicle({ reference: "PC-BMW-X5-0241" });
-    expect(vehiclePath(v)).toBe("/cars/bmw/x5-xdrive40i-2024-pc-bmw-x5-0241");
+    expect(vehiclePath(v)).toBe("/cars/bmw/bmw-x5-xdrive40i-2024-pc-bmw-x5-0241");
   });
 
   it("gives two identical cars in stock different URLs", () => {

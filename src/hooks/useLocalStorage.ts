@@ -8,9 +8,12 @@ import { useCallback, useEffect, useState } from "react";
  * server and first client render; `hydrated` flips to true once the stored
  * value has been read, so consumers can avoid hydration mismatches.
  */
+const identity = <T,>(raw: unknown): T => raw as T;
+
 export function useLocalStorage<T>(
   key: string,
   defaultValue: T,
+  parse: (raw: unknown) => T = identity<T>,
 ): [T, (next: T | ((prev: T) => T)) => void, boolean] {
   const [value, setValue] = useState<T>(defaultValue);
   const [hydrated, setHydrated] = useState(false);
@@ -23,7 +26,7 @@ export function useLocalStorage<T>(
     let stored = defaultValue;
     try {
       const raw = window.localStorage.getItem(key);
-      if (raw != null) stored = JSON.parse(raw) as T;
+      if (raw != null) stored = parse(JSON.parse(raw));
     } catch {
       /* private mode / disabled storage — keep the default */
     }
@@ -55,14 +58,14 @@ export function useLocalStorage<T>(
     const onStorage = (e: StorageEvent) => {
       if (e.key !== key || e.newValue == null) return;
       try {
-        setValue(JSON.parse(e.newValue) as T);
+        setValue(parse(JSON.parse(e.newValue)));
       } catch {
         /* ignore */
       }
     };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
-  }, [key]);
+  }, [key, parse]);
 
   return [value, set, hydrated];
 }

@@ -22,8 +22,8 @@ const list = (v: string | string[] | undefined): string[] | undefined => {
 };
 
 const num = (v: string | string[] | undefined): number | undefined => {
-  const s = first(v);
-  if (s == null || s === "") return undefined;
+  const s = first(v)?.trim();
+  if (!s) return undefined;
   const n = Number(s);
   return Number.isFinite(n) ? n : undefined;
 };
@@ -40,11 +40,9 @@ export function parseSearchParams(sp: RawParams): VehicleQuery {
   const sortRaw = first(sp.sort) as SortKey | undefined;
   return {
     brand: list(sp.brand),
-    bodyType: list(sp.body),
     fuelType: list(sp.fuel),
     transmission: list(sp.transmission),
     color: list(sp.color),
-    condition: list(sp.condition),
     minPrice: num(sp.priceMin),
     maxPrice: num(sp.priceMax),
     minYear: num(sp.yearMin),
@@ -65,11 +63,9 @@ export function queryToSearchParams(q: VehicleQuery): URLSearchParams {
   };
 
   setList("brand", q.brand);
-  setList("body", q.bodyType);
   setList("fuel", q.fuelType);
   setList("transmission", q.transmission);
   setList("color", q.color);
-  setList("condition", q.condition);
   setNum("priceMin", q.minPrice);
   setNum("priceMax", q.maxPrice);
   setNum("yearMin", q.minYear);
@@ -87,11 +83,9 @@ export function queryToSearchString(q: VehicleQuery): string {
 export function hasActiveFilters(q: VehicleQuery): boolean {
   return Boolean(
     q.brand?.length ||
-      q.bodyType?.length ||
       q.fuelType?.length ||
       q.transmission?.length ||
       q.color?.length ||
-      q.condition?.length ||
       q.minPrice != null ||
       q.maxPrice != null ||
       q.minYear != null ||

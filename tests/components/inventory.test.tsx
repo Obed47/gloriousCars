@@ -26,10 +26,14 @@ vi.mock("next/navigation", () => ({
 const listed = sampleCatalogue().filter((v) => v.status !== "Sold");
 const options = deriveFilterOptions(listed);
 
+/** The URL the browser was last asked to show (filters are written with history.replaceState). */
+let replaced: ReturnType<typeof vi.spyOn>;
+const lastUrl = () => replaced.mock.calls.at(-1)?.[2];
+
 beforeEach(() => {
   nav.search = "";
   nav.push.mockReset();
-  nav.replace.mockReset();
+  replaced = vi.spyOn(window.history, "replaceState").mockImplementation(() => {});
 });
 
 describe("InventoryBrowser", () => {
@@ -49,7 +53,7 @@ describe("InventoryBrowser", () => {
     render(<InventoryBrowser vehicles={listed} options={options} />);
     const sidebar = document.querySelector("aside") as HTMLElement;
     await user.click(within(sidebar).getByRole("checkbox", { name: "Toyota" }));
-    expect(nav.replace).toHaveBeenCalledWith("/cars?brand=Toyota", { scroll: false });
+    expect(lastUrl()).toBe("/cars?brand=Toyota");
   });
 
   it("removes a filter from its chip", async () => {
@@ -57,7 +61,7 @@ describe("InventoryBrowser", () => {
     nav.search = "brand=Toyota,Audi";
     render(<InventoryBrowser vehicles={listed} options={options} />);
     await user.click(screen.getByRole("button", { name: /^Toyota/ }));
-    expect(nav.replace).toHaveBeenCalledWith("/cars?brand=Audi", { scroll: false });
+    expect(lastUrl()).toBe("/cars?brand=Audi");
   });
 
   it("clears every filter but keeps the chosen sort", async () => {
@@ -65,14 +69,14 @@ describe("InventoryBrowser", () => {
     nav.search = "brand=Toyota&sort=price-asc";
     render(<InventoryBrowser vehicles={listed} options={options} />);
     await user.click(screen.getByRole("button", { name: "Clear all" }));
-    expect(nav.replace).toHaveBeenCalledWith("/cars?sort=price-asc", { scroll: false });
+    expect(lastUrl()).toBe("/cars?sort=price-asc");
   });
 
   it("changes the sort order in the URL", async () => {
     const user = userEvent.setup();
     render(<InventoryBrowser vehicles={listed} options={options} />);
     await user.selectOptions(screen.getByRole("combobox", { name: "Sort vehicles" }), "price-desc");
-    expect(nav.replace).toHaveBeenCalledWith("/cars?sort=price-desc", { scroll: false });
+    expect(lastUrl()).toBe("/cars?sort=price-desc");
   });
 
   it("explains an empty result and offers a reset", async () => {
@@ -81,7 +85,7 @@ describe("InventoryBrowser", () => {
     render(<InventoryBrowser vehicles={listed} options={options} />);
     expect(screen.getByText("No vehicles match your search")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Reset filters" }));
-    expect(nav.replace).toHaveBeenCalledWith("/cars", { scroll: false });
+    expect(lastUrl()).toBe("/cars");
   });
 
   it("uses a valid form control structure in the mobile filter sheet", async () => {
@@ -176,13 +180,13 @@ describe("FilterPanel", () => {
 });
 
 describe("QuickSearch", () => {
-  it("opens a results page filtered by the chosen brand and body type", async () => {
+  it("opens a results page filtered by the chosen brand and fuel", async () => {
     const user = userEvent.setup();
     render(<QuickSearch options={options} />);
     await user.selectOptions(screen.getByRole("combobox", { name: "Brand" }), "Toyota");
-    await user.selectOptions(screen.getByRole("combobox", { name: "Body type" }), "SUV");
+    await user.selectOptions(screen.getByRole("combobox", { name: "Fuel" }), "Hybrid");
     await user.click(screen.getByRole("button", { name: "Search Cars" }));
-    expect(nav.push).toHaveBeenCalledWith("/cars?brand=Toyota&body=SUV");
+    expect(nav.push).toHaveBeenCalledWith("/cars?brand=Toyota&fuel=Hybrid");
   });
 
   it("goes to the full inventory when nothing is chosen", async () => {

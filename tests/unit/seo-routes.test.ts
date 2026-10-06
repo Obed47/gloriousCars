@@ -61,6 +61,6 @@ describe("vehicle paths used by sitemap", () => {
   it("uses the same unique path as the detail page", async () => {
     const { default: sitemap } = await import("@/app/sitemap");
     const entries = await sitemap();
-    expect(entries.some((e) => e.url.endsWith("/cars/bmw/x5-xdrive40i-2024-pc-bmw-x5-0241"))).toBe(true);
+    expect(entries.some((e) => e.url.endsWith("/cars/bmw/bmw-x5-xdrive40i-2024-pc-bmw-x5-0241"))).toBe(true);
   });
 });

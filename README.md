@@ -135,13 +135,19 @@ changes.
 
 ### Vehicle shape
 
-`id, reference, brand, model, trim?, year, price, currency, mileage, fuelType,
-transmission, engine, horsepower, driveType, bodyType, color, seats, doors,
-condition, status, featured, location, description, highlights[], features[],
+`id, reference, name, brand, year, price, currency, mileage, fuelType,
+transmission, color, seats, doors, status, featured, location, description,
 images[], listedAt`
 
-Clean URLs are derived from the data: `/cars/bmw/x5-xdrive40i-2024`
-(`src/lib/slug.ts`). Detail pages are statically generated via
+`name` is the make and model together ("BMW X5 xDrive40i"), entered once in the
+admin. `brand` is taken from the start of the name when a car is saved, so brand
+filters and brand pages keep working. Engine, horsepower, drive type, body type,
+trim, condition, highlights and features are not stored; those details are given
+on WhatsApp.
+
+Clean URLs are derived from the data: `/cars/bmw/bmw-x5-xdrive40i-2024-pc-bmw-x5-0241`
+(`src/lib/slug.ts`). The stock reference is part of the slug, so two identical
+cars in stock each get their own page. Detail pages are statically generated via
 `generateStaticParams` and carry per-vehicle `<title>`, description, Open Graph
 tags and `schema.org/Car` JSON-LD.
 
@@ -151,7 +157,7 @@ tags and `schema.org/Car` JSON-LD.
 | --- | --- |
 | `/` | homepage — hero, quick search, featured, about, why, how-it-works, brands, reviews, CTA |
 | `/cars` | inventory — sidebar filters (mobile bottom-sheet), instant client-side filtering, URL-synced, sort, result count, empty state |
-| `/cars/[brand]/[slug]` | detail — gallery + lightbox, spec grid, features, description, WhatsApp + test-drive CTAs, sticky mobile action bar, related vehicles |
+| `/cars/[brand]/[slug]` | detail — gallery + lightbox, spec grid, description, WhatsApp + test-drive CTAs, sticky mobile action bar, related vehicles |
 | `/compare` | up to 3 vehicles side by side, best-value highlighting |
 | `/favorites` | saved vehicles (localStorage) |
 | `/about` · `/services` · `/contact` | content pages |

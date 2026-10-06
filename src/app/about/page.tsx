@@ -35,7 +35,7 @@ export default function AboutPage() {
                 </div>
               ))}
             </dl>
-            <p className="mt-4 text-xs text-silver">
+            <p className="mt-4 text-xs text-muted">
               Figures shown are placeholders for this demo.
             </p>
           </Reveal>
@@ -69,8 +69,9 @@ export default function AboutPage() {
             <p>
               Information is complete. The mileage on the listing is the mileage
               on the odometer. The photos are the actual car, not a stock image.
-              Specifications, features and known imperfections are all
-              documented so you can make a decision before you visit.
+              Key specifications and known imperfections are documented so you
+              can make a decision before you visit. For any other detail, ask
+              us on WhatsApp.
             </p>
             <p>
               Service is direct. From the first question to the handover of

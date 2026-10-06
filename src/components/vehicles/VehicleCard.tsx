@@ -12,7 +12,7 @@ import {
   Users,
 } from "lucide-react";
 import { VehicleImage } from "./VehicleImage";
-import { Badge, conditionBadge } from "@/components/ui/Badge";
+import { Badge } from "@/components/ui/Badge";
 import { useFavorites } from "@/components/providers/FavoritesProvider";
 import { useCompare } from "@/components/providers/CompareProvider";
 import { formatMileage, formatPrice } from "@/lib/format";
@@ -41,7 +41,6 @@ export function VehicleCard({
   const fav = favHydrated && isFavorite(vehicle.id);
   const comparing = cmpHydrated && isComparing(vehicle.id);
   const compareDisabled = !comparing && !canAddMore;
-  const badge = conditionBadge(vehicle.condition, vehicle.featured);
   const href = vehiclePath(vehicle);
   const title = vehicleTitle(vehicle);
 
@@ -72,9 +71,11 @@ export function VehicleCard({
           aria-hidden
         />
 
-        <div className="absolute left-3 top-3">
-          <Badge tone={badge.tone}>{badge.label}</Badge>
-        </div>
+        {vehicle.featured && (
+          <div className="absolute left-3 top-3">
+            <Badge tone="featured">Featured</Badge>
+          </div>
+        )}
 
         <div className="absolute right-3 top-3 z-20 flex flex-col gap-2">
           <button

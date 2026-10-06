@@ -17,12 +17,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE.url}/terms`, priority: 0.2, changeFrequency: "yearly" },
   ];
 
-  const vehicleRoutes: MetadataRoute.Sitemap = vehicles.map((v) => ({
-    url: `${SITE.url}${vehiclePath(v)}`,
-    lastModified: new Date(v.listedAt),
-    changeFrequency: "weekly",
-    priority: 0.8,
-  }));
+  // The public query already hides sold cars; filter again so that stays true
+  // even if the database rules change.
+  const vehicleRoutes: MetadataRoute.Sitemap = vehicles
+    .filter((v) => v.status !== "Sold")
+    .map((v) => ({
+      url: `${SITE.url}${vehiclePath(v)}`,
+      lastModified: new Date(v.listedAt),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    }));
 
   return [...staticRoutes, ...vehicleRoutes];
 }

@@ -1,0 +1,194 @@
+[
+  {
+    "id": "v-bmw-x5-xdrive40i-2024-a1",
+    "reference": "PC-BMW-X5-0241",
+    "name": "BMW X5 xDrive40i",
+    "brand": "BMW",
+    "year": 2024,
+    "price": "68500000",
+    "currency": "XAF",
+    "mileage": 12000,
+    "fuel_type": "Petrol",
+    "transmission": "Automatic",
+    "color": "Alpine White",
+    "seats": 5,
+    "doors": 5,
+    "status": "Available",
+    "featured": true,
+    "location": "Yaoundé — Bastos Branch",
+    "description": "Well maintained, full service history and a clean inspection report.",
+    "images": [
+      {
+        "url": "http://127.0.0.1:54321/storage/v1/object/public/vehicle-images/vehicles/bmw-a1.jpg",
+        "alt": "BMW X5 front",
+        "angle": "Front"
+      },
+      {
+        "url": "http://127.0.0.1:54321/storage/v1/object/public/vehicle-images/vehicles/bmw-a1-rear.jpg",
+        "alt": "BMW X5 rear",
+        "angle": "Rear"
+      }
+    ],
+    "listed_at": "2026-09-01T10:00:00.000Z"
+  },
+  {
+    "id": "v-bmw-x5-xdrive40i-2024-b2",
+    "reference": "PC-BMW-X5-0242",
+    "name": "BMW X5 xDrive40i",
+    "brand": "BMW",
+    "year": 2024,
+    "price": "68500000",
+    "currency": "XAF",
+    "mileage": 14000,
+    "fuel_type": "Petrol",
+    "transmission": "Automatic",
+    "color": "Carbon Black",
+    "seats": 5,
+    "doors": 5,
+    "status": "Available",
+    "featured": false,
+    "location": "Douala — Akwa Showroom",
+    "description": "Second unit, same specification as the white one.",
+    "images": [
+      {
+        "url": "http://127.0.0.1:54321/storage/v1/object/public/vehicle-images/vehicles/bmw-b2.jpg",
+        "alt": "BMW X5 front",
+        "angle": "Front"
+      },
+      {
+        "url": "http://127.0.0.1:54321/storage/v1/object/public/vehicle-images/vehicles/bmw-b2-rear.jpg",
+        "alt": "BMW X5 rear",
+        "angle": "Rear"
+      }
+    ],
+    "listed_at": "2026-09-02T10:00:00.000Z"
+  },
+  {
+    "id": "v-toyota-rav4-hybrid-2023-c3",
+    "reference": "PC-TOY-RAV4-0102",
+    "name": "Toyota RAV4 Hybrid",
+    "brand": "Toyota",
+    "year": 2023,
+    "price": "21900000",
+    "currency": "XAF",
+    "mileage": 38000,
+    "fuel_type": "Hybrid",
+    "transmission": "Automatic",
+    "color": "Silver",
+    "seats": 5,
+    "doors": 5,
+    "status": "Available",
+    "featured": false,
+    "location": "Douala — Akwa Showroom",
+    "description": "Economical hybrid family SUV.",
+    "images": [
+      {
+        "url": "http://127.0.0.1:54321/storage/v1/object/public/vehicle-images/vehicles/rav4-c3.jpg",
+        "alt": "Toyota RAV4 front",
+        "angle": "Front"
+      },
+      {
+        "url": "http://127.0.0.1:54321/storage/v1/object/public/vehicle-images/vehicles/rav4-c3-rear.jpg",
+        "alt": "Toyota RAV4 rear",
+        "angle": "Rear"
+      }
+    ],
+    "listed_at": "2026-08-15T10:00:00.000Z"
+  },
+  {
+    "id": "v-vw-golf-2019-d4",
+    "reference": "PC-VW-GOLF-0007",
+    "name": "Volkswagen Golf",
+    "brand": "Volkswagen",
+    "year": 2019,
+    "price": "9800000",
+    "currency": "XAF",
+    "mileage": 96000,
+    "fuel_type": "Diesel",
+    "transmission": "Manual",
+    "color": "Black",
+    "seats": 5,
+    "doors": 5,
+    "status": "Available",
+    "featured": false,
+    "location": "Yaoundé — Bastos Branch",
+    "description": "Reliable diesel hatch.",
+    "images": [
+      {
+        "url": "http://127.0.0.1:54321/storage/v1/object/public/vehicle-images/vehicles/golf-d4.jpg",
+        "alt": "Volkswagen Golf front",
+        "angle": "Front"
+      },
+      {
+        "url": "http://127.0.0.1:54321/storage/v1/object/public/vehicle-images/vehicles/golf-d4-rear.jpg",
+        "alt": "Volkswagen Golf rear",
+        "angle": "Rear"
+      }
+    ],
+    "listed_at": "2026-07-01T10:00:00.000Z"
+  },
+  {
+    "id": "v-tesla-model-3-2025-e5",
+    "reference": "PC-TES-M3-0300",
+    "name": "Tesla Model 3 Long Range",
+    "brand": "Tesla",
+    "year": 2025,
+    "price": "47000000",
+    "currency": "XAF",
+    "mileage": 4000,
+    "fuel_type": "Electric",
+    "transmission": "Automatic",
+    "color": "Red",
+    "seats": 5,
+    "doors": 4,
+    "status": "Reserved",
+    "featured": true,
+    "location": "Douala — Bonabéri Lot",
+    "description": "Nearly new, reserved for a test drive this week.",
+    "images": [
+      {
+        "url": "http://127.0.0.1:54321/storage/v1/object/public/vehicle-images/vehicles/tesla-e5.jpg",
+        "alt": "Tesla Model 3 front",
+        "angle": "Front"
+      },
+      {
+        "url": "http://127.0.0.1:54321/storage/v1/object/public/vehicle-images/vehicles/tesla-e5-rear.jpg",
+        "alt": "Tesla Model 3 rear",
+        "angle": "Rear"
+      }
+    ],
+    "listed_at": "2026-09-20T10:00:00.000Z"
+  },
+  {
+    "id": "v-audi-a4-2020-f6",
+    "reference": "PC-AUD-A4-0450",
+    "name": "Audi A4",
+    "brand": "Audi",
+    "year": 2020,
+    "price": "15500000",
+    "currency": "XAF",
+    "mileage": 61000,
+    "fuel_type": "Petrol",
+    "transmission": "Automatic",
+    "color": "Grey",
+    "seats": 5,
+    "doors": 4,
+    "status": "Sold",
+    "featured": false,
+    "location": "Yaoundé — Bastos Branch",
+    "description": "Sold.",
+    "images": [
+      {
+        "url": "http://127.0.0.1:54321/storage/v1/object/public/vehicle-images/vehicles/audi-f6.jpg",
+        "alt": "Audi A4 front",
+        "angle": "Front"
+      },
+      {
+        "url": "http://127.0.0.1:54321/storage/v1/object/public/vehicle-images/vehicles/audi-f6-rear.jpg",
+        "alt": "Audi A4 rear",
+        "angle": "Rear"
+      }
+    ],
+    "listed_at": "2026-06-01T10:00:00.000Z"
+  }
+]

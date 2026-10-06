@@ -1,6 +1,4 @@
 import type {
-  BodyType,
-  Condition,
   FilterOptions,
   FuelType,
   SortKey,
@@ -26,6 +24,20 @@ export const SORT_OPTIONS: { key: SortKey; label: string }[] = [
 const inList = (value: string, list?: string[]): boolean =>
   !list || list.length === 0 || list.includes(value);
 
+/** Everything a visitor might type to find a car, lowercased. */
+function searchableText(v: Vehicle): string {
+  return [
+    vehicleFullTitle(v),
+    v.fuelType,
+    v.transmission,
+    v.color,
+    v.location,
+    v.reference,
+  ]
+    .join(" ")
+    .toLowerCase();
+}
+
 export function filterVehicles(
   vehicles: Vehicle[],
   q: VehicleQuery,
@@ -34,11 +46,9 @@ export function filterVehicles(
 
   return vehicles.filter((v) => {
     if (!inList(v.brand, q.brand)) return false;
-    if (!inList(v.bodyType, q.bodyType)) return false;
     if (!inList(v.fuelType, q.fuelType)) return false;
     if (!inList(v.transmission, q.transmission)) return false;
     if (!inList(v.color, q.color)) return false;
-    if (!inList(v.condition, q.condition)) return false;
 
     if (q.minPrice != null && v.price < q.minPrice) return false;
     if (q.maxPrice != null && v.price > q.maxPrice) return false;
@@ -47,8 +57,9 @@ export function filterVehicles(
     if (q.maxMileage != null && v.mileage > q.maxMileage) return false;
 
     if (search) {
-      const haystack = `${vehicleFullTitle(v)} ${v.bodyType} ${v.fuelType} ${v.color} ${v.reference}`.toLowerCase();
-      if (!haystack.includes(search)) return false;
+      // Every typed word must appear somewhere (any order), as on the admin list.
+      const haystack = searchableText(v);
+      if (!search.split(/\s+/).every((word) => haystack.includes(word))) return false;
     }
     return true;
   });
@@ -83,6 +94,26 @@ export function sortVehicles(vehicles: Vehicle[], sort: SortKey = "featured"): V
   }
 }
 
+/** Price steps for a dropdown: a round step, sized so the list stays short. */
+const PRICE_STEPS = [
+  10_000, 25_000, 50_000, 100_000, 250_000, 500_000, 1_000_000, 2_500_000, 5_000_000, 10_000_000,
+];
+
+/**
+ * Round price values covering `[min, max]`, with about `maxOptions` entries at
+ * most. A fixed step gave thousands of options for real XAF prices.
+ */
+export function priceSteps(min: number, max: number, maxOptions = 40): number[] {
+  if (!(max > 0)) return [];
+  const span = Math.max(max - Math.max(min, 0), 0);
+  const step = PRICE_STEPS.find((s) => span / s <= maxOptions) ?? PRICE_STEPS.at(-1)!;
+  const start = Math.floor(Math.max(min, 0) / step) * step;
+  const end = Math.ceil(max / step) * step;
+  const steps: number[] = [];
+  for (let p = start; p <= end; p += step) steps.push(p);
+  return steps;
+}
+
 const uniqueSorted = <T extends string | number>(values: T[]): T[] =>
   [...new Set(values)].sort((a, b) =>
     typeof a === "number" && typeof b === "number"
@@ -95,11 +126,9 @@ export function deriveFilterOptions(vehicles: Vehicle[]): FilterOptions {
   const mileages = vehicles.map((v) => v.mileage);
   return {
     brands: uniqueSorted(vehicles.map((v) => v.brand)),
-    bodyTypes: uniqueSorted(vehicles.map((v) => v.bodyType)) as BodyType[],
     fuelTypes: uniqueSorted(vehicles.map((v) => v.fuelType)) as FuelType[],
     transmissions: uniqueSorted(vehicles.map((v) => v.transmission)) as Transmission[],
     colors: uniqueSorted(vehicles.map((v) => v.color)),
-    conditions: uniqueSorted(vehicles.map((v) => v.condition)) as Condition[],
     years: uniqueSorted(vehicles.map((v) => v.year)),
     // An empty catalogue would otherwise yield [Infinity, -Infinity].
     priceRange: prices.length ? [Math.min(...prices), Math.max(...prices)] : [0, 0],

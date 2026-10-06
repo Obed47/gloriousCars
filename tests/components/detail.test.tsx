@@ -4,7 +4,6 @@ import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AboutVehicle } from "@/components/detail/AboutVehicle";
 import { DetailCTAs } from "@/components/detail/DetailCTAs";
-import { FeatureGroups } from "@/components/detail/FeatureGroups";
 import { Gallery } from "@/components/detail/Gallery";
 import { TestDriveModal } from "@/components/detail/TestDriveModal";
 import { FavoritesProvider } from "@/components/providers/FavoritesProvider";
@@ -59,7 +58,7 @@ describe("TestDriveModal: validation", () => {
     fireEvent.change(screen.getByLabelText(/Preferred date/), { target: { value: localDate(-3) } });
     await user.click(screen.getByRole("button", { name: "10:00" }));
     await user.click(screen.getByRole("button", { name: "Confirm Test Drive" }));
-    expect(screen.getByText(/today or later/i)).toBeInTheDocument();
+    expect(screen.getByText("Choose a date from today onwards.")).toBeInTheDocument();
     expect(openSpy).not.toHaveBeenCalled();
   });
 });
@@ -224,27 +223,11 @@ describe("description and specification lists", () => {
   it("expands a long description", async () => {
     const user = userEvent.setup();
     const long = "A".repeat(300);
-    render(<AboutVehicle description={long} highlights={[]} />);
+    render(<AboutVehicle description={long} />);
     const toggle = screen.getByRole("button", { name: "Read more" });
     expect(toggle).toHaveAttribute("aria-expanded", "false");
     await user.click(toggle);
     expect(screen.getByRole("button", { name: "Read less" })).toHaveAttribute("aria-expanded", "true");
   });
 
-  it("renders repeated highlights and features without key warnings", () => {
-    // Regression: items were keyed by their text, so a repeated line caused a
-    // React key warning and could drop a row.
-    const error = vi.spyOn(console, "error").mockImplementation(() => {});
-    render(
-      <>
-        <AboutVehicle description="x" highlights={["Sunroof", "Sunroof"]} />
-        <FeatureGroups groups={[{ category: "Safety", items: ["ABS", "ABS"] }]} />
-      </>,
-    );
-    expect(screen.getAllByText("Sunroof")).toHaveLength(2);
-    expect(screen.getAllByText("ABS")).toHaveLength(2);
-    const keyWarnings = error.mock.calls.filter((args) => String(args[0]).includes("same key"));
-    expect(keyWarnings).toHaveLength(0);
-    error.mockRestore();
-  });
 });

@@ -10,17 +10,6 @@ export type Currency = "XAF";
 
 export type FuelType = "Petrol" | "Diesel" | "Hybrid" | "Electric";
 export type Transmission = "Automatic" | "Manual";
-export type DriveType = "FWD" | "RWD" | "AWD" | "4WD";
-export type BodyType =
-  | "SUV"
-  | "Sedan"
-  | "Coupe"
-  | "Hatchback"
-  | "Pickup"
-  | "Convertible"
-  | "Wagon"
-  | "Van";
-export type Condition = "New" | "Used";
 export type VehicleStatus = "Available" | "Reserved" | "Sold";
 
 export type ImageAngle =
@@ -39,25 +28,15 @@ export interface VehicleImage {
   angle: ImageAngle;
 }
 
-export type FeatureCategory =
-  | "Comfort"
-  | "Technology"
-  | "Safety"
-  | "Performance";
-
-export interface FeatureGroup {
-  category: FeatureCategory;
-  items: string[];
-}
-
 export interface Vehicle {
   id: string;
   /** Human-facing stock reference, e.g. "PC-BMW-X5-0241". */
   reference: string;
 
+  /** Make and model as shown to visitors, e.g. "BMW X5 xDrive40i". */
+  name: string;
+  /** The make, taken from the start of `name`. Drives brand browsing and filters. */
   brand: string;
-  model: string;
-  trim?: string;
   year: number;
 
   price: number;
@@ -66,22 +45,15 @@ export interface Vehicle {
   mileage: number; // kilometres
   fuelType: FuelType;
   transmission: Transmission;
-  engine: string; // display string, e.g. "3.0L turbo"
-  horsepower: number;
-  driveType: DriveType;
-  bodyType: BodyType;
   color: string;
   seats: number;
   doors: number;
 
-  condition: Condition;
   status: VehicleStatus;
   featured: boolean;
 
   location: string;
   description: string;
-  highlights: string[];
-  features: FeatureGroup[];
   images: VehicleImage[];
 
   /** ISO date — powers the "Newest" sort and sitemap lastModified. */
@@ -91,11 +63,9 @@ export interface Vehicle {
 /** Options surfaced to the inventory filter UI, derived from the catalogue. */
 export interface FilterOptions {
   brands: string[];
-  bodyTypes: BodyType[];
   fuelTypes: FuelType[];
   transmissions: Transmission[];
   colors: string[];
-  conditions: Condition[];
   years: number[];
   priceRange: [number, number];
   mileageRange: [number, number];
@@ -106,8 +76,7 @@ export interface VehicleSummary {
   id: string;
   reference: string;
   brand: string;
-  model: string;
-  trim?: string;
+  name: string;
   year: number;
   price: number;
   currency: Currency;
@@ -126,11 +95,9 @@ export type SortKey =
 
 export interface VehicleQuery {
   brand?: string[];
-  bodyType?: string[];
   fuelType?: string[];
   transmission?: string[];
   color?: string[];
-  condition?: string[];
   minPrice?: number;
   maxPrice?: number;
   minYear?: number;

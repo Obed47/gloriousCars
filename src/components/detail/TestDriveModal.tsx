@@ -6,7 +6,8 @@ import { CalendarCheck, Check, MapPin, X } from "lucide-react";
 import Image from "next/image";
 import { WhatsAppIcon } from "@/components/ui/icons";
 import { SITE } from "@/lib/site";
-import { formatPrice } from "@/lib/format";
+import { formatPrice, localDateString } from "@/lib/format";
+import { useDialogFocus } from "@/hooks/useDialogFocus";
 import { vehicleFullTitle } from "@/lib/slug";
 import {
   buildWhatsAppUrl,
@@ -51,34 +52,35 @@ export function TestDriveModal({
     Partial<Record<keyof FormState, string>>
   >({});
   const [confirmed, setConfirmed] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const firstFieldRef = useRef<HTMLInputElement>(null);
   const titleId = useId();
 
-  const today = new Date().toISOString().slice(0, 10);
+  // The local calendar day: the UTC date is a day behind in the early hours in Cameroon.
+  const today = localDateString(new Date());
 
-  // Reset transient state on each open/close transition; focus first field.
+  // Reset transient state on each open/close transition.
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (open) {
       setConfirmed(false);
       setErrors({});
-      const t = setTimeout(() => firstFieldRef.current?.focus(), 60);
-      return () => clearTimeout(t);
+      return;
     }
     setForm(emptyForm());
   }, [open]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
+  // Focus the first field, keep Tab inside the dialog, Escape closes, focus returns on close.
+  useDialogFocus(open, dialogRef, { initialFocusRef: firstFieldRef, onEscape: onClose });
+
   useEffect(() => {
     if (!open) return;
     document.body.style.overflow = "hidden";
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
     };
-  }, [open, onClose]);
+  }, [open]);
 
   const set = (key: keyof FormState) => (value: string) => {
     setForm((f) => ({ ...f, [key]: value }));
@@ -92,6 +94,7 @@ export function TestDriveModal({
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
       next.email = "That email doesn't look right.";
     if (!form.date) next.date = "Choose a preferred date.";
+    else if (form.date < today) next.date = "Choose a date from today onwards.";
     if (!form.time) next.time = "Pick a time slot.";
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -119,6 +122,7 @@ export function TestDriveModal({
     <AnimatePresence>
       {open && (
         <motion.div
+          ref={dialogRef}
           className="fixed inset-0 z-[80] flex items-end justify-center bg-ink/70 backdrop-blur-sm sm:items-center sm:p-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

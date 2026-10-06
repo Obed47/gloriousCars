@@ -8,6 +8,8 @@ import {
   type ReactNode,
 } from "react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { usePruneUnknown } from "@/hooks/usePruneUnknown";
+import { parseStoredIds } from "@/lib/storedIds";
 
 export const MAX_COMPARE = 3;
 
@@ -27,11 +29,20 @@ const CompareContext = createContext<CompareContextValue | null>(null);
 
 const STORAGE_KEY = "glorious-cars:compare";
 
-export function CompareProvider({ children }: { children: ReactNode }) {
+export function CompareProvider({
+  children,
+  knownIds,
+}: {
+  children: ReactNode;
+  /** Ids of the vehicles that exist; picks outside this list are dropped. */
+  knownIds?: string[];
+}) {
   const [compareIds, setCompareIds, hydrated] = useLocalStorage<string[]>(
     STORAGE_KEY,
     [],
+    parseStoredIds,
   );
+  usePruneUnknown(hydrated, knownIds, setCompareIds);
 
   const isComparing = useCallback(
     (id: string) => compareIds.includes(id),

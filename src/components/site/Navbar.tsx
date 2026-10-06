@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
@@ -8,6 +8,7 @@ import { ArrowUpRight, Heart, Menu, Search, X } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "@/components/ui/Button";
 import { useFavorites } from "@/components/providers/FavoritesProvider";
+import { useDialogFocus } from "@/hooks/useDialogFocus";
 import { SITE } from "@/lib/site";
 
 const LINKS = [
@@ -18,7 +19,17 @@ const LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
-const POPULAR = ["BMW", "SUV", "Hybrid", "Automatic", "Under XAF 40,000"];
+/**
+ * Quick links in the search overlay. Each one opens the matching filter, so it
+ * always leads to results.
+ */
+export const POPULAR_SEARCHES: { label: string; href: string }[] = [
+  { label: "BMW", href: "/cars?brand=BMW" },
+  { label: "Hybrid", href: "/cars?fuel=Hybrid" },
+  { label: "Electric", href: "/cars?fuel=Electric" },
+  { label: "Automatic", href: "/cars?transmission=Automatic" },
+  { label: "Under XAF 40M", href: "/cars?priceMax=40000000" },
+];
 
 function isActive(pathname: string, href: string): boolean {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -33,6 +44,10 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [term, setTerm] = useState("");
+  const searchRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(searchOpen, searchRef);
+  useDialogFocus(menuOpen, menuRef);
 
   useEffect(() => {
     const onScroll = () => {
@@ -84,6 +99,12 @@ export function Navbar() {
     router.push(q ? `/cars?search=${encodeURIComponent(q)}` : "/cars");
   }
 
+  function openSearchPreset(href: string) {
+    setSearchOpen(false);
+    setTerm("");
+    router.push(href);
+  }
+
   const favBadge = hydrated && count > 0 ? count : null;
 
   return (
@@ -102,7 +123,7 @@ export function Navbar() {
           }`}
           aria-label="Primary"
         >
-          <Logo tone={heroHeader ? "light" : "dark"} />
+          <Logo tone={heroHeader ? "light" : "dark"} preload />
 
           <ul className="hidden items-center gap-1 lg:flex">
             {LINKS.map((link) => {
@@ -207,6 +228,7 @@ export function Navbar() {
             aria-label="Search vehicles"
           >
             <motion.div
+              ref={searchRef}
               className="w-full max-w-xl rounded-2xl bg-surface p-4 shadow-lift"
               initial={{ opacity: 0, y: -16, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -226,7 +248,7 @@ export function Navbar() {
                   autoFocus
                   value={term}
                   onChange={(e) => setTerm(e.target.value)}
-                  placeholder="Search make, model, body type…"
+                  placeholder="Search make or car name…"
                   className="h-14 w-full bg-transparent text-base text-ink outline-none placeholder:text-muted"
                   aria-label="Search term"
                 />
@@ -241,14 +263,14 @@ export function Navbar() {
               </form>
               <div className="mt-3 flex flex-wrap gap-2 px-1 pb-1">
                 <span className="eyebrow py-1 text-muted">Popular</span>
-                {POPULAR.map((p) => (
+                {POPULAR_SEARCHES.map((item) => (
                   <button
-                    key={p}
+                    key={item.label}
                     type="button"
-                    onClick={() => runSearch(p)}
+                    onClick={() => openSearchPreset(item.href)}
                     className="rounded-full border border-line bg-surface px-3 py-1 text-xs font-medium text-muted transition-colors hover:border-ink hover:text-ink"
                   >
-                    {p}
+                    {item.label}
                   </button>
                 ))}
               </div>
@@ -261,6 +283,7 @@ export function Navbar() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
+            ref={menuRef}
             className="fixed inset-0 z-70 flex flex-col bg-ink text-white lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

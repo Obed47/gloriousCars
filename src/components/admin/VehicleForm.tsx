@@ -6,10 +6,6 @@ import { Loader2 } from "lucide-react";
 import { saveVehicle } from "@/app/admin/actions";
 import { ImagesField } from "@/components/admin/ImagesField";
 import {
-  BODY_TYPES,
-  CONDITIONS,
-  DRIVE_TYPES,
-  FEATURE_CATEGORIES,
   FUEL_TYPES,
   STATUSES,
   TRANSMISSIONS,
@@ -127,14 +123,8 @@ export function VehicleForm({
           <Field label="Location" error={e.location}>
             <input name="location" defaultValue={d.location} aria-invalid={!!e.location} className={input} />
           </Field>
-          <Field label="Brand" error={e.brand}>
-            <input name="brand" defaultValue={d.brand} aria-invalid={!!e.brand} className={input} />
-          </Field>
-          <Field label="Model" error={e.model}>
-            <input name="model" defaultValue={d.model} aria-invalid={!!e.model} className={input} />
-          </Field>
-          <Field label="Trim (optional)">
-            <input name="trim" defaultValue={d.trim} className={input} />
+          <Field label="Car name" error={e.name} hint="Make and model, e.g. Toyota Land Cruiser Prado" className="sm:col-span-2">
+            <input name="name" defaultValue={d.name} aria-invalid={!!e.name} className={input} />
           </Field>
           <Field label="Year" error={e.year}>
             <input name="year" inputMode="numeric" defaultValue={d.year} aria-invalid={!!e.year} className={input} />
@@ -143,15 +133,12 @@ export function VehicleForm({
       </Section>
 
       <Section title="Listing" description="Price is in XAF.">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Field label="Price (XAF)" error={e.price}>
             <input name="price" inputMode="numeric" defaultValue={d.price} aria-invalid={!!e.price} className={input} />
           </Field>
           <Field label="Mileage (km)" error={e.mileage}>
             <input name="mileage" inputMode="numeric" defaultValue={d.mileage} aria-invalid={!!e.mileage} className={input} />
-          </Field>
-          <Field label="Condition" error={e.condition}>
-            <Select name="condition" options={CONDITIONS} defaultValue={d.condition} invalid={!!e.condition} />
           </Field>
           <Field label="Status" error={e.status} hint="Sold vehicles are hidden from the public site.">
             <Select name="status" options={STATUSES} defaultValue={d.status} invalid={!!e.status} />
@@ -170,12 +157,6 @@ export function VehicleForm({
 
       <Section title="Specification">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Field label="Engine" error={e.engine} hint="e.g. 3.0L turbo I6">
-            <input name="engine" defaultValue={d.engine} aria-invalid={!!e.engine} className={input} />
-          </Field>
-          <Field label="Horsepower" error={e.horsepower}>
-            <input name="horsepower" inputMode="numeric" defaultValue={d.horsepower} aria-invalid={!!e.horsepower} className={input} />
-          </Field>
           <Field label="Colour" error={e.color}>
             <input name="color" defaultValue={d.color} aria-invalid={!!e.color} className={input} />
           </Field>
@@ -184,12 +165,6 @@ export function VehicleForm({
           </Field>
           <Field label="Transmission" error={e.transmission}>
             <Select name="transmission" options={TRANSMISSIONS} defaultValue={d.transmission} invalid={!!e.transmission} />
-          </Field>
-          <Field label="Drive" error={e.driveType}>
-            <Select name="driveType" options={DRIVE_TYPES} defaultValue={d.driveType} invalid={!!e.driveType} />
-          </Field>
-          <Field label="Body type" error={e.bodyType}>
-            <Select name="bodyType" options={BODY_TYPES} defaultValue={d.bodyType} invalid={!!e.bodyType} />
           </Field>
           <Field label="Seats" error={e.seats}>
             <input name="seats" inputMode="numeric" defaultValue={d.seats} aria-invalid={!!e.seats} className={input} />
@@ -204,24 +179,6 @@ export function VehicleForm({
         <Field label="Description" error={e.description}>
           <textarea name="description" rows={5} defaultValue={d.description} aria-invalid={!!e.description} className={textarea} />
         </Field>
-        <Field label="Highlights" hint="One per line.">
-          <textarea name="highlights" rows={4} defaultValue={d.highlights} className={textarea} />
-        </Field>
-      </Section>
-
-      <Section title="Features & equipment" description="One feature per line. Empty categories are hidden.">
-        <div className="grid gap-4 sm:grid-cols-2">
-          {FEATURE_CATEGORIES.map((category) => (
-            <Field key={category} label={category}>
-              <textarea
-                name={`features_${category}`}
-                rows={5}
-                defaultValue={d.features[category]}
-                className={textarea}
-              />
-            </Field>
-          ))}
-        </div>
       </Section>
 
       <Section title="Photos">

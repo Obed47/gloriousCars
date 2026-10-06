@@ -2,13 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { SITE } from "@/lib/site";
 
-/** Shared Glorious Cars brand lockup. */
+/**
+ * Shared Glorious Cars brand lockup. `preload` only for the copy in the
+ * navbar, which is always visible; the footer copy loads lazily.
+ */
 export function Logo({
   tone = "dark",
   className = "",
+  preload = false,
 }: {
   tone?: "dark" | "light";
   className?: string;
+  preload?: boolean;
 }) {
   return (
     <Link
@@ -21,7 +26,7 @@ export function Logo({
           src={tone === "light" ? "/logoWhite.png" : "/logo.png"}
           alt={SITE.name}
           fill
-          priority
+          preload={preload}
           sizes="(max-width: 640px) 10rem, 11rem"
           className="object-cover object-center"
         />

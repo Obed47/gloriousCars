@@ -17,9 +17,9 @@ describe("parseSearchParams", () => {
   });
 
   it("splits comma-separated lists and drops blank entries", () => {
-    const q = parseSearchParams({ brand: "BMW, Audi,,", body: "SUV" });
+    const q = parseSearchParams({ brand: "BMW, Audi,,", fuel: "Hybrid," });
     expect(q.brand).toEqual(["BMW", "Audi"]);
-    expect(q.bodyType).toEqual(["SUV"]);
+    expect(q.fuelType).toEqual(["Hybrid"]);
   });
 
   it("reads the first value when a parameter repeats", () => {
@@ -57,9 +57,9 @@ describe("queryToSearchParams", () => {
   });
 
   it("writes lists comma-separated under the public parameter names", () => {
-    const p = queryToSearchParams({ brand: ["BMW", "Audi"], bodyType: ["SUV"], maxPrice: 40_000_000 });
+    const p = queryToSearchParams({ brand: ["BMW", "Audi"], fuelType: ["Hybrid"], maxPrice: 40_000_000 });
     expect(p.get("brand")).toBe("BMW,Audi");
-    expect(p.get("body")).toBe("SUV");
+    expect(p.get("fuel")).toBe("Hybrid");
     expect(p.get("priceMax")).toBe("40000000");
   });
 

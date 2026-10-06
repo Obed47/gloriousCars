@@ -55,7 +55,7 @@ export function Hero() {
           <h1 className="text-4xl font-extrabold uppercase leading-[0.94] tracking-[-0.03em] sm:text-6xl lg:text-[5.8rem]">
             Find the right car,
             <br />
-            <span className="text-accent">ready to drive.</span>
+            <span className="text-accent-on-dark">ready to drive.</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-silver sm:text-base">
             Browse quality cars for sale in Yaoundé, Douala and across Cameroon,

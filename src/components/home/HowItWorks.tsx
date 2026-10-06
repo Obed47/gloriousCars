@@ -15,7 +15,7 @@ const STEPS = [
   {
     n: "02",
     title: "Explore",
-    body: "Check specifications, features, the full image gallery and pricing.",
+    body: "Check the specifications, the full image gallery and pricing.",
   },
   {
     n: "03",
@@ -86,7 +86,7 @@ export function HowItWorks() {
                   className="hidden size-3 rounded-full bg-accent ring-4 ring-graphite lg:block"
                   aria-hidden
                 />
-                <span className="text-sm font-bold tracking-[0.2em] text-accent">
+                <span className="text-sm font-bold tracking-[0.2em] text-accent-on-dark">
                   {step.n}
                 </span>
                 <h3 className="text-xl font-bold text-white">{step.title}</h3>

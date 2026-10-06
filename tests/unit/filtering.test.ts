@@ -9,8 +9,7 @@ import {
 } from "@/lib/filtering";
 import { makeVehicle, sampleCatalogue } from "../fixtures/vehicles";
 
-const titles = (list: { brand: string; model: string }[]) =>
-  list.map((v) => `${v.brand} ${v.model}`);
+const titles = (list: { name: string }[]) => list.map((v) => v.name);
 
 describe("filterVehicles", () => {
   const catalogue = sampleCatalogue();
@@ -21,7 +20,7 @@ describe("filterVehicles", () => {
 
   it("matches any of the selected brands", () => {
     const result = filterVehicles(catalogue, { brand: ["BMW", "Audi"] });
-    expect(titles(result).sort()).toEqual(["Audi A4", "BMW X5"]);
+    expect(titles(result).sort()).toEqual(["Audi A4", "BMW X5 xDrive40i"]);
   });
 
   it("treats an empty selection as no filter", () => {
@@ -30,29 +29,29 @@ describe("filterVehicles", () => {
 
   it("applies inclusive price bounds", () => {
     const result = filterVehicles(catalogue, { minPrice: 15_500_000, maxPrice: 21_900_000 });
-    expect(titles(result).sort()).toEqual(["Audi A4", "Toyota RAV4"]);
+    expect(titles(result).sort()).toEqual(["Audi A4", "Toyota RAV4 Hybrid"]);
   });
 
   it("applies year and mileage limits", () => {
     const result = filterVehicles(catalogue, { minYear: 2023, maxMileage: 40_000 });
-    expect(titles(result).sort()).toEqual(["BMW X5", "Tesla Model 3", "Toyota RAV4"]);
+    expect(titles(result).sort()).toEqual(["BMW X5 xDrive40i", "Tesla Model 3 Long Range", "Toyota RAV4 Hybrid"]);
   });
 
   it("matches search text against the vehicle title", () => {
-    expect(titles(filterVehicles(catalogue, { search: "rav4" }))).toEqual(["Toyota RAV4"]);
+    expect(titles(filterVehicles(catalogue, { search: "rav4" }))).toEqual(["Toyota RAV4 Hybrid"]);
     expect(titles(filterVehicles(catalogue, { search: "  2019 volkswagen  " }))).toEqual([
       "Volkswagen Golf",
     ]);
   });
 
-  it("matches search text against body type, fuel and colour", () => {
-    expect(titles(filterVehicles(catalogue, { search: "hatchback" }))).toEqual(["Volkswagen Golf"]);
-    expect(titles(filterVehicles(catalogue, { search: "electric" }))).toEqual(["Tesla Model 3"]);
-    expect(titles(filterVehicles(catalogue, { search: "alpine" }))).toEqual(["BMW X5"]);
+  it("matches search text against fuel and colour", () => {
+    expect(titles(filterVehicles(catalogue, { search: "hybrid" }))).toEqual(["Toyota RAV4 Hybrid"]);
+    expect(titles(filterVehicles(catalogue, { search: "electric" }))).toEqual(["Tesla Model 3 Long Range"]);
+    expect(titles(filterVehicles(catalogue, { search: "alpine" }))).toEqual(["BMW X5 xDrive40i"]);
   });
 
   it("matches search text against the stock reference", () => {
-    expect(titles(filterVehicles(catalogue, { search: "PC-TES-M3" }))).toEqual(["Tesla Model 3"]);
+    expect(titles(filterVehicles(catalogue, { search: "PC-TES-M3" }))).toEqual(["Tesla Model 3 Long Range"]);
   });
 
   it("matches search text against transmission", () => {
@@ -63,17 +62,13 @@ describe("filterVehicles", () => {
     expect(automatic.every((v) => v.transmission === "Automatic")).toBe(true);
   });
 
-  it("matches search text against the drive type", () => {
-    expect(titles(filterVehicles(catalogue, { search: "awd" }))).toEqual(["BMW X5"]);
-  });
-
   it("ignores a blank search", () => {
     expect(filterVehicles(catalogue, { search: "   " })).toHaveLength(catalogue.length);
   });
 
   it("combines filters with AND", () => {
-    const result = filterVehicles(catalogue, { bodyType: ["SUV"], fuelType: ["Hybrid"] });
-    expect(titles(result)).toEqual(["Toyota RAV4"]);
+    const result = filterVehicles(catalogue, { fuelType: ["Hybrid"], transmission: ["Automatic"] });
+    expect(titles(result)).toEqual(["Toyota RAV4 Hybrid"]);
   });
 });
 

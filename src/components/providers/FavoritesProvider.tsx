@@ -8,6 +8,8 @@ import {
   type ReactNode,
 } from "react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { usePruneUnknown } from "@/hooks/usePruneUnknown";
+import { parseStoredIds } from "@/lib/storedIds";
 
 interface FavoritesContextValue {
   favorites: string[];
@@ -22,11 +24,20 @@ const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 
 const STORAGE_KEY = "glorious-cars:favorites";
 
-export function FavoritesProvider({ children }: { children: ReactNode }) {
+export function FavoritesProvider({
+  children,
+  knownIds,
+}: {
+  children: ReactNode;
+  /** Ids of the vehicles that exist; saved ids outside this list are dropped. */
+  knownIds?: string[];
+}) {
   const [favorites, setFavorites, hydrated] = useLocalStorage<string[]>(
     STORAGE_KEY,
     [],
+    parseStoredIds,
   );
+  usePruneUnknown(hydrated, knownIds, setFavorites);
 
   const isFavorite = useCallback(
     (id: string) => favorites.includes(id),

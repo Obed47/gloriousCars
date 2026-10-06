@@ -3,13 +3,7 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
-export function AboutVehicle({
-  description,
-  highlights,
-}: {
-  description: string;
-  highlights: string[];
-}) {
+export function AboutVehicle({ description }: { description: string }) {
   const [expanded, setExpanded] = useState(false);
   const isLong = description.length > 280;
 
@@ -36,20 +30,6 @@ export function AboutVehicle({
             aria-hidden
           />
         </button>
-      )}
-
-      {highlights.length > 0 && (
-        <ul className="mt-1 grid grid-cols-1 gap-2 sm:grid-cols-2">
-          {highlights.map((h) => (
-            <li
-              key={h}
-              className="flex items-center gap-2.5 rounded-lg bg-mist px-3 py-2.5 text-sm font-medium text-ink"
-            >
-              <span className="size-1.5 shrink-0 rounded-full bg-accent" aria-hidden />
-              {h}
-            </li>
-          ))}
-        </ul>
       )}
     </div>
   );

@@ -15,8 +15,8 @@ import { vehicleFullTitle, vehiclePath } from "@/lib/slug";
  *  - Case, accents and punctuation are ignored ("yaounde" finds "Yaoundé",
  *    "mercedes-benz" finds "Mercedes Benz").
  *  - A word matches anywhere inside a text field ("40i" finds "xDrive40i").
- *  - Price, mileage and horsepower match only as whole numbers, so "2024"
- *    finds model-year 2024 but not a car priced XAF 12,024,000.
+ *  - Price and mileage match only as whole numbers, so "2024" finds a car
+ *    with 2024 in its title but not one priced XAF 12,024,000.
  */
 
 export interface AdminVehicleRow {
@@ -32,7 +32,7 @@ export interface AdminVehicleRow {
   publicPath: string | null;
   /** Normalised text searched by substring. */
   searchText: string;
-  /** Numbers searched by exact match: price, mileage, horsepower. */
+  /** Numbers searched by exact match: price, mileage. */
   numbers: string[];
 }
 
@@ -57,16 +57,10 @@ export function toAdminRow(v: Vehicle): AdminVehicleRow {
       vehicleFullTitle(v),
       v.reference,
       v.brand,
-      v.model,
-      v.trim ?? "",
       v.color,
       v.location,
-      v.engine,
-      v.bodyType,
       v.fuelType,
       v.transmission,
-      v.driveType,
-      v.condition,
       v.status,
       v.featured ? "featured" : "",
     ].join(" "),
@@ -83,7 +77,7 @@ export function toAdminRow(v: Vehicle): AdminVehicleRow {
     featured: v.featured,
     publicPath: v.status === "Sold" ? null : vehiclePath(v),
     searchText,
-    numbers: [String(v.price), String(v.mileage), String(v.horsepower)],
+    numbers: [String(v.price), String(v.mileage)],
   };
 }
 

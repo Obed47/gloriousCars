@@ -9,12 +9,25 @@ import { makeVehicle, makeVehicleRow, photo, sampleCatalogue } from "../fixtures
  * The repository reads Supabase through `createSupabasePublicClient`. Replace
  * that client with an in-memory table so each query path can be exercised.
  */
-const state: { rows: unknown[]; error: { message: string } | null } = { rows: [], error: null };
+const state: {
+  rows: unknown[];
+  error: { message: string } | null;
+  /** How many of the next queries fail with no HTTP response, as a dropped connection does. */
+  dropsLeft: number;
+  calls: number;
+} = { rows: [], error: null, dropsLeft: 0, calls: 0 };
 
 vi.mock("@/lib/supabase/public", () => ({
   createSupabasePublicClient: () => ({
     from: () => ({
-      select: async () => ({ data: state.error ? null : state.rows, error: state.error }),
+      select: async () => {
+        state.calls += 1;
+        if (state.dropsLeft > 0) {
+          state.dropsLeft -= 1;
+          return { data: null, error: { message: "TypeError: fetch failed" }, status: 0 };
+        }
+        return { data: state.error ? null : state.rows, error: state.error, status: state.error ? 400 : 200 };
+      },
     }),
   }),
 }));
@@ -25,6 +38,8 @@ const repo = () => import("@/lib/repository");
 beforeEach(() => {
   vi.resetModules();
   state.error = null;
+  state.dropsLeft = 0;
+  state.calls = 0;
   state.rows = sampleCatalogue().map(toRow);
 });
 
@@ -37,28 +52,20 @@ function toRow(v: ReturnType<typeof makeVehicle>) {
   return makeVehicleRow({
     id: v.id,
     reference: v.reference,
+    name: v.name,
     brand: v.brand,
-    model: v.model,
-    trim: v.trim ?? null,
     year: v.year,
     price: String(v.price),
     mileage: v.mileage,
     fuel_type: v.fuelType,
     transmission: v.transmission,
-    engine: v.engine,
-    horsepower: v.horsepower,
-    drive_type: v.driveType,
-    body_type: v.bodyType,
     color: v.color,
     seats: v.seats,
     doors: v.doors,
-    condition: v.condition,
     status: v.status,
     featured: v.featured,
     location: v.location,
     description: v.description,
-    highlights: v.highlights,
-    features: v.features,
     images: v.images,
     listed_at: v.listedAt,
   });
@@ -76,18 +83,40 @@ describe("repository: configuration and errors", () => {
     const { getAllVehicles } = await repo();
     await expect(getAllVehicles()).rejects.toThrow("Could not load vehicles from Supabase: permission denied");
   });
+
+  it("retries once when the connection drops, then loads the catalogue", async () => {
+    // Regression: one dropped connection turned the whole homepage into a 500.
+    state.dropsLeft = 1;
+    const { getAllVehicles } = await repo();
+    expect(await getAllVehicles()).toHaveLength(sampleCatalogue().length);
+    expect(state.calls).toBe(2);
+  });
+
+  it("gives up after one retry if the connection is still down", async () => {
+    state.dropsLeft = 5;
+    const { getAllVehicles } = await repo();
+    await expect(getAllVehicles()).rejects.toThrow("Could not load vehicles from Supabase: TypeError: fetch failed");
+    expect(state.calls).toBe(2);
+  });
+
+  it("does not retry a real error from Supabase", async () => {
+    state.error = { message: "permission denied" };
+    const { getAllVehicles } = await repo();
+    await expect(getAllVehicles()).rejects.toThrow();
+    expect(state.calls).toBe(1);
+  });
 });
 
 describe("repository: vehicle lookups", () => {
   it("finds a vehicle by its brand and slug", async () => {
     const { getVehicleBySlugs } = await repo();
-    const found = await getVehicleBySlugs("bmw", "x5-xdrive40i-2024-pc-bmw-x5-0241");
+    const found = await getVehicleBySlugs("bmw", "bmw-x5-xdrive40i-2024-pc-bmw-x5-0241");
     expect(found?.reference).toBe("PC-BMW-X5-0241");
   });
 
   it("returns null when the brand segment does not match", async () => {
     const { getVehicleBySlugs } = await repo();
-    expect(await getVehicleBySlugs("audi", "x5-xdrive40i-2024-pc-bmw-x5-0241")).toBeNull();
+    expect(await getVehicleBySlugs("audi", "bmw-x5-xdrive40i-2024-pc-bmw-x5-0241")).toBeNull();
   });
 
   it("returns null for an unknown vehicle", async () => {
@@ -97,7 +126,7 @@ describe("repository: vehicle lookups", () => {
   });
 
   it("gives identical cars their own slugs so each one can be opened", async () => {
-    // Two cars with the same model, trim and year must both resolve.
+    // Two cars with the same name and year must both resolve.
     const twin = { ...toRow(makeVehicle()), id: "v-twin", reference: "PC-BMW-X5-0242" };
     state.rows = [toRow(makeVehicle()), twin];
     const { getAllVehicles, getVehicleBySlugs } = await repo();
@@ -126,8 +155,17 @@ describe("repository: listings", () => {
     const related = await getRelatedVehicles(bmw, 5);
     expect(related.map((v) => v.id)).not.toContain(bmw.id);
     expect(related.every((v) => v.status !== "Sold")).toBe(true);
-    // Same body type and brand ranks first when one exists.
-    expect(related[0].bodyType).toBe("SUV");
+  });
+
+  it("ranks a car of the same make first among related vehicles", async () => {
+    state.rows = [
+      ...state.rows,
+      toRow(makeVehicle({ id: "v-bmw-320i", reference: "PC-BMW-320-0009", name: "BMW 320i", year: 2021, price: 30_000_000 })),
+    ];
+    const { getAllVehicles, getRelatedVehicles } = await repo();
+    const [bmw] = await getAllVehicles();
+    const related = await getRelatedVehicles(bmw, 5);
+    expect(related[0].brand).toBe("BMW");
   });
 
   it("reports the filtered total alongside the unfiltered count", async () => {
@@ -170,7 +208,7 @@ describe("repository: photos", () => {
     const { getVehicleSummaries } = await repo();
     const [summary] = await getVehicleSummaries();
     expect(summary.image).toBe("");
-    expect(summary.imageAlt).toBe("BMW X5");
+    expect(summary.imageAlt).toBe("BMW X5 xDrive40i");
   });
 });
 
@@ -185,7 +223,7 @@ describe("repository: brands", () => {
   it("includes a brand that is in stock even when it is not in the curated list", async () => {
     // Regression: brands were only ever taken from a fixed list, so stock of any
     // other make (for example Honda) never appeared in the "Explore by brand" strip.
-    state.rows = [toRow(makeVehicle({ id: "v-honda", brand: "Honda", model: "CR-V", reference: "PC-HON-1" }))];
+    state.rows = [toRow(makeVehicle({ id: "v-honda", brand: "Honda", name: "Honda CR-V", reference: "PC-HON-1" }))];
     const { getBrandsWithCounts } = await repo();
     const brands = await getBrandsWithCounts();
     expect(brands).toEqual([expect.objectContaining({ name: "Honda", count: 1 })]);

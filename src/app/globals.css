@@ -20,12 +20,15 @@
   --color-silver: #aeb4ba;
 
   /* Performance blue accent */
-  --color-accent: #1769ff;
-  --color-accent-strong: #0f52d6;
+  /* Darker for text on light backgrounds (contrast 6:1 on mist and white). */
+  --color-accent: #0f52d6;
+  --color-accent-strong: #0b43b3;
+  /* Lighter for text on the dark sections (contrast 6.9:1 on graphite). */
+  --color-accent-on-dark: #6aa3ff;
   --color-accent-soft: #eaf1ff;
 
   /* Status */
-  --color-positive: #1e8f57;
+  --color-positive: #17704a;
 
   /* Type */
   --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, -apple-system,

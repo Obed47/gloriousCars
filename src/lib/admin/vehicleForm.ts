@@ -1,9 +1,4 @@
 import type {
-  BodyType,
-  Condition,
-  DriveType,
-  FeatureCategory,
-  FeatureGroup,
   FuelType,
   ImageAngle,
   Transmission,
@@ -13,6 +8,7 @@ import type {
 } from "@/lib/types";
 import type { VehicleInput } from "@/lib/supabase/vehicles";
 import { isAllowedImageUrl } from "@/lib/images";
+import { brandFromName } from "@/data/brands";
 
 /**
  * Admin vehicle form: option lists, the string-only draft the form holds
@@ -23,25 +19,7 @@ import { isAllowedImageUrl } from "@/lib/images";
 
 export const FUEL_TYPES = ["Petrol", "Diesel", "Hybrid", "Electric"] as const satisfies readonly FuelType[];
 export const TRANSMISSIONS = ["Automatic", "Manual"] as const satisfies readonly Transmission[];
-export const DRIVE_TYPES = ["FWD", "RWD", "AWD", "4WD"] as const satisfies readonly DriveType[];
-export const BODY_TYPES = [
-  "SUV",
-  "Sedan",
-  "Coupe",
-  "Hatchback",
-  "Pickup",
-  "Convertible",
-  "Wagon",
-  "Van",
-] as const satisfies readonly BodyType[];
-export const CONDITIONS = ["New", "Used"] as const satisfies readonly Condition[];
 export const STATUSES = ["Available", "Reserved", "Sold"] as const satisfies readonly VehicleStatus[];
-export const FEATURE_CATEGORIES = [
-  "Comfort",
-  "Technology",
-  "Safety",
-  "Performance",
-] as const satisfies readonly FeatureCategory[];
 export const IMAGE_ANGLES = [
   "Front",
   "Side profile",
@@ -61,30 +39,20 @@ export interface ImageDraft {
 
 export interface VehicleDraft {
   reference: string;
-  brand: string;
-  model: string;
-  trim: string;
+  /** Make and model together, e.g. "Toyota Land Cruiser Prado". */
+  name: string;
   year: string;
   price: string;
   mileage: string;
   fuelType: string;
   transmission: string;
-  engine: string;
-  horsepower: string;
-  driveType: string;
-  bodyType: string;
   color: string;
   seats: string;
   doors: string;
-  condition: string;
   status: string;
   featured: boolean;
   location: string;
   description: string;
-  /** One highlight per line. */
-  highlights: string;
-  /** One feature per line, per category. */
-  features: Record<FeatureCategory, string>;
   images: ImageDraft[];
 }
 
@@ -94,70 +62,42 @@ export interface SaveState {
   message?: string;
 }
 
-const lines = (text: string): string[] =>
-  text
-    .split(/\r?\n/)
-    .map((l) => l.trim())
-    .filter(Boolean);
-
 export function emptyDraft(): VehicleDraft {
   return {
     reference: "",
-    brand: "",
-    model: "",
-    trim: "",
+    name: "",
     year: String(new Date().getFullYear()),
     price: "",
     mileage: "0",
     fuelType: "Petrol",
     transmission: "Automatic",
-    engine: "",
-    horsepower: "0",
-    driveType: "FWD",
-    bodyType: "SUV",
     color: "",
     seats: "5",
     doors: "5",
-    condition: "Used",
     status: "Available",
     featured: false,
     location: "",
     description: "",
-    highlights: "",
-    features: { Comfort: "", Technology: "", Safety: "", Performance: "" },
     images: [{ url: "", alt: "", angle: "Front" }],
   };
 }
 
 export function draftFromVehicle(v: Vehicle): VehicleDraft {
-  const features = emptyDraft().features;
-  for (const group of v.features) {
-    features[group.category] = group.items.join("\n");
-  }
   return {
     reference: v.reference,
-    brand: v.brand,
-    model: v.model,
-    trim: v.trim ?? "",
+    name: v.name,
     year: String(v.year),
     price: String(v.price),
     mileage: String(v.mileage),
     fuelType: v.fuelType,
     transmission: v.transmission,
-    engine: v.engine,
-    horsepower: String(v.horsepower),
-    driveType: v.driveType,
-    bodyType: v.bodyType,
     color: v.color,
     seats: String(v.seats),
     doors: String(v.doors),
-    condition: v.condition,
     status: v.status,
     featured: v.featured,
     location: v.location,
     description: v.description,
-    highlights: v.highlights.join("\n"),
-    features,
     images: v.images.length
       ? v.images.map((i) => ({ url: i.url, alt: i.alt, angle: i.angle }))
       : [{ url: "", alt: "", angle: "Front" }],
@@ -172,33 +112,19 @@ export function draftFromFormData(fd: FormData): VehicleDraft {
 
   return {
     reference: str("reference"),
-    brand: str("brand"),
-    model: str("model"),
-    trim: str("trim"),
+    name: str("name"),
     year: str("year"),
     price: str("price"),
     mileage: str("mileage"),
     fuelType: str("fuelType"),
     transmission: str("transmission"),
-    engine: str("engine"),
-    horsepower: str("horsepower"),
-    driveType: str("driveType"),
-    bodyType: str("bodyType"),
     color: str("color"),
     seats: str("seats"),
     doors: str("doors"),
-    condition: str("condition"),
     status: str("status"),
     featured: fd.get("featured") === "on",
     location: str("location"),
     description: str("description"),
-    highlights: String(fd.get("highlights") ?? ""),
-    features: {
-      Comfort: String(fd.get("features_Comfort") ?? ""),
-      Technology: String(fd.get("features_Technology") ?? ""),
-      Safety: String(fd.get("features_Safety") ?? ""),
-      Performance: String(fd.get("features_Performance") ?? ""),
-    },
     images: urls.map((url, i) => ({
       url: url.trim(),
       alt: (alts[i] ?? "").trim(),
@@ -229,9 +155,7 @@ export function validateDraft(d: VehicleDraft): Result {
     if (!String(d[key]).trim()) errors[key] = `${label} is required.`;
   };
   required("reference", "Reference");
-  required("brand", "Brand");
-  required("model", "Model");
-  required("engine", "Engine");
+  required("name", "Car name");
   required("color", "Colour");
   required("location", "Location");
   required("description", "Description");
@@ -253,7 +177,6 @@ export function validateDraft(d: VehicleDraft): Result {
   };
   const year = integer("year", "Year", 1900, 2100);
   const mileage = integer("mileage", "Mileage", 0);
-  const horsepower = integer("horsepower", "Horsepower", 0);
   const seats = integer("seats", "Seats", 1);
   const doors = integer("doors", "Doors", 1);
 
@@ -270,9 +193,6 @@ export function validateDraft(d: VehicleDraft): Result {
   };
   const fuelType = oneOf("fuelType", FUEL_TYPES, "fuel type");
   const transmission = oneOf("transmission", TRANSMISSIONS, "transmission");
-  const driveType = oneOf("driveType", DRIVE_TYPES, "drive type");
-  const bodyType = oneOf("bodyType", BODY_TYPES, "body type");
-  const condition = oneOf("condition", CONDITIONS, "condition");
   const status = oneOf("status", STATUSES, "status");
 
   const images: VehicleImage[] = [];
@@ -284,7 +204,7 @@ export function validateDraft(d: VehicleDraft): Result {
     }
     images.push({
       url: row.url,
-      alt: row.alt || `${d.brand} ${d.model}`.trim(),
+      alt: row.alt || d.name.trim(),
       angle: IMAGE_ANGLES.includes(row.angle as ImageAngle)
         ? (row.angle as ImageAngle)
         : "Exterior",
@@ -293,38 +213,26 @@ export function validateDraft(d: VehicleDraft): Result {
 
   if (Object.keys(errors).length > 0) return { ok: false, errors };
 
-  const features: FeatureGroup[] = FEATURE_CATEGORIES.map((category) => ({
-    category,
-    items: lines(d.features[category]),
-  })).filter((g) => g.items.length > 0);
-
+  const name = d.name.trim();
   return {
     ok: true,
     value: {
       reference: d.reference,
-      brand: d.brand,
-      model: d.model,
-      trim: d.trim || undefined,
+      name,
+      brand: brandFromName(name),
       year,
       price,
       currency: "XAF",
       mileage,
       fuelType,
       transmission,
-      engine: d.engine,
-      horsepower,
-      driveType,
-      bodyType,
       color: d.color,
       seats,
       doors,
-      condition,
       status,
       featured: d.featured,
       location: d.location,
       description: d.description,
-      highlights: lines(d.highlights),
-      features,
       images,
     },
   };

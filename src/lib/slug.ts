@@ -12,19 +12,21 @@ export function slugify(input: string): string {
 
 export const brandSlug = (v: Pick<Vehicle, "brand">): string => slugify(v.brand);
 
+/**
+ * The stock reference is part of the slug so that two identical cars in stock
+ * (same name and year) still get their own URL. References are unique.
+ */
 export const vehicleSlug = (
-  v: Pick<Vehicle, "model" | "trim" | "year">,
-): string => slugify(`${v.model} ${v.trim ?? ""} ${v.year}`);
+  v: Pick<Vehicle, "name" | "year" | "reference">,
+): string => slugify(`${v.name} ${v.year} ${v.reference}`);
 
-/** Clean, human-readable detail URL: /cars/bmw/x5-xdrive40i-2024 */
+/** Clean, human-readable detail URL: /cars/bmw/bmw-x5-xdrive40i-2024-pc-bmw-x5-0241 */
 export const vehiclePath = (
-  v: Pick<Vehicle, "brand" | "model" | "trim" | "year">,
+  v: Pick<Vehicle, "brand" | "name" | "year" | "reference">,
 ): string => `/cars/${brandSlug(v)}/${vehicleSlug(v)}`;
 
-export const vehicleTitle = (
-  v: Pick<Vehicle, "brand" | "model" | "trim">,
-): string => `${v.brand} ${v.model}${v.trim ? ` ${v.trim}` : ""}`;
+export const vehicleTitle = (v: Pick<Vehicle, "name">): string => v.name;
 
 export const vehicleFullTitle = (
-  v: Pick<Vehicle, "brand" | "model" | "trim" | "year">,
-): string => `${v.year} ${vehicleTitle(v)}`;
+  v: Pick<Vehicle, "name" | "year">,
+): string => `${v.year} ${v.name}`;

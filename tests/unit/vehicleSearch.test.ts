@@ -38,11 +38,11 @@ describe("toAdminRow", () => {
   });
 
   it("links an available vehicle to its public page", () => {
-    expect(toAdminRow(makeVehicle()).publicPath).toBe("/cars/bmw/x5-xdrive40i-2024-pc-bmw-x5-0241");
+    expect(toAdminRow(makeVehicle()).publicPath).toBe("/cars/bmw/bmw-x5-xdrive40i-2024-pc-bmw-x5-0241");
   });
 
-  it("keeps exact numbers for price, mileage and horsepower", () => {
-    expect(toAdminRow(makeVehicle()).numbers).toEqual(["68500000", "12000", "335"]);
+  it("keeps exact numbers for price and mileage", () => {
+    expect(toAdminRow(makeVehicle()).numbers).toEqual(["68500000", "12000"]);
   });
 });
 
@@ -55,8 +55,8 @@ describe("createMatcher", () => {
   });
 
   it("requires every typed word, in any order", () => {
-    expect(find("bmw 2024 suv")).toEqual(["2024 BMW X5 xDrive40i"]);
-    expect(find("suv bmw")).toEqual(["2024 BMW X5 xDrive40i"]);
+    expect(find("bmw 2024 petrol")).toEqual(["2024 BMW X5 xDrive40i"]);
+    expect(find("petrol bmw")).toEqual(["2024 BMW X5 xDrive40i"]);
     expect(find("bmw 2019")).toEqual([]);
   });
 

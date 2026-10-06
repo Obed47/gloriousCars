@@ -18,3 +18,16 @@ export const brandNames: string[] = [
   "Tesla",
   "Peugeot",
 ];
+
+/**
+ * The make at the start of a car name: "Land Rover Defender" → "Land Rover".
+ * A make missing from the list falls back to the first word.
+ */
+export function brandFromName(name: string): string {
+  const text = name.trim();
+  const lower = text.toLowerCase();
+  const known = [...brandNames]
+    .sort((a, b) => b.length - a.length)
+    .find((b) => lower === b.toLowerCase() || lower.startsWith(`${b.toLowerCase()} `));
+  return known ?? text.split(/\s+/)[0] ?? "";
+}

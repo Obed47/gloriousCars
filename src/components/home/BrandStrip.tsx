@@ -22,7 +22,7 @@ export function BrandStrip({ brands }: { brands: BrandSummary[] }) {
                 <span className="text-xs font-bold uppercase tracking-[0.08em] text-muted sm:text-sm sm:tracking-[0.12em] transition-colors group-hover:text-ink">
                   {brand.name}
                 </span>
-                <span className="text-[0.6875rem] text-silver">
+                <span className="text-[0.6875rem] text-muted">
                   {brand.count} {brand.count === 1 ? "vehicle" : "vehicles"}
                 </span>
               </Link>

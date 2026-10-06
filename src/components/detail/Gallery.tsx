@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useDialogFocus } from "@/hooks/useDialogFocus";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
@@ -17,6 +18,7 @@ export function Gallery({
   const [direction, setDirection] = useState(0);
   const [lightbox, setLightbox] = useState(false);
   const pointerStart = useRef<number | null>(null);
+  const lightboxRef = useRef<HTMLDivElement>(null);
 
   const count = images.length;
   const go = useCallback(
@@ -31,10 +33,11 @@ export function Gallery({
     setIndex(i);
   };
 
+  useDialogFocus(lightbox, lightboxRef, { onEscape: () => setLightbox(false) });
+
   useEffect(() => {
     if (!lightbox) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setLightbox(false);
       if (e.key === "ArrowRight") go(1);
       if (e.key === "ArrowLeft") go(-1);
     };
@@ -168,6 +171,7 @@ export function Gallery({
       <AnimatePresence>
         {lightbox && (
           <motion.div
+            ref={lightboxRef}
             className="fixed inset-0 z-80 flex flex-col bg-ink/95"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

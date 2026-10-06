@@ -33,7 +33,7 @@ const SOCIAL = [
 ];
 
 export function Footer() {
-  const year = 2026;
+  const year = new Date().getFullYear();
   return (
     <footer className="bg-ink text-silver">
       <div className="wrap grid grid-cols-1 gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.3fr] lg:py-20">
@@ -117,7 +117,7 @@ export function Footer() {
               {SITE.address.city}, {SITE.address.country}
             </span>
           </p>
-          <ul className="mt-1 space-y-1 text-xs text-silver/60">
+          <ul className="mt-1 space-y-1 text-xs text-silver/80">
             {SITE.hours.map((h) => (
               <li key={h.days} className="flex justify-between gap-4">
                 <span>{h.days}</span>
@@ -129,7 +129,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-white/10">
-        <div className="wrap flex flex-col gap-3 py-6 text-xs text-silver/60 sm:flex-row sm:items-center sm:justify-between">
+        <div className="wrap flex flex-col gap-3 py-6 text-xs text-silver/80 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {year} {SITE.legalName}. All rights reserved.
           </p>

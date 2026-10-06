@@ -232,7 +232,7 @@ describe("VehicleCard", () => {
     renderWithProviders(<VehicleCard vehicle={makeVehicle()} />);
     expect(screen.getByRole("link", { name: "BMW X5 xDrive40i" })).toHaveAttribute(
       "href",
-      "/cars/bmw/x5-xdrive40i-2024-pc-bmw-x5-0241",
+      "/cars/bmw/bmw-x5-xdrive40i-2024-pc-bmw-x5-0241",
     );
   });
 });

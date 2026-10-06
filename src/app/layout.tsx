@@ -104,7 +104,7 @@ export default async function RootLayout({
         className="flex min-h-dvh flex-col bg-mist font-sans text-ink antialiased"
         suppressHydrationWarning
       >
-        <Providers>
+        <Providers knownIds={summaries.map((s) => s.id)}>
           <SiteJsonLd />
           <a
             href="#main"

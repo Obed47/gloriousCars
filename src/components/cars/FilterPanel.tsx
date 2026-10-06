@@ -2,6 +2,7 @@
 
 import { ChevronDown } from "lucide-react";
 import { formatMileage, formatPriceCompact } from "@/lib/format";
+import { priceSteps } from "@/lib/filtering";
 import type { FilterOptions, VehicleQuery } from "@/lib/types";
 
 type Patch = Partial<VehicleQuery>;
@@ -111,13 +112,12 @@ export function FilterPanel({
   onChange: (patch: Patch) => void;
   onReset: () => void;
 }) {
-  const priceTiers: number[] = [];
-  {
-    const [min, max] = options.priceRange;
-    const step = 10000;
-    const start = Math.floor(min / step) * step;
-    for (let p = start; p <= max + step; p += step) priceTiers.push(p);
-  }
+  const priceTiers = priceSteps(options.priceRange[0], options.priceRange[1]);
+  // A price from the URL may fall between steps; list it so the select shows it.
+  const withCurrent = (value?: number) =>
+    value != null && !priceTiers.includes(value)
+      ? [...priceTiers, value].sort((a, b) => a - b)
+      : priceTiers;
   const mileageTiers = [
     10000, 20000, 30000, 40000, 50000, 75000, 100000,
   ].filter((m) => m <= options.mileageRange[1] + 25000);
@@ -146,17 +146,6 @@ export function FilterPanel({
         ))}
       </Group>
 
-      <Group title="Body type" count={query.bodyType?.length}>
-        {options.bodyTypes.map((b) => (
-          <Check
-            key={b}
-            label={b}
-            checked={query.bodyType?.includes(b) ?? false}
-            onChange={() => onChange({ bodyType: toggle(query.bodyType, b) })}
-          />
-        ))}
-      </Group>
-
       <Group title="Price">
         <div className="flex gap-3">
           <MiniSelect
@@ -165,7 +154,7 @@ export function FilterPanel({
             onChange={(v) => onChange({ minPrice: v ? Number(v) : undefined })}
           >
             <option value="">Any</option>
-            {priceTiers.map((p) => (
+            {withCurrent(query.minPrice).map((p) => (
               <option key={p} value={p}>
                 {formatPriceCompact(p, "XAF")}
               </option>
@@ -177,7 +166,7 @@ export function FilterPanel({
             onChange={(v) => onChange({ maxPrice: v ? Number(v) : undefined })}
           >
             <option value="">Any</option>
-            {priceTiers.map((p) => (
+            {withCurrent(query.maxPrice).map((p) => (
               <option key={p} value={p}>
                 {formatPriceCompact(p, "XAF")}
               </option>
@@ -250,17 +239,6 @@ export function FilterPanel({
             onChange={() =>
               onChange({ transmission: toggle(query.transmission, t) })
             }
-          />
-        ))}
-      </Group>
-
-      <Group title="Condition" count={query.condition?.length}>
-        {options.conditions.map((c) => (
-          <Check
-            key={c}
-            label={c}
-            checked={query.condition?.includes(c) ?? false}
-            onChange={() => onChange({ condition: toggle(query.condition, c) })}
           />
         ))}
       </Group>

@@ -9,18 +9,16 @@ import {
   validateDraft,
   type VehicleDraft,
 } from "@/lib/admin/vehicleForm";
-import { makeVehicle, photo } from "../fixtures/vehicles";
+import { makeVehicle, photo, toVehicleInput } from "../fixtures/vehicles";
 
 /** A draft that passes validation; tests override one field at a time. */
 function validDraft(overrides: Partial<VehicleDraft> = {}): VehicleDraft {
   return {
     ...emptyDraft(),
     reference: "PC-TEST-0001",
-    brand: "Toyota",
-    model: "Corolla",
+    name: "Toyota Corolla",
     year: "2022",
     price: "12500000",
-    engine: "1.8L",
     color: "White",
     location: "Douala — Akwa Showroom",
     description: "Clean car.",
@@ -43,11 +41,11 @@ describe("validateDraft: required fields", () => {
   });
 
   it("reports every missing required field at once", () => {
-    expectErrors(emptyDraft(), ["reference", "brand", "model", "engine", "color", "location", "description", "price"]);
+    expectErrors(emptyDraft(), ["reference", "name", "color", "location", "description", "price"]);
   });
 
   it("treats whitespace-only text as missing", () => {
-    expectErrors(validDraft({ brand: "   " }), ["brand"]);
+    expectErrors(validDraft({ name: "   " }), ["name"]);
   });
 });
 
@@ -73,10 +71,10 @@ describe("validateDraft: numbers", () => {
     expect(validateDraft(validDraft({ price: "0" })).ok).toBe(true);
   });
 
-  it("requires whole numbers for year, mileage, horsepower, seats and doors", () => {
+  it("requires whole numbers for year, mileage, seats and doors", () => {
     expectErrors(
-      validDraft({ year: "2022.5", mileage: "1.2", horsepower: "abc", seats: "5.0", doors: "" }),
-      ["year", "mileage", "horsepower", "seats", "doors"],
+      validDraft({ year: "2022.5", mileage: "1.2", seats: "5.0", doors: "" }),
+      ["year", "mileage", "seats", "doors"],
     );
   });
 
@@ -108,6 +106,19 @@ describe("validateDraft: choice fields", () => {
   });
 });
 
+describe("validateDraft: car name and make", () => {
+  it("takes the make from the start of the name", () => {
+    const result = validateDraft(validDraft({ name: "  Land Rover Defender 110 " }));
+    expect(result.ok && result.value.name).toBe("Land Rover Defender 110");
+    expect(result.ok && result.value.brand).toBe("Land Rover");
+  });
+
+  it("uses the first word as the make when it is not in the brand list", () => {
+    const result = validateDraft(validDraft({ name: "Dacia Duster" }));
+    expect(result.ok && result.value.brand).toBe("Dacia");
+  });
+});
+
 describe("validateDraft: photos", () => {
   it("refuses a photo link from another website", () => {
     const result = validateDraft(
@@ -129,7 +140,7 @@ describe("validateDraft: photos", () => {
     expect(result.ok && result.value.images).toHaveLength(1);
   });
 
-  it("falls back to brand and model as alt text", () => {
+  it("falls back to the car name as alt text", () => {
     const result = validateDraft(validDraft());
     expect(result.ok && result.value.images[0].alt).toBe("Toyota Corolla");
   });
@@ -143,27 +154,6 @@ describe("validateDraft: photos", () => {
 });
 
 describe("validateDraft: normalisation", () => {
-  it("drops blank feature lines and empty categories", () => {
-    const result = validateDraft(
-      validDraft({
-        features: { Comfort: "  Heated seats  \n\n  Keyless  ", Technology: "   ", Safety: "", Performance: "" },
-      }),
-    );
-    expect(result.ok && result.value.features).toEqual([
-      { category: "Comfort", items: ["Heated seats", "Keyless"] },
-    ]);
-  });
-
-  it("splits highlights on any line ending", () => {
-    const result = validateDraft(validDraft({ highlights: "One\r\nTwo\nThree" }));
-    expect(result.ok && result.value.highlights).toEqual(["One", "Two", "Three"]);
-  });
-
-  it("stores a blank trim as undefined", () => {
-    const result = validateDraft(validDraft({ trim: "" }));
-    expect(result.ok && result.value.trim).toBeUndefined();
-  });
-
   it("always stores the currency as XAF", () => {
     const result = validateDraft(validDraft());
     expect(result.ok && result.value.currency).toBe("XAF");
@@ -173,15 +163,10 @@ describe("validateDraft: normalisation", () => {
 describe("edit round trip", () => {
   it("an unchanged existing vehicle validates back to the same data", () => {
     // Editing a car and saving without changes must not alter it.
-    const vehicle = makeVehicle({
-      trim: undefined,
-      features: [{ category: "Safety", items: ["ABS", "Airbags"] }],
-      highlights: ["Panoramic roof"],
-    });
-    const { id: _id, listedAt: _listedAt, ...expected } = vehicle;
+    const vehicle = makeVehicle();
     const result = validateDraft(draftFromVehicle(vehicle));
     expect(result.ok).toBe(true);
-    if (result.ok) expect(result.value).toEqual(expected);
+    if (result.ok) expect(result.value).toEqual(toVehicleInput(vehicle));
   });
 });
 
@@ -189,14 +174,12 @@ describe("draftFromFormData", () => {
   it("reads the fields the form submits", () => {
     const fd = new FormData();
     fd.set("reference", "  PC-1  ");
-    fd.set("brand", "Audi");
+    fd.set("name", "Audi A4");
     fd.set("featured", "on");
-    fd.set("features_Safety", "ABS");
     const draft = draftFromFormData(fd);
     expect(draft.reference).toBe("PC-1");
+    expect(draft.name).toBe("Audi A4");
     expect(draft.featured).toBe(true);
-    expect(draft.features.Safety).toBe("ABS");
-    expect(draft.features.Comfort).toBe("");
   });
 
   it("treats an unticked featured box as false", () => {

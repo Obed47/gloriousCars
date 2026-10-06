@@ -45,3 +45,9 @@ export function relativeListedDate(iso: string): string {
   const months = Math.floor(days / 30);
   return months === 1 ? "Listed 1 month ago" : `Listed ${months} months ago`;
 }
+
+/** "2026-10-04" for the local calendar day of `date` (not the UTC day). */
+export function localDateString(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}

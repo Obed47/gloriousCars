@@ -19,7 +19,6 @@ import { SITE } from "@/lib/site";
 
 import { Gallery } from "@/components/detail/Gallery";
 import { SpecGrid } from "@/components/detail/SpecGrid";
-import { FeatureGroups } from "@/components/detail/FeatureGroups";
 import { AboutVehicle } from "@/components/detail/AboutVehicle";
 import { DetailCTAs } from "@/components/detail/DetailCTAs";
 import { DetailSaveRow } from "@/components/detail/DetailSaveRow";
@@ -52,7 +51,7 @@ export async function generateMetadata({
     vehicle.currency,
   )}, ${formatMileage(vehicle.mileage)}, ${vehicle.fuelType}, ${
     vehicle.transmission
-  }. Full specifications, features, images and test-drive availability at ${SITE.name}.`;
+  }. Full specifications, images and test-drive availability at ${SITE.name}.`;
   const path = vehiclePath(vehicle);
 
   return {
@@ -127,7 +126,7 @@ export default async function VehicleDetailPage({
             {vehicle.brand}
           </Link>
           <ChevronRight className="size-3" aria-hidden />
-          <span className="text-ink">{vehicle.model}</span>
+          <span className="text-ink">{vehicle.name}</span>
         </nav>
 
         {/* Gallery + summary */}
@@ -137,9 +136,7 @@ export default async function VehicleDetailPage({
           <div className="lg:sticky lg:top-24 lg:self-start">
             <div className="flex flex-col gap-5">
               <div className="flex flex-col gap-3">
-                <span className="eyebrow text-muted">
-                  {vehicle.year} • {vehicle.condition} {vehicle.bodyType}
-                </span>
+                <span className="eyebrow text-muted">{vehicle.brand}</span>
                 <h1 className="text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">
                   {full}
                 </h1>
@@ -205,22 +202,7 @@ export default async function VehicleDetailPage({
             as="h2"
           />
           <div className="mt-6">
-            <AboutVehicle
-              description={vehicle.description}
-              highlights={vehicle.highlights}
-            />
-          </div>
-        </section>
-
-        {/* Features */}
-        <section className="mt-16">
-          <SectionHeading
-            eyebrow="Equipment"
-            title="Features &amp; equipment"
-            as="h2"
-          />
-          <div className="mt-6">
-            <FeatureGroups groups={vehicle.features} />
+            <AboutVehicle description={vehicle.description} />
           </div>
         </section>
       </div>

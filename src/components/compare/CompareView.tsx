@@ -8,7 +8,7 @@ import { VehicleGridSkeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { WhatsAppIcon } from "@/components/ui/icons";
-import { formatMileage, formatNumber, formatPrice } from "@/lib/format";
+import { formatMileage, formatPrice } from "@/lib/format";
 import { vehiclePath, vehicleFullTitle } from "@/lib/slug";
 import { buildWhatsAppUrl, vehicleInquiryMessage } from "@/lib/whatsapp";
 import type { Vehicle } from "@/lib/types";
@@ -24,14 +24,9 @@ const ROWS: Row[] = [
   { label: "Price", value: (v) => formatPrice(v.price, v.currency), metric: (v) => v.price, best: "min" },
   { label: "Year", value: (v) => String(v.year), metric: (v) => v.year, best: "max" },
   { label: "Mileage", value: (v) => formatMileage(v.mileage), metric: (v) => v.mileage, best: "min" },
-  { label: "Body type", value: (v) => v.bodyType },
-  { label: "Engine", value: (v) => v.engine },
-  { label: "Horsepower", value: (v) => `${formatNumber(v.horsepower)} hp`, metric: (v) => v.horsepower, best: "max" },
   { label: "Fuel", value: (v) => v.fuelType },
   { label: "Transmission", value: (v) => v.transmission },
-  { label: "Drive type", value: (v) => v.driveType },
   { label: "Seats", value: (v) => String(v.seats), metric: (v) => v.seats, best: "max" },
-  { label: "Condition", value: (v) => v.condition },
   { label: "Location", value: (v) => v.location },
 ];
 

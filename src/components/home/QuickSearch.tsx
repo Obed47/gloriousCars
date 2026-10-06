@@ -6,11 +6,11 @@ import { ChevronDown, Search } from "lucide-react";
 import { CarGlyph } from "@/components/ui/icons";
 import { formatPriceCompact } from "@/lib/format";
 import { queryToSearchString } from "@/lib/searchParams";
+import { priceSteps } from "@/lib/filtering";
 import type { FilterOptions } from "@/lib/types";
 
 interface Selection {
   brand: string;
-  body: string;
   fuel: string;
   transmission: string;
   yearMin: string;
@@ -19,7 +19,6 @@ interface Selection {
 
 const EMPTY: Selection = {
   brand: "",
-  body: "",
   fuel: "",
   transmission: "",
   yearMin: "",
@@ -67,20 +66,16 @@ export function QuickSearch({ options }: { options: FilterOptions }) {
   const filledCount = Object.values(sel).filter(Boolean).length;
   const progress = useMemo(() => Math.min(filledCount / 4, 1), [filledCount]);
 
-  const priceTiers = useMemo(() => {
-    const [, max] = options.priceRange;
-    const step = 15000;
-    const tiers: number[] = [];
-    for (let p = step; p < max; p += step) tiers.push(p);
-    tiers.push(Math.ceil(max / 1000) * 1000);
-    return tiers;
-  }, [options.priceRange]);
+  // "Up to" tiers: the round steps above zero, so an empty catalogue offers none.
+  const priceTiers = useMemo(
+    () => priceSteps(0, options.priceRange[1]).filter((p) => p > 0),
+    [options.priceRange],
+  );
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     const qs = queryToSearchString({
       brand: sel.brand ? [sel.brand] : undefined,
-      bodyType: sel.body ? [sel.body] : undefined,
       fuelType: sel.fuel ? [sel.fuel] : undefined,
       transmission: sel.transmission ? [sel.transmission] : undefined,
       minYear: sel.yearMin ? Number(sel.yearMin) : undefined,
@@ -99,15 +94,6 @@ export function QuickSearch({ options }: { options: FilterOptions }) {
         <Field label="Brand" value={sel.brand} onChange={set("brand")}>
           <option value="">Any brand</option>
           {options.brands.map((b) => (
-            <option key={b} value={b}>
-              {b}
-            </option>
-          ))}
-        </Field>
-
-        <Field label="Body type" value={sel.body} onChange={set("body")}>
-          <option value="">Any body type</option>
-          {options.bodyTypes.map((b) => (
             <option key={b} value={b}>
               {b}
             </option>

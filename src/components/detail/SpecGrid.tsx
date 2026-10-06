@@ -1,14 +1,5 @@
-import {
-  Calendar,
-  Cog,
-  Compass,
-  Fuel,
-  Gauge,
-  Settings2,
-  Users,
-  Zap,
-} from "lucide-react";
-import { formatMileage, formatNumber } from "@/lib/format";
+import { Calendar, Fuel, Gauge, Settings2, Users } from "lucide-react";
+import { formatMileage } from "@/lib/format";
 import type { Vehicle } from "@/lib/types";
 
 export function SpecGrid({ vehicle }: { vehicle: Vehicle }) {
@@ -17,18 +8,11 @@ export function SpecGrid({ vehicle }: { vehicle: Vehicle }) {
     { Icon: Gauge, label: "Mileage", value: formatMileage(vehicle.mileage) },
     { Icon: Fuel, label: "Fuel", value: vehicle.fuelType },
     { Icon: Settings2, label: "Transmission", value: vehicle.transmission },
-    { Icon: Cog, label: "Engine", value: vehicle.engine },
-    {
-      Icon: Zap,
-      label: "Power",
-      value: `${formatNumber(vehicle.horsepower)} hp`,
-    },
     { Icon: Users, label: "Seats", value: String(vehicle.seats) },
-    { Icon: Compass, label: "Drive", value: vehicle.driveType },
   ];
 
   return (
-    <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-4">
+    <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-5">
       {specs.map(({ Icon, label, value }) => (
         <div
           key={label}

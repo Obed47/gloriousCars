@@ -48,7 +48,10 @@ export function Testimonials({ reviews }: { reviews: Review[] }) {
 
         <div
           ref={trackRef}
-          className="no-scrollbar mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-2"
+          role="region"
+          tabIndex={0}
+          aria-label="Customer reviews"
+          className="no-scrollbar mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
         >
           {reviews.map((review) => (
             <figure
