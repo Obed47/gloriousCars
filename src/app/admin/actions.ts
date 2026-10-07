@@ -1,8 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireStaff } from "@/lib/auth";
+import { CATALOGUE_TAG } from "@/lib/catalogueCache";
 import { VEHICLE_IMAGE_BUCKET, storagePathFromUrl } from "@/lib/images";
 import { slugify } from "@/lib/slug";
 import type { VehicleImage } from "@/lib/types";
@@ -17,6 +18,7 @@ import {
 
 /** Public pages are prerendered; refresh them after any catalogue change. */
 function refreshSite() {
+  updateTag(CATALOGUE_TAG);
   revalidatePath("/", "layout");
   revalidatePath("/sitemap.xml");
 }

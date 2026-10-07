@@ -19,7 +19,7 @@ test.describe("finding a car", () => {
   });
 
   test("a search with several words needs them all to match", async ({ page }) => {
-    await page.goto("/cars?search=bmw%20suv");
+    await page.goto("/cars?search=bmw%20petrol");
     await expect(carCards(page)).toHaveCount(2);
   });
 

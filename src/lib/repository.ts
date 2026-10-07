@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { brandNames } from "@/data/brands";
 import { reviews as rawReviews, type Review } from "@/data/reviews";
 import type {
@@ -14,6 +15,7 @@ import {
   sortVehicles,
 } from "./filtering";
 import { isAllowedImageUrl } from "./images";
+import { CATALOGUE_TAG } from "./catalogueCache";
 import { isSupabaseConfigured } from "./supabase/env";
 import { createSupabasePublicClient } from "./supabase/public";
 import { rowToVehicle, type VehicleRow } from "./supabase/vehicles";
@@ -36,26 +38,37 @@ const selectVehicleRows = () =>
   createSupabasePublicClient().from("vehicles").select("*");
 
 /**
- * One query per request, shared by every function below. Uses the
- * cookie-less client, so row-level security applies as for an anonymous
- * visitor (sold vehicles are hidden). A failed query throws rather than
- * silently showing an empty catalogue.
+ * The catalogue, shared by every request. Without this, each page render
+ * waited on its own Supabase round trip, which made every navigation slow.
+ * Uses the cookie-less client, so row-level security applies as for an
+ * anonymous visitor (sold vehicles are hidden). A failed query throws and is
+ * not cached, so the next request tries again.
  */
+const fetchCatalogue = unstable_cache(
+  async (): Promise<Vehicle[]> => {
+    let result = await selectVehicleRows();
+    // Status 0 means no HTTP response at all (a dropped connection), so one
+    // retry is worth it. Any real error from Supabase still fails straight away.
+    if (result.error && result.status === 0) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      result = await selectVehicleRows();
+    }
+    const { data, error } = result;
+    if (error) {
+      throw new Error(`Could not load vehicles from Supabase: ${error.message}`);
+    }
+    return (data as VehicleRow[]).map(rowToVehicle).map(dropUnrenderablePhotos);
+  },
+  ["vehicle-catalogue"],
+  // Five minutes is the fallback for rows changed directly in the Supabase
+  // dashboard; admin saves expire the cache at once through CATALOGUE_TAG.
+  { tags: [CATALOGUE_TAG], revalidate: 300 },
+);
+
+/** One lookup per request, so a page and its layout share a single read. */
 const loadVehicles = cache(async (): Promise<Vehicle[]> => {
   if (!isSupabaseConfigured()) return [];
-
-  let result = await selectVehicleRows();
-  // Status 0 means no HTTP response at all (a dropped connection), so one
-  // retry is worth it. Any real error from Supabase still fails straight away.
-  if (result.error && result.status === 0) {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    result = await selectVehicleRows();
-  }
-  const { data, error } = result;
-  if (error) {
-    throw new Error(`Could not load vehicles from Supabase: ${error.message}`);
-  }
-  return (data as VehicleRow[]).map(rowToVehicle).map(dropUnrenderablePhotos);
+  return fetchCatalogue();
 });
 
 /**

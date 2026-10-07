@@ -6,6 +6,13 @@ import { brandSlug, vehicleSlug } from "@/lib/slug";
 import { makeVehicle, makeVehicleRow, photo, sampleCatalogue } from "../fixtures/vehicles";
 
 /**
+ * The catalogue cache needs a running Next.js server, so here it passes through.
+ * The spy checks the caching settings: the tag admin saves expire, and the lifetime.
+ */
+const cacheSpy = vi.hoisted(() => vi.fn((fn: unknown) => fn));
+vi.mock("next/cache", () => ({ unstable_cache: cacheSpy }));
+
+/**
  * The repository reads Supabase through `createSupabasePublicClient`. Replace
  * that client with an in-memory table so each query path can be exercised.
  */
@@ -72,6 +79,14 @@ function toRow(v: ReturnType<typeof makeVehicle>) {
 }
 
 describe("repository: configuration and errors", () => {
+  it("caches the catalogue across requests under the tag admin saves expire", async () => {
+    await repo();
+    expect(cacheSpy).toHaveBeenCalledWith(expect.any(Function), ["vehicle-catalogue"], {
+      tags: ["vehicles"],
+      revalidate: 300,
+    });
+  });
+
   it("returns an empty catalogue when Supabase is not configured", async () => {
     vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "");
     const { getAllVehicles } = await repo();

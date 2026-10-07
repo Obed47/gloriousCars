@@ -57,8 +57,9 @@ describe("Navbar search", () => {
 
   it("every popular quick link opens the matching filter", async () => {
     const user = await openSearch();
-    const dialog = screen.getByRole("dialog", { name: "Search vehicles" });
     for (const { label, href } of POPULAR_SEARCHES) {
+      // Look the dialog up again each time: it unmounts after every preset.
+      const dialog = screen.getByRole("dialog", { name: "Search vehicles" });
       await user.click(within(dialog).getByRole("button", { name: label }));
       expect(nav.push, label).toHaveBeenLastCalledWith(href);
       expect(href, label).not.toMatch(/search=/);

@@ -10,7 +10,7 @@ const STEPS = [
   {
     n: "01",
     title: "Discover",
-    body: "Browse our collection and filter down to the vehicles that fit your life.",
+    body: "Browse our collection and filter down to the vehicles that fit your needs.",
   },
   {
     n: "02",
@@ -28,6 +28,7 @@ const STEPS = [
     body: "Talk to our team on WhatsApp, visit us and complete your purchase.",
   },
 ];
+
 
 export function HowItWorks() {
   const ref = useRef<HTMLDivElement>(null);

@@ -2,6 +2,7 @@
  * @vitest-environment node
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { updateTag } from "next/cache";
 import { photo } from "../fixtures/vehicles";
 
 /**
@@ -32,6 +33,7 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
+  updateTag: vi.fn(),
 }));
 
 const staff = { current: null as null | { id: string; email: string; role: "admin" | "editor" } };
@@ -174,6 +176,13 @@ describe("saveVehicle: writes", () => {
     expect(row.id).toMatch(/^v-toyota-corolla-2022-[0-9a-f]{6}$/);
     expect(row.reference).toBe("PC-TOY-0001");
     expect(row.currency).toBe("XAF");
+  });
+
+  it("expires the cached catalogue after a save, so the change shows at once", async () => {
+    staff.current = { id: "u1", email: "e@x.test", role: "editor" };
+    const { saveVehicle } = await actions();
+    await expect(saveVehicle(null, emptyState(), validForm())).rejects.toThrow(`${REDIRECT};/admin`);
+    expect(updateTag).toHaveBeenCalledWith("vehicles");
   });
 
   it("explains a duplicate stock reference against the reference field", async () => {
