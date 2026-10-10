@@ -32,7 +32,7 @@ export const SITE = {
   email: "gloriouscars237@gmail.com",
 
   address: {
-    line: "Bastos Branch",
+    line: "Biyem-Assi Branch",
     city: "Yaoundé",
     country: "Cameroon",
   },
@@ -47,7 +47,7 @@ export const SITE = {
 
   /** Test-drive / pickup locations offered in the booking flow. */
   locations: [
-    "Yaoundé — Bastos Branch",
+    "Yaoundé — Biyem-Assi Branch",
     "Douala — Akwa Showroom",
     "Douala — Bonabéri Lot",
   ],
