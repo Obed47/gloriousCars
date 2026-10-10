@@ -13,8 +13,8 @@ import { makeVehicle } from "../fixtures/vehicles";
 
 describe("buildWhatsAppUrl", () => {
   it("keeps only the digits of the number and encodes the text", () => {
-    expect(buildWhatsAppUrl("Hi there & welcome", "+237 677 176 139")).toBe(
-      "https://wa.me/237677176139?text=Hi%20there%20%26%20welcome",
+    expect(buildWhatsAppUrl("Hi there & welcome", "+237 675938792")).toBe(
+      "https://wa.me/237675938792?text=Hi%20there%20%26%20welcome",
     );
   });
 

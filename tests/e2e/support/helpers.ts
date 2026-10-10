@@ -1,7 +1,7 @@
 import { expect, type Page } from "@playwright/test";
 
 /** The dealership WhatsApp number from SITE.whatsappNumber. */
-export const WHATSAPP_NUMBER = "237677176139";
+export const WHATSAPP_NUMBER = "237675938792";
 
 /** Known catalogue entries, from tests/e2e/fixtures/catalogue.json. */
 export const CARS = {

@@ -87,7 +87,7 @@ test.describe("a vehicle page", () => {
     await expect(page.getByText("XAF 68,500,000").first()).toBeVisible();
 
     const enquiry = page.getByRole("link", { name: "Order / Inquire on WhatsApp" });
-    await expect(enquiry.first()).toHaveAttribute("href", new RegExp(`^https://wa\\.me/237677176139\\?text=`));
+    await expect(enquiry.first()).toHaveAttribute("href", new RegExp(`^https://wa\\.me/237675938792\\?text=`));
     const message = decodeURIComponent((await enquiry.first().getAttribute("href"))!.split("text=")[1]);
     expect(message).toContain(`Reference: ${CARS.bmwWhite.reference}`);
     expect(errors.filter((e) => !e.includes("/_next/image") && !e.includes("status of 4") && !e.includes("status of 5"))).toEqual([]);

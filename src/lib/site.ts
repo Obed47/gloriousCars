@@ -27,9 +27,9 @@ export const SITE = {
   defaultCurrency: "XAF" as Currency,
 
   /* ---- Contact / conversion ---- */
-  whatsappNumber: "237677176139",
-  phoneDisplay: "+237 677 176 139",
-  email: "hello@gloriouscars.example",
+  whatsappNumber: "237675938792",
+  phoneDisplay: "+237 675938792",
+  email: "gloriouscars237@gmail.com",
 
   address: {
     line: "Bastos Branch",
