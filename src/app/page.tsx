@@ -1,6 +1,7 @@
 import { Hero } from "@/components/home/Hero";
 import { QuickSearch } from "@/components/home/QuickSearch";
 import { FeaturedVehicles } from "@/components/home/FeaturedVehicles";
+import { OilService } from "@/components/home/OilService";
 import { AboutStrip } from "@/components/home/AboutStrip";
 import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { HowItWorks } from "@/components/home/HowItWorks";
@@ -45,6 +46,7 @@ export default async function HomePage() {
       </div>
 
       <FeaturedVehicles vehicles={featured} />
+      <OilService />
       <AboutStrip />
       <WhyChooseUs />
       <HowItWorks />

@@ -1,17 +1,26 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Banknote, CalendarCheck, Car, MessagesSquare } from "lucide-react";
+import {
+  Banknote,
+  CalendarCheck,
+  Car,
+  Droplet,
+  MessagesSquare,
+} from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
 import { WhatsAppIcon } from "@/components/ui/icons";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { SITE } from "@/lib/site";
-import { buildWhatsAppUrl, generalInquiryMessage } from "@/lib/whatsapp";
+import {
+  buildWhatsAppUrl,
+  generalInquiryMessage,
+} from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "Services",
-  description: `Vehicle sales, test drives, consultation and buying assistance from ${SITE.name}.`,
+  description: `Vehicle sales, test drives, consultation and buying assistance from ${SITE.name}, with fresh engine and gearbox oil in every car we deliver.`,
   alternates: { canonical: "/services" },
 };
 
@@ -52,6 +61,12 @@ const SERVICES = [
       external: true,
     },
   },
+  {
+    id: "oil-service",
+    Icon: Droplet,
+    title: "Engine & Gearbox Oil",
+    body: "Every car we deliver gets fresh, quality engine and gearbox oil, matched to the manufacturer's specification and changed by our team before handover.",
+  },
 ];
 
 export default function ServicesPage() {
@@ -70,7 +85,16 @@ export default function ServicesPage() {
 
           <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-2">
             {SERVICES.map(({ id, Icon, title, body, cta }, i) => (
-              <Reveal key={id} delay={(i % 2) * 0.08}>
+              <Reveal
+                key={id}
+                delay={(i % 2) * 0.08}
+                // An odd card out spans the row instead of sitting alone.
+                className={
+                  i === SERVICES.length - 1 && i % 2 === 0
+                    ? "md:col-span-2"
+                    : undefined
+                }
+              >
                 <article
                   id={id}
                   className="card flex h-full scroll-mt-28 flex-col gap-4 p-7"
@@ -82,7 +106,7 @@ export default function ServicesPage() {
                   <p className="flex-1 text-sm leading-relaxed text-muted">
                     {body}
                   </p>
-                  {cta.external ? (
+                  {cta?.external ? (
                     <a
                       href={cta.href}
                       target="_blank"
@@ -92,14 +116,14 @@ export default function ServicesPage() {
                       <WhatsAppIcon className="size-4" />
                       {cta.label}
                     </a>
-                  ) : (
+                  ) : cta ? (
                     <Link
                       href={cta.href}
                       className="inline-flex items-center gap-1 self-start text-sm font-semibold text-accent hover:gap-2"
                     >
                       {cta.label} →
                     </Link>
-                  )}
+                  ) : null}
                 </article>
               </Reveal>
             ))}
