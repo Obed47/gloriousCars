@@ -27,6 +27,21 @@ export function SiteJsonLd() {
           "@type": "AdministrativeArea",
           name,
         })),
+        // One `department` per showroom/pickup location, so the branches in
+        // both cities (not just the registered address) carry their own
+        // locality signal for local search.
+        department: SITE.locations.map((loc) => {
+          const [city, branch] = loc.split(" — ");
+          return {
+            "@type": "AutoDealer",
+            name: `${SITE.legalName} — ${branch}`,
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: city,
+              addressCountry: SITE.address.country,
+            },
+          };
+        }),
         contactPoint: {
           "@type": "ContactPoint",
           telephone: SITE.phoneDisplay,

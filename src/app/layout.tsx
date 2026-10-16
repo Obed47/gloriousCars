@@ -44,7 +44,11 @@ export const metadata: Metadata = {
   keywords: [
     "cars for sale",
     "cars for sale in Yaoundé",
+    "cars for sale in Douala",
     "used cars in Yaoundé",
+    "used cars in Douala",
+    "car dealers in Yaoundé",
+    "car dealers in Douala",
     "car dealers in Cameroon",
     "cars for sale in Cameroon",
     "used cars",
@@ -52,6 +56,7 @@ export const metadata: Metadata = {
     "buy a car",
     "test drive",
     SITE.address.city,
+    "Douala",
     SITE.address.country,
   ],
   alternates: { canonical: "/" },
@@ -72,6 +77,12 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
+  },
+  // Legacy geo meta tags. Google ignores these, but Bing and some regional
+  // engines still read them as a light signal for the target market.
+  other: {
+    "geo.region": "CM",
+    "geo.placename": "Yaoundé, Douala",
   },
 };
 

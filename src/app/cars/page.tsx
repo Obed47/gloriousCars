@@ -7,11 +7,11 @@ import { VehicleGridSkeleton } from "@/components/ui/Skeleton";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Cars for Sale in Cameroon",
+  title: "Cars for Sale in Yaoundé & Douala, Cameroon",
   description: `Browse cars for sale in Yaoundé, Douala and across Cameroon at ${SITE.name}. Filter by brand, price, body type, fuel and more, then book a test drive.`,
   alternates: { canonical: "/cars" },
   openGraph: {
-    title: `Cars for Sale in Cameroon | ${SITE.name}`,
+    title: `Cars for Sale in Yaoundé & Douala, Cameroon | ${SITE.name}`,
     description: `Browse inspected cars for sale in Yaoundé, Douala and across Cameroon.`,
     url: "/cars",
   },
@@ -29,7 +29,7 @@ export default async function CarsPage() {
         <SectionHeading
           as="h1"
           eyebrow="Inventory"
-          title="Cars for sale in Cameroon"
+          title="Cars for sale in Yaoundé & Douala"
           description="Compare inspected vehicles available in Yaoundé, Douala and across Cameroon, with transparent prices and direct WhatsApp support."
         />
       </header>

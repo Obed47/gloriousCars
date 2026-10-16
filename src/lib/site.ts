@@ -16,12 +16,18 @@ import type { Currency } from "./types";
 export const SITE = {
   name: "Glorious Cars",
   legalName: "Glorious Cars Motors",
-  tagline: "Cars for sale in Yaoundé and Cameroon.",
+  tagline: "Cars for sale in Yaoundé, Douala and Cameroon.",
   description:
     "Shop quality cars for sale in Yaoundé, Douala and across Cameroon. Compare inspected vehicles, view transparent prices and book a test drive with Glorious Cars.",
 
-  /** Used for absolute URLs in metadata, Open Graph and the sitemap. */
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://gloriouscars.example.com",
+  /**
+   * Used for absolute URLs in metadata, Open Graph, JSON-LD and the sitemap.
+   * The fallback is the real production domain, so a deploy that forgets to
+   * set NEXT_PUBLIC_SITE_URL still points at the live site instead of a
+   * placeholder — but don't rely on the fallback: set the env var in the
+   * hosting provider's dashboard too, since this value is read at build time.
+   */
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://gloriouscars237.com",
   locale: "en",
 
   defaultCurrency: "XAF" as Currency,

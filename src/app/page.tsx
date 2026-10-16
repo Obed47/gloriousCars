@@ -18,12 +18,12 @@ import type { Metadata } from "next";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Cars for Sale in Yaoundé and Cameroon",
+  title: "Cars for Sale in Yaoundé & Douala, Cameroon",
   description: SITE.description,
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
-    title: `${SITE.name} | Cars for Sale in Yaoundé and Cameroon`,
+    title: `${SITE.name} | Cars for Sale in Yaoundé & Douala, Cameroon`,
     description: SITE.description,
     url: "/",
   },
