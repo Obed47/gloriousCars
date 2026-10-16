@@ -58,7 +58,7 @@ export const fr: Dictionary = {
     },
     oilService: {
       eyebrow: "Avant la remise des clés",
-      title: "Huile moteur et boîte neuve sur chaque voiture",
+      title: "De l'huile neuve, moteur et boîte, dans chaque voiture",
       description:
         "Avant qu'une voiture ne quitte nos mains, nous changeons l'huile moteur et l'huile de boîte avec une huile de qualité et du bon grade. Vous roulez avec une huile neuve dès le premier jour, sans rien à prévoir vous-même.",
       imageAlt: "Huile moteur dorée et propre versée dans un moteur de voiture",
