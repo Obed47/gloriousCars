@@ -457,6 +457,7 @@ git commit -m "feat(i18n): translate vehicle detail page, JSON-LD labels and sta
 - Modify: `src/app/[lang]/about/page.tsx`, `src/app/[lang]/services/page.tsx`, `src/app/[lang]/contact/page.tsx`
 - Modify: `src/components/contact/ContactForm.tsx`
 - Modify: `src/components/detail/TestDriveModal.tsx`
+- Modify: `src/components/detail/DetailCTAs.tsx` (call site only — Task 7 already translated its labels; this task only updates its `vehicleInquiryMessage`/`testDriveMessage` call to pass the new `dict` argument)
 - Modify: `src/lib/whatsapp.ts` (signatures change — see Interfaces)
 - Test: existing tests for the above — confirm unchanged.
 - Test: new French-dictionary test(s) for `ContactForm`'s subject options and `TestDriveModal`'s labels; new tests for the changed `whatsapp.ts` signatures.
@@ -498,7 +499,7 @@ git commit -m "feat(i18n): translate about/services/contact pages and WhatsApp m
 - Test: new French-dictionary test(s) for `CompareTray` and the Favorites/Compare empty states.
 
 **Interfaces:**
-- Consumes: `getDictionary`, `localePaths`, `useDictionary`; new `dict.legal.*` (shared body copy structure for privacy/terms — these are long-form legal text, so the dictionary entries are the already-existing English paragraphs verbatim plus their French translation, not restructured), `dict.favorites.*`, `dict.compare.*`.
+- Consumes: `getDictionary`, `localePaths`, `useDictionary`; new `dict.privacy.*` and `dict.terms.*` namespaces (separate, like every other page — not a shared `legal` namespace, since the two pages' paragraphs are different content and must not share keys; they may share the same internal shape, e.g. `{ title: string; sections: { heading: string; body: string }[] }`, without sharing a namespace), plus `dict.favorites.*`, `dict.compare.*`. These are long-form text — the dictionary entries are the already-existing English paragraphs verbatim plus their French translation, not restructured.
 - Produces: `generateMetadata` for all four pages.
 
 - [ ] **Step 1: Write failing French-dictionary tests** for `CompareTray` (one label) and the Favorites/Compare pages' empty-state copy.
