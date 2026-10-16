@@ -90,7 +90,7 @@ vi.mock("@/lib/supabase/server", () => ({
   }),
 }));
 
-const actions = () => import("@/app/admin/actions");
+const actions = () => import("@/app/[lang]/admin/actions");
 
 function validForm(extra: Record<string, string | string[]> = {}) {
   const fd = new FormData();

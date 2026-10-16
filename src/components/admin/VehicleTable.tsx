@@ -12,7 +12,7 @@ import {
   deleteVehicle,
   setVehicleFeatured,
   setVehicleStatus,
-} from "@/app/admin/actions";
+} from "@/app/[lang]/admin/actions";
 
 /**
  * The vehicle list with a search box. All rows are already in the browser, so

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireStaff } from "@/lib/auth";
-import { logout } from "@/app/login/actions";
+import { logout } from "@/app/[lang]/login/actions";
 
 export const metadata: Metadata = {
   title: { default: "Admin", template: "%s | Admin" },

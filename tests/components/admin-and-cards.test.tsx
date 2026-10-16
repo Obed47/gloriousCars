@@ -18,7 +18,7 @@ const mocks = vi.hoisted(() => ({
   discard: vi.fn(),
 }));
 
-vi.mock("@/app/admin/actions", () => ({
+vi.mock("@/app/[lang]/admin/actions", () => ({
   deleteVehicle: vi.fn(),
   setVehicleFeatured: vi.fn(),
   setVehicleStatus: vi.fn(),

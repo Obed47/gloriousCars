@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
+import "../globals.css";
 
 import { SITE } from "@/lib/site";
 import { getVehicleSummaries } from "@/lib/repository";
@@ -10,11 +10,13 @@ import { Footer } from "@/components/site/Footer";
 import { FloatingWhatsApp } from "@/components/site/FloatingWhatsApp";
 import { CompareTray } from "@/components/site/CompareTray";
 import { SiteJsonLd } from "@/components/seo/SiteJsonLd";
+import { getDictionary } from "@/i18n/get-dictionary";
+import { DictionaryProvider } from "@/i18n/dictionary-context";
 
 // Self-hosted Montserrat (variable). Source: @fontsource-variable/montserrat.
 // The latin subset covers Latin-1 (é, è, ç, ã…) used across the content.
 const montserrat = localFont({
-  src: "../fonts/montserrat-variable.woff2",
+  src: "../../fonts/montserrat-variable.woff2",
   weight: "100 900",
   style: "normal",
   display: "swap",
@@ -96,16 +98,24 @@ export const viewport: Viewport = {
   colorScheme: "light",
 };
 
+export async function generateStaticParams() {
+  return [{ lang: "en" }, { lang: "fr" }];
+}
+
 export default async function RootLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ lang: string }>;
 }) {
+  const { lang } = await params;
   const summaries = await getVehicleSummaries();
+  const dictionary = await getDictionary();
 
   return (
     <html
-      lang="en"
+      lang={lang}
       data-scroll-behavior="smooth"
       className={`${montserrat.variable} h-full`}
     >
@@ -116,20 +126,22 @@ export default async function RootLayout({
         suppressHydrationWarning
       >
         <Providers knownIds={summaries.map((s) => s.id)}>
-          <SiteJsonLd />
-          <a
-            href="#main"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
-          >
-            Skip to content
-          </a>
-          <Navbar />
-          <main id="main" className="flex-1">
-            {children}
-          </main>
-          <Footer />
-          <FloatingWhatsApp />
-          <CompareTray summaries={summaries} />
+          <DictionaryProvider dictionary={dictionary}>
+            <SiteJsonLd />
+            <a
+              href="#main"
+              className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+            >
+              Skip to content
+            </a>
+            <Navbar />
+            <main id="main" className="flex-1">
+              {children}
+            </main>
+            <Footer />
+            <FloatingWhatsApp />
+            <CompareTray summaries={summaries} />
+          </DictionaryProvider>
         </Providers>
       </body>
     </html>

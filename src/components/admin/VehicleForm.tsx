@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
-import { saveVehicle } from "@/app/admin/actions";
+import { saveVehicle } from "@/app/[lang]/admin/actions";
 import { ImagesField } from "@/components/admin/ImagesField";
 import {
   FUEL_TYPES,
