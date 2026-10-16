@@ -154,6 +154,89 @@ export const en = {
       whatsapp: "Chat on WhatsApp",
     },
   },
+  cars: {
+    metadata: {
+      title: "Cars for Sale in Yaoundé & Douala, Cameroon",
+      descriptionPrefix:
+        "Browse cars for sale in Yaoundé, Douala and across Cameroon at",
+      descriptionSuffix:
+        "Filter by brand, price, body type, fuel and more, then book a test drive.",
+      ogDescription:
+        "Browse inspected cars for sale in Yaoundé, Douala and across Cameroon.",
+    },
+    heading: {
+      eyebrow: "Inventory",
+      title: "Cars for sale in Yaoundé & Douala",
+      description:
+        "Compare inspected vehicles available in Yaoundé, Douala and across Cameroon, with transparent prices and direct WhatsApp support.",
+    },
+    filterPanel: {
+      title: "Filters",
+      resetAll: "Reset all",
+      brand: "Brand",
+      price: "Price",
+      year: "Year",
+      maxMileage: "Max mileage",
+      fuel: "Fuel",
+      transmission: "Transmission",
+      colour: "Colour",
+      min: "Min",
+      max: "Max",
+      from: "From",
+      to: "To",
+      upTo: "Up to",
+      any: "Any",
+      anyMileage: "Any mileage",
+    },
+    sort: {
+      label: "Sort",
+      ariaLabel: "Sort vehicles",
+    },
+    sortOptions: {
+      featured: "Featured",
+      newest: "Newest",
+      "price-asc": "Price: Low to High",
+      "price-desc": "Price: High to Low",
+      "mileage-asc": "Lowest Mileage",
+    },
+    toolbar: {
+      filterButton: "Filter",
+      clearAll: "Clear all",
+      countAvailableSingular: "{count} vehicle available",
+      countAvailablePlural: "{count} vehicles available",
+      countOfTotalSingular: "{shown} of {total} vehicle",
+      countOfTotalPlural: "{shown} of {total} vehicles",
+    },
+    emptyState: {
+      title: "No vehicles match your search",
+      description: "Try widening your price range or removing a filter.",
+      resetButton: "Reset filters",
+    },
+    mobileSheet: {
+      ariaLabel: "Filter and sort",
+      heading: "Filter & Sort",
+      closeFiltersAriaLabel: "Close filters",
+      sortByLabel: "Sort by",
+      resetButton: "Reset",
+      showResults: "Show {count} results",
+    },
+  },
+  vehicleCard: {
+    featuredBadge: "Featured",
+    viewDetails: "View details",
+    view: "View",
+    seatsUnit: "seats",
+    saveToFavoritesPrefix: "Save",
+    toFavoritesSuffix: "to favorites",
+    removeFromFavoritesPrefix: "Remove",
+    fromFavoritesSuffix: "from favorites",
+    addToComparisonPrefix: "Add",
+    toComparisonSuffix: "to comparison",
+    removeFromComparisonPrefix: "Remove",
+    fromComparisonSuffix: "from comparison",
+    compare: "Compare",
+    comparisonFull: "Comparison is full (max 3)",
+  },
 };
 
 export type Dictionary = typeof en;

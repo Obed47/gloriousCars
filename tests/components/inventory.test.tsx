@@ -6,6 +6,8 @@ import { InventoryBrowser } from "@/components/cars/InventoryBrowser";
 import { QuickSearch } from "@/components/home/QuickSearch";
 import { deriveFilterOptions } from "@/lib/filtering";
 import type { VehicleQuery } from "@/lib/types";
+import { DictionaryProvider } from "@/i18n/dictionary-context";
+import { dictionaries } from "@/i18n/dictionaries";
 import { sampleCatalogue } from "../fixtures/vehicles";
 import { renderWithProviders as render } from "../support/render";
 
@@ -107,6 +109,19 @@ describe("InventoryBrowser", () => {
     expect(screen.getByRole("dialog", { name: "Filter and sort" })).toBeInTheDocument();
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("dialog", { name: "Filter and sort" })).not.toBeInTheDocument();
+  });
+});
+
+describe("InventoryBrowser (French dictionary)", () => {
+  it("renders filter labels and toolbar chrome in French", () => {
+    render(
+      <DictionaryProvider dictionary={dictionaries.fr}>
+        <InventoryBrowser vehicles={listed} options={options} />
+      </DictionaryProvider>,
+    );
+    const sidebar = document.querySelector("aside") as HTMLElement;
+    expect(within(sidebar).getByText("Marque")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Filtrer/ })).toBeInTheDocument();
   });
 });
 

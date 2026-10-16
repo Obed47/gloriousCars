@@ -15,6 +15,7 @@ import { VehicleImage } from "./VehicleImage";
 import { Badge } from "@/components/ui/Badge";
 import { useFavorites } from "@/components/providers/FavoritesProvider";
 import { useCompare } from "@/components/providers/CompareProvider";
+import { useDictionary } from "@/i18n/dictionary-context";
 import { formatMileage, formatPrice } from "@/lib/format";
 import { vehiclePath, vehicleTitle } from "@/lib/slug";
 import type { Vehicle } from "@/lib/types";
@@ -28,6 +29,7 @@ export function VehicleCard({
   priority?: boolean;
   sizes?: string;
 }) {
+  const dict = useDictionary();
   const { isFavorite, toggleFavorite, hydrated: favHydrated } = useFavorites();
   const {
     isComparing,
@@ -47,7 +49,7 @@ export function VehicleCard({
   const specs = [
     { Icon: Settings2, label: vehicle.transmission },
     { Icon: Fuel, label: vehicle.fuelType },
-    { Icon: Users, label: `${vehicle.seats} seats` },
+    { Icon: Users, label: `${vehicle.seats} ${dict.vehicleCard.seatsUnit}` },
     { Icon: Gauge, label: formatMileage(vehicle.mileage) },
   ];
 
@@ -73,7 +75,7 @@ export function VehicleCard({
 
         {vehicle.featured && (
           <div className="absolute left-3 top-3">
-            <Badge tone="featured">Featured</Badge>
+            <Badge tone="featured">{dict.vehicleCard.featuredBadge}</Badge>
           </div>
         )}
 
@@ -88,8 +90,8 @@ export function VehicleCard({
             aria-pressed={fav}
             aria-label={
               fav
-                ? `Remove ${title} from favorites`
-                : `Save ${title} to favorites`
+                ? `${dict.vehicleCard.removeFromFavoritesPrefix} ${title} ${dict.vehicleCard.fromFavoritesSuffix}`
+                : `${dict.vehicleCard.saveToFavoritesPrefix} ${title} ${dict.vehicleCard.toFavoritesSuffix}`
             }
             className={`flex size-9 items-center justify-center rounded-full bg-white/92 text-ink shadow-sm backdrop-blur transition-colors hover:bg-white ${
               pop ? "[animation:heart-pop_0.4s_ease]" : ""
@@ -110,10 +112,14 @@ export function VehicleCard({
             aria-pressed={comparing}
             aria-label={
               comparing
-                ? `Remove ${title} from comparison`
-                : `Add ${title} to comparison`
+                ? `${dict.vehicleCard.removeFromComparisonPrefix} ${title} ${dict.vehicleCard.fromComparisonSuffix}`
+                : `${dict.vehicleCard.addToComparisonPrefix} ${title} ${dict.vehicleCard.toComparisonSuffix}`
             }
-            title={compareDisabled ? "Comparison is full (max 3)" : "Compare"}
+            title={
+              compareDisabled
+                ? dict.vehicleCard.comparisonFull
+                : dict.vehicleCard.compare
+            }
             className={`flex size-9 items-center justify-center rounded-full shadow-sm backdrop-blur transition-colors disabled:cursor-not-allowed disabled:opacity-45 ${
               comparing
                 ? "bg-accent text-white"
@@ -129,7 +135,7 @@ export function VehicleCard({
           className="pointer-events-none absolute inset-x-0 bottom-0 flex translate-y-2 items-center justify-between bg-gradient-to-t from-black/60 to-transparent px-4 pb-3 pt-10 text-sm font-semibold text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
           aria-hidden
         >
-          View details
+          {dict.vehicleCard.viewDetails}
           <ArrowRight className="size-4" />
         </div>
       </div>
@@ -171,7 +177,7 @@ export function VehicleCard({
             </p>
           </div>
           <span className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-accent">
-            View
+            {dict.vehicleCard.view}
             <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
           </span>
         </div>

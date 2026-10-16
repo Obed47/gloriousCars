@@ -10,6 +10,8 @@ import { VehicleGrid } from "@/components/vehicles/VehicleGrid";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { useDialogFocus } from "@/hooks/useDialogFocus";
+import { useDictionary } from "@/i18n/dictionary-context";
+import type { Dictionary } from "@/i18n/dictionaries";
 import { filterVehicles, sortVehicles } from "@/lib/filtering";
 import {
   hasActiveFilters,
@@ -21,6 +23,7 @@ import type { FilterOptions, Vehicle, VehicleQuery } from "@/lib/types";
 
 function activeChips(
   query: VehicleQuery,
+  dict: Dictionary,
 ): { label: string; clear: Partial<VehicleQuery> }[] {
   const chips: { label: string; clear: Partial<VehicleQuery> }[] = [];
   const pushList = (key: "brand" | "fuelType" | "transmission" | "color") => {
@@ -37,12 +40,12 @@ function activeChips(
   pushList("color");
   if (query.minPrice != null)
     chips.push({
-      label: `From ${formatPriceCompact(query.minPrice, "XAF")}`,
+      label: `${dict.cars.filterPanel.from} ${formatPriceCompact(query.minPrice, "XAF")}`,
       clear: { minPrice: undefined },
     });
   if (query.maxPrice != null)
     chips.push({
-      label: `Up to ${formatPriceCompact(query.maxPrice, "XAF")}`,
+      label: `${dict.cars.filterPanel.upTo} ${formatPriceCompact(query.maxPrice, "XAF")}`,
       clear: { maxPrice: undefined },
     });
   if (query.minYear != null)
@@ -66,6 +69,7 @@ export function InventoryBrowser({
   vehicles: Vehicle[];
   options: FilterOptions;
 }) {
+  const dict = useDictionary();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -99,13 +103,21 @@ export function InventoryBrowser({
     };
   }, [sheetOpen]);
 
-  const chips = activeChips(query);
+  const chips = activeChips(query, dict);
   const active = hasActiveFilters(query);
-  const noun = vehicles.length === 1 ? "vehicle" : "vehicles";
+  const totalIsSingular = vehicles.length === 1;
   const countLabel =
     results.length === vehicles.length
-      ? `${results.length} ${noun} available`
-      : `${results.length} of ${vehicles.length} ${noun}`;
+      ? (totalIsSingular
+          ? dict.cars.toolbar.countAvailableSingular
+          : dict.cars.toolbar.countAvailablePlural
+        ).replace("{count}", String(results.length))
+      : (totalIsSingular
+          ? dict.cars.toolbar.countOfTotalSingular
+          : dict.cars.toolbar.countOfTotalPlural
+        )
+          .replace("{shown}", String(results.length))
+          .replace("{total}", String(vehicles.length));
 
   return (
     <div className="wrap grid grid-cols-1 gap-8 lg:grid-cols-[270px_1fr] lg:gap-12">
@@ -138,7 +150,7 @@ export function InventoryBrowser({
               className="inline-flex h-10 items-center gap-2 rounded-lg border border-line-strong bg-surface px-3 text-sm font-semibold text-ink lg:hidden"
             >
               <SlidersHorizontal className="size-4" aria-hidden />
-              Filter
+              {dict.cars.toolbar.filterButton}
               {active && (
                 <span className="flex size-5 items-center justify-center rounded-full bg-accent text-[0.625rem] text-white">
                   {chips.length}
@@ -171,7 +183,7 @@ export function InventoryBrowser({
               onClick={reset}
               className="text-xs font-medium text-accent hover:underline"
             >
-              Clear all
+              {dict.cars.toolbar.clearAll}
             </button>
           </div>
         )}
@@ -186,11 +198,11 @@ export function InventoryBrowser({
             />
           ) : (
             <EmptyState
-              title="No vehicles match your search"
-              description="Try widening your price range or removing a filter."
+              title={dict.cars.emptyState.title}
+              description={dict.cars.emptyState.description}
               action={
                 <Button variant="primary" size="sm" onClick={reset}>
-                  Reset filters
+                  {dict.cars.emptyState.resetButton}
                 </Button>
               }
             />
@@ -210,16 +222,16 @@ export function InventoryBrowser({
             transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
             role="dialog"
             aria-modal="true"
-            aria-label="Filter and sort"
+            aria-label={dict.cars.mobileSheet.ariaLabel}
           >
             <div className="flex items-center justify-between border-b border-line px-5 py-4">
               <h2 className="text-base font-bold text-ink">
-                Filter &amp; Sort
+                {dict.cars.mobileSheet.heading}
               </h2>
               <button
                 type="button"
                 onClick={() => setSheetOpen(false)}
-                aria-label="Close filters"
+                aria-label={dict.cars.mobileSheet.closeFiltersAriaLabel}
                 className="flex size-9 items-center justify-center rounded-lg text-ink hover:bg-black/5"
               >
                 <X className="size-5" aria-hidden />
@@ -228,7 +240,7 @@ export function InventoryBrowser({
 
             <div className="flex-1 overflow-y-auto px-5 py-2">
               <div className="flex items-center justify-between border-b border-line py-4 text-sm font-semibold text-ink">
-                <span>Sort by</span>
+                <span>{dict.cars.mobileSheet.sortByLabel}</span>
                 <SortSelect
                   value={query.sort ?? "featured"}
                   onChange={(sort) => patch({ sort })}
@@ -244,10 +256,13 @@ export function InventoryBrowser({
 
             <div className="flex gap-3 border-t border-line p-4">
               <Button variant="outline" fullWidth onClick={reset}>
-                Reset
+                {dict.cars.mobileSheet.resetButton}
               </Button>
               <Button fullWidth onClick={() => setSheetOpen(false)}>
-                Show {results.length} results
+                {dict.cars.mobileSheet.showResults.replace(
+                  "{count}",
+                  String(results.length),
+                )}
               </Button>
             </div>
           </motion.div>

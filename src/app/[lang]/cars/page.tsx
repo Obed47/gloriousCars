@@ -4,23 +4,52 @@ import { getAllVehicles, getFilterOptions } from "@/lib/repository";
 import { InventoryBrowser } from "@/components/cars/InventoryBrowser";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { VehicleGridSkeleton } from "@/components/ui/Skeleton";
+import { localePaths } from "@/i18n/alternates";
+import { dictionaries } from "@/i18n/dictionaries";
+import { getDictionary } from "@/i18n/get-dictionary";
+import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/i18n/locales";
 import { SITE } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Cars for Sale in Yaoundé & Douala, Cameroon",
-  description: `Browse cars for sale in Yaoundé, Douala and across Cameroon at ${SITE.name}. Filter by brand, price, body type, fuel and more, then book a test drive.`,
-  alternates: { canonical: "/cars" },
-  openGraph: {
-    title: `Cars for Sale in Yaoundé & Douala, Cameroon | ${SITE.name}`,
-    description: `Browse inspected cars for sale in Yaoundé, Douala and across Cameroon.`,
-    url: "/cars",
-  },
-};
+// Nested under the `[lang]` segment, so this page's own `params` already
+// carry `lang` — no need for `next/root-params`'s `lang()` here for the
+// metadata, same as src/app/[lang]/page.tsx.
+function isLocale(value: unknown): value is Locale {
+  return (
+    typeof value === "string" &&
+    (LOCALES as readonly string[]).includes(value)
+  );
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  const locale: Locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
+  const dict = dictionaries[locale];
+  const { canonical, languages } = localePaths("/cars", locale);
+  const description = `${dict.cars.metadata.descriptionPrefix} ${SITE.name}. ${dict.cars.metadata.descriptionSuffix}`;
+
+  return {
+    title: dict.cars.metadata.title,
+    description,
+    alternates: { canonical, languages },
+    openGraph: {
+      title: `${dict.cars.metadata.title} | ${SITE.name}`,
+      description: dict.cars.metadata.ogDescription,
+      url: canonical,
+      locale: locale === "fr" ? "fr_FR" : "en_US",
+      alternateLocale: locale === "fr" ? "en_US" : "fr_FR",
+    },
+  };
+}
 
 export default async function CarsPage() {
-  const [vehicles, options] = await Promise.all([
+  const [vehicles, options, dict] = await Promise.all([
     getAllVehicles(),
     getFilterOptions(),
+    getDictionary(),
   ]);
 
   return (
@@ -28,9 +57,9 @@ export default async function CarsPage() {
       <header className="wrap">
         <SectionHeading
           as="h1"
-          eyebrow="Inventory"
-          title="Cars for sale in Yaoundé & Douala"
-          description="Compare inspected vehicles available in Yaoundé, Douala and across Cameroon, with transparent prices and direct WhatsApp support."
+          eyebrow={dict.cars.heading.eyebrow}
+          title={dict.cars.heading.title}
+          description={dict.cars.heading.description}
         />
       </header>
 

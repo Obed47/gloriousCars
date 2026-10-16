@@ -10,6 +10,8 @@ import { FavoritesView } from "@/components/favorites/FavoritesView";
 import { VehicleCard } from "@/components/vehicles/VehicleCard";
 import { toAdminRow } from "@/lib/admin/vehicleSearch";
 import { SITE } from "@/lib/site";
+import { DictionaryProvider } from "@/i18n/dictionary-context";
+import { dictionaries } from "@/i18n/dictionaries";
 import { makeVehicle, photo, sampleCatalogue } from "../fixtures/vehicles";
 import { renderWithProviders } from "../support/render";
 
@@ -234,6 +236,18 @@ describe("VehicleCard", () => {
       "href",
       "/cars/bmw/bmw-x5-xdrive40i-2024-pc-bmw-x5-0241",
     );
+  });
+
+  it("shows its static chrome in French when a French dictionary is provided", () => {
+    renderWithProviders(
+      <DictionaryProvider dictionary={dictionaries.fr}>
+        <VehicleCard vehicle={makeVehicle()} />
+      </DictionaryProvider>,
+    );
+    // Static chrome translates; the vehicle's own name/brand never does.
+    expect(screen.getByText("En vedette")).toBeInTheDocument();
+    expect(screen.getByText("Voir les détails")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "BMW X5 xDrive40i" })).toBeInTheDocument();
   });
 });
 

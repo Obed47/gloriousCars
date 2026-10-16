@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
+import { useDictionary } from "@/i18n/dictionary-context";
 import { formatMileage, formatPriceCompact } from "@/lib/format";
 import { priceSteps } from "@/lib/filtering";
 import type { FilterOptions, VehicleQuery } from "@/lib/types";
@@ -112,6 +113,7 @@ export function FilterPanel({
   onChange: (patch: Patch) => void;
   onReset: () => void;
 }) {
+  const dict = useDictionary();
   const priceTiers = priceSteps(options.priceRange[0], options.priceRange[1]);
   // A price from the URL may fall between steps; list it so the select shows it.
   const withCurrent = (value?: number) =>
@@ -125,17 +127,19 @@ export function FilterPanel({
   return (
     <div className="flex flex-col">
       <div className="flex items-center justify-between pb-2">
-        <h2 className="text-base font-bold text-ink">Filters</h2>
+        <h2 className="text-base font-bold text-ink">
+          {dict.cars.filterPanel.title}
+        </h2>
         <button
           type="button"
           onClick={onReset}
           className="text-xs font-medium text-accent underline-offset-2 hover:underline"
         >
-          Reset all
+          {dict.cars.filterPanel.resetAll}
         </button>
       </div>
 
-      <Group title="Brand" count={query.brand?.length}>
+      <Group title={dict.cars.filterPanel.brand} count={query.brand?.length}>
         {options.brands.map((b) => (
           <Check
             key={b}
@@ -146,14 +150,14 @@ export function FilterPanel({
         ))}
       </Group>
 
-      <Group title="Price">
+      <Group title={dict.cars.filterPanel.price}>
         <div className="flex gap-3">
           <MiniSelect
-            label="Min"
+            label={dict.cars.filterPanel.min}
             value={query.minPrice}
             onChange={(v) => onChange({ minPrice: v ? Number(v) : undefined })}
           >
-            <option value="">Any</option>
+            <option value="">{dict.cars.filterPanel.any}</option>
             {withCurrent(query.minPrice).map((p) => (
               <option key={p} value={p}>
                 {formatPriceCompact(p, "XAF")}
@@ -161,11 +165,11 @@ export function FilterPanel({
             ))}
           </MiniSelect>
           <MiniSelect
-            label="Max"
+            label={dict.cars.filterPanel.max}
             value={query.maxPrice}
             onChange={(v) => onChange({ maxPrice: v ? Number(v) : undefined })}
           >
-            <option value="">Any</option>
+            <option value="">{dict.cars.filterPanel.any}</option>
             {withCurrent(query.maxPrice).map((p) => (
               <option key={p} value={p}>
                 {formatPriceCompact(p, "XAF")}
@@ -175,14 +179,14 @@ export function FilterPanel({
         </div>
       </Group>
 
-      <Group title="Year">
+      <Group title={dict.cars.filterPanel.year}>
         <div className="flex gap-3">
           <MiniSelect
-            label="From"
+            label={dict.cars.filterPanel.from}
             value={query.minYear}
             onChange={(v) => onChange({ minYear: v ? Number(v) : undefined })}
           >
-            <option value="">Any</option>
+            <option value="">{dict.cars.filterPanel.any}</option>
             {options.years.map((y) => (
               <option key={y} value={y}>
                 {y}
@@ -190,11 +194,11 @@ export function FilterPanel({
             ))}
           </MiniSelect>
           <MiniSelect
-            label="To"
+            label={dict.cars.filterPanel.to}
             value={query.maxYear}
             onChange={(v) => onChange({ maxYear: v ? Number(v) : undefined })}
           >
-            <option value="">Any</option>
+            <option value="">{dict.cars.filterPanel.any}</option>
             {options.years.map((y) => (
               <option key={y} value={y}>
                 {y}
@@ -204,13 +208,13 @@ export function FilterPanel({
         </div>
       </Group>
 
-      <Group title="Max mileage">
+      <Group title={dict.cars.filterPanel.maxMileage}>
         <MiniSelect
-          label="Up to"
+          label={dict.cars.filterPanel.upTo}
           value={query.maxMileage}
           onChange={(v) => onChange({ maxMileage: v ? Number(v) : undefined })}
         >
-          <option value="">Any mileage</option>
+          <option value="">{dict.cars.filterPanel.anyMileage}</option>
           {mileageTiers.map((m) => (
             <option key={m} value={m}>
               {formatMileage(m)}
@@ -219,7 +223,7 @@ export function FilterPanel({
         </MiniSelect>
       </Group>
 
-      <Group title="Fuel" count={query.fuelType?.length}>
+      <Group title={dict.cars.filterPanel.fuel} count={query.fuelType?.length}>
         {options.fuelTypes.map((f) => (
           <Check
             key={f}
@@ -230,7 +234,10 @@ export function FilterPanel({
         ))}
       </Group>
 
-      <Group title="Transmission" count={query.transmission?.length}>
+      <Group
+        title={dict.cars.filterPanel.transmission}
+        count={query.transmission?.length}
+      >
         {options.transmissions.map((t) => (
           <Check
             key={t}
@@ -243,7 +250,11 @@ export function FilterPanel({
         ))}
       </Group>
 
-      <Group title="Colour" count={query.color?.length} defaultOpen={false}>
+      <Group
+        title={dict.cars.filterPanel.colour}
+        count={query.color?.length}
+        defaultOpen={false}
+      >
         {options.colors.map((c) => (
           <Check
             key={c}
