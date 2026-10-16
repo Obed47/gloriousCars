@@ -27,7 +27,8 @@ export function prefersFrench(acceptLanguage: string | null): boolean {
       const q = qParam ? Number.parseFloat(qParam.slice(2)) : 1;
       return { tag: tag.trim().toLowerCase(), q: Number.isNaN(q) ? 0 : q, index };
     })
-    .filter((entry) => entry.tag !== "");
+    // q=0 means "not acceptable".
+    .filter((entry) => entry.tag !== "" && entry.q > 0);
 
   if (entries.length === 0) return false;
 
@@ -54,6 +55,10 @@ export function resolveLocaleAction(
   }
 
   if (hasPrefix(pathname, "/fr")) {
+    // Staff pages have no French version; send /fr/admin and /fr/login back to
+    // the unprefixed path so they go through the forced-English rule above.
+    const unprefixed = pathname.slice("/fr".length) || "/";
+    if (isStaffPath(unprefixed)) return { kind: "redirect", path: unprefixed };
     return { kind: "next" };
   }
 

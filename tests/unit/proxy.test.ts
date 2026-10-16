@@ -46,6 +46,11 @@ describe("proxy: staff paths", () => {
     expect(response.headers.get("x-middleware-rewrite")).toBe("https://x.test/en/admin");
   });
 
+  test("the admin search query survives the staff rewrite", async () => {
+    const response = await proxy(request("/admin?q=toyota"));
+    expect(response.headers.get("x-middleware-rewrite")).toBe("https://x.test/en/admin?q=toyota");
+  });
+
   test("a refreshed session cookie written onto the request reaches the rewritten render", async () => {
     // Mirrors updateSupabaseSession's setAll: the refreshed token is written onto
     // the request so server components in the same request see it.
@@ -100,6 +105,29 @@ describe("proxy: public paths", () => {
     expect(response.status).toBe(307);
     expect(response.headers.get("location")).toBe("https://x.test/cars");
     expect(mockUpdateSupabaseSession).not.toHaveBeenCalled();
+  });
+
+  test("/fr/admin redirects to /admin without touching supabase or planting the french cookie", async () => {
+    const response = await proxy(request("/fr/admin", { cookie: "NEXT_LOCALE=fr" }));
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe("https://x.test/admin");
+    expect(response.cookies.get("NEXT_LOCALE")).toBeUndefined();
+    expect(mockUpdateSupabaseSession).not.toHaveBeenCalled();
+  });
+
+  test("the query string survives a rewrite", async () => {
+    const response = await proxy(request("/cars?brand=toyota&utm_source=x"));
+    expect(response.headers.get("x-middleware-rewrite")).toBe("https://x.test/en/cars?brand=toyota&utm_source=x");
+  });
+
+  test("the query string survives a french redirect", async () => {
+    const response = await proxy(request("/cars?brand=toyota", { acceptLanguage: "fr-FR" }));
+    expect(response.headers.get("location")).toBe("https://x.test/fr/cars?brand=toyota");
+  });
+
+  test("the query string survives a stray /en redirect", async () => {
+    const response = await proxy(request("/en/cars?brand=toyota"));
+    expect(response.headers.get("location")).toBe("https://x.test/cars?brand=toyota");
   });
 
   test("a /fr page passes through and sets the french cookie", async () => {

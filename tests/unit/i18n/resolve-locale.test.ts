@@ -26,6 +26,18 @@ describe("resolveLocaleAction", () => {
   test("a /fr path passes through untouched", () => {
     expect(resolveLocaleAction("/fr/cars", null, null)).toEqual({ kind: "next" });
   });
+  test("/fr/admin redirects to the unprefixed staff path", () => {
+    expect(resolveLocaleAction("/fr/admin", "fr", "fr-FR")).toEqual({ kind: "redirect", path: "/admin" });
+  });
+  test("/fr/login redirects to the unprefixed staff path", () => {
+    expect(resolveLocaleAction("/fr/login", null, null)).toEqual({ kind: "redirect", path: "/login" });
+  });
+  test("/fr/admin/vehicles redirects to the unprefixed staff path", () => {
+    expect(resolveLocaleAction("/fr/admin/vehicles", null, null)).toEqual({
+      kind: "redirect",
+      path: "/admin/vehicles",
+    });
+  });
   test("unprefixed root with french accept-language redirects to /fr", () => {
     expect(resolveLocaleAction("/", null, "fr-CM,fr;q=0.9,en;q=0.5")).toEqual({ kind: "redirect", path: "/fr" });
   });
@@ -39,6 +51,8 @@ describe("prefersFrench", () => {
     ["fr-CM,fr;q=0.9,en;q=0.5", true],
     ["en-US,en;q=0.9", false],
     ["", false],
+    ["fr;q=0,en;q=0.5", false],
+    ["fr;q=0", false],
     [null, false],
   ])("prefersFrench(%s) -> %s", (header, expected) => {
     expect(prefersFrench(header)).toBe(expected);

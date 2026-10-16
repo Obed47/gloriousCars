@@ -17,12 +17,18 @@ export function toLocaleResponse(
   // Forwarding the request keeps any session cookies the Supabase client wrote
   // onto it, so the rendered staff page sees the refreshed token.
   const init = carryCookiesFrom ? { request } : undefined;
-  const response =
-    action.kind === "next"
-      ? NextResponse.next(init)
-      : action.kind === "rewrite"
-        ? NextResponse.rewrite(new URL(action.path, request.url), init)
-        : NextResponse.redirect(new URL(action.path, request.url));
+  let response: NextResponse;
+  if (action.kind === "next") {
+    response = NextResponse.next(init);
+  } else {
+    // Clone so the original query string (search prefill, filters, UTM) survives.
+    const target = request.nextUrl.clone();
+    target.pathname = action.path;
+    response =
+      action.kind === "rewrite"
+        ? NextResponse.rewrite(target, init)
+        : NextResponse.redirect(target);
+  }
 
   carryCookiesFrom?.cookies.getAll().forEach((cookie) => response.cookies.set(cookie));
 
