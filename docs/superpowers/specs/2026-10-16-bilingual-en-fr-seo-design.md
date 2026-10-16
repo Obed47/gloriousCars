@@ -20,11 +20,30 @@ site.
 
 ### Why this is architectural, not bounded
 
-This restructures routing for the entire `src/app/` tree, introduces a new
-`proxy.ts` (locale detection), and changes URL structure (adds `/fr/...`).
-URL structure is hard to reverse once search engines index it, which is why
-this went through the full brainstorming process rather than being treated
-as a bounded change.
+This restructures routing for the entire `src/app/` tree, extends an
+existing `proxy.ts` with locale detection, and changes URL structure (adds
+`/fr/...`). URL structure is hard to reverse once search engines index it,
+which is why this went through the full brainstorming process rather than
+being treated as a bounded change.
+
+### Pre-existing `src/proxy.ts` (discovered after initial design, must be preserved)
+
+`src/proxy.ts` already exists. It delegates to
+`updateSupabaseSession` (`src/lib/supabase/proxy.ts`), which refreshes the
+Supabase auth session and redirects a signed-out visitor away from
+`/admin`. It is deliberately scoped to `matcher: ["/admin/:path*", "/login"]`
+only — the file's own comment explains that running it on every public
+page caused a page to stall for ~25s when a dropped connection made the
+auth-session token refresh retry.
+
+Locale resolution needs to run on (almost) every path, which means the
+single `proxy.ts` this fork allows needs a matcher broad enough for that.
+**The Supabase session logic's narrow scope must be preserved by an
+in-function pathname check, not lost by broadening the matcher**: `proxy()`
+runs `updateSupabaseSession` only when the (original, pre-rewrite) pathname
+starts with `/admin` or is `/login`, exactly as today, and otherwise skips
+it entirely — the performance characteristic that scoping exists for does
+not change. See §3.2 for the merged control flow.
 
 ### Constraint specific to this codebase
 
@@ -102,12 +121,19 @@ Admin/login remain dynamically rendered (they already call
 cause a wasted "French admin" static build — Next.js renders those
 per-request regardless of the parent's `generateStaticParams`.
 
-### 3.2 `src/proxy.ts` (not `middleware.ts`)
+### 3.2 `src/proxy.ts` (not `middleware.ts`) — merged with the existing Supabase session logic
 
-Runs on every request (via `matcher`, excluding `_next/static`,
-`_next/image`, `favicon.ico`, `icon.svg`, `robots.txt`, `sitemap.xml`,
+`proxy()`'s matcher broadens from today's `["/admin/:path*", "/login"]` to
+run on (almost) every request (excluding `_next/static`, `_next/image`,
+`favicon.ico`, `icon.svg`, `robots.txt`, `sitemap.xml`,
 `manifest.webmanifest`, and other static file extensions — negative-match
-pattern as shown in this fork's `proxy.js` file-convention docs).
+pattern as shown in this fork's `proxy.js` file-convention docs), because
+locale resolution applies to every page, not just staff ones. The
+pre-existing Supabase session check does **not** get that same broad
+scope — its narrow, performance-motivated scoping (see above) moves from
+the `matcher` option into an explicit pathname check inside `proxy()`
+itself, so it keeps running only for `/admin` and `/login` exactly as
+today.
 
 Resolution order for the incoming pathname `P`:
 
@@ -117,10 +143,17 @@ Resolution order for the incoming pathname `P`:
    English pages — it only ever exists as an internal rewrite target, never
    a public URL.
 2. **`P === "/admin"` / starts with `"/admin/"`, or `P === "/login"` /
-   starts with `"/login/"`** → rewrite (not redirect) to `/en${P}`.
-   Visible URL is unchanged. Locale is always `"en"` here — never
-   negotiated, never redirected to `/fr`, regardless of cookie or
-   `Accept-Language`.
+   starts with `"/login/"`**:
+   - Run `updateSupabaseSession(request)` first, exactly as today.
+   - If it redirects (signed-out visitor → `/login`), return that redirect
+     immediately — it takes priority over locale handling; the follow-up
+     request to `/login` goes through `proxy()` again and gets the locale
+     rewrite then.
+   - Otherwise, rewrite (not redirect) to `/en${P}`, copying over any
+     cookies `updateSupabaseSession` set (refreshed auth tokens) onto the
+     rewritten response. Visible URL is unchanged. Locale is always `"en"`
+     here — never negotiated, never redirected to `/fr`, regardless of
+     cookie or `Accept-Language`.
 3. **`P === "/fr"` or starts with `"/fr/"`** → pass through
    (`NextResponse.next()`); the file router already resolves this
    correctly since `fr` is a literal matching segment. Refresh the
@@ -273,6 +306,13 @@ gain here.
 
 ## 8. Risk notes
 
+- **Merging with the pre-existing Supabase session proxy (§3.2) is the
+  second-biggest risk**, after the canonical-URL risk below: get the
+  composition wrong and staff sign-in silently breaks, or the ~25s-stall
+  regression the narrow `matcher` was added to avoid comes back for public
+  pages. The plan must test both branches explicitly (signed-out `/admin`
+  still redirects to `/login`; a public page never triggers
+  `updateSupabaseSession`).
 - The single biggest risk is accidentally changing an existing canonical
   English URL (e.g. `/cars/toyota/...`) during the `[lang]` restructuring.
   The plan must verify, post-migration, that every URL in the current

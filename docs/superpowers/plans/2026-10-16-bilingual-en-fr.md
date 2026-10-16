@@ -13,6 +13,7 @@
 ## Global Constraints
 
 - Use `src/proxy.ts` exporting `proxy`, never `middleware.ts` — this fork deprecated and renamed it; a `middleware.ts` file would silently never run.
+- `src/proxy.ts` already exists (Supabase session refresh, scoped to `/admin`+`/login` to avoid a ~25s stall on public pages) — Task 2 merges locale resolution into it; it must not be replaced wholesale, and the Supabase logic's narrow scope must survive the matcher broadening.
 - No third-party i18n library.
 - No Supabase schema change, no admin-form change. `vehicle.name`, `vehicle.description`, `vehicle.brand`, `vehicle.fuelType`, `vehicle.transmission`, `vehicle.color`, `vehicle.location`, `vehicle.reference` render identically regardless of locale.
 - Every English dictionary string must be byte-identical to the current hardcoded copy it replaces — this is an extraction, not a copy-edit, so existing tests that assert that text keep passing unchanged.
@@ -31,6 +32,7 @@
 - A visitor with a `NEXT_LOCALE=fr` cookie who requests `/admin` or `/login` must still get English — the admin/login override must short-circuit before the cookie is ever consulted. → Task 2.
 - Someone manually requesting `/en/cars` must be redirected to `/cars`, never rendered as a second, indexable copy. → Task 2.
 - `/fr/cars/<brand>/<nonexistent-slug>` must 404 correctly through the vehicle-specific `not-found.tsx`, which is now nested two levels deeper (`[lang]/cars/[brand]/[slug]/not-found.tsx`) — the restructuring must not shadow or break it. → Task 3.
+- A signed-out visit to `/admin` must still redirect to `/login` via `updateSupabaseSession` exactly as today, and a public page (e.g. `/cars`) must never invoke `updateSupabaseSession` at all — broadening the proxy's matcher for locale resolution must not silently widen or lose the pre-existing, performance-motivated Supabase scoping. → Task 2.
 
 ---
 
@@ -108,23 +110,35 @@ git commit -m "feat(i18n): add locale, dictionary and alternates core utilities"
 
 ---
 
-## Task 2: Locale resolution logic + `proxy.ts`
+## Task 2: Locale resolution logic, merged into the existing `proxy.ts`
+
+`src/proxy.ts` already exists (discovered after the design was approved —
+see spec §1/§3.2). It currently just delegates to `updateSupabaseSession`
+(`src/lib/supabase/proxy.ts`, **not modified by this task**), scoped via
+`matcher: ["/admin/:path*", "/login"]` to avoid running Supabase's session
+refresh on public pages (its own comment: doing so once caused a ~25s
+stall on a dropped connection). This task adds locale resolution without
+losing that scoping.
 
 **Files:**
 - Create: `src/i18n/resolve-locale.ts`
-- Create: `src/proxy.ts`
+- Modify: `src/proxy.ts` (currently 13 lines — replace its body, do not
+  touch `src/lib/supabase/proxy.ts`)
 - Test: `tests/unit/i18n/resolve-locale.test.ts`
+- Test: `tests/unit/proxy.test.ts` (new — exercises the merged `proxy()`,
+  not just the pure logic)
 
 **Interfaces:**
-- Consumes: `Locale`, `DEFAULT_LOCALE`, `LOCALE_COOKIE` from `src/i18n/locales.ts` (Task 1).
+- Consumes: `Locale`, `DEFAULT_LOCALE`, `LOCALE_COOKIE` from `src/i18n/locales.ts` (Task 1); `updateSupabaseSession(request: NextRequest): Promise<NextResponse>` from `src/lib/supabase/proxy.ts` (pre-existing, unchanged).
 - Produces: `type LocaleAction = { kind: "next" } | { kind: "rewrite"; path: string } | { kind: "redirect"; path: string }`.
+- Produces: `isStaffPath(pathname: string): boolean` — `pathname === "/admin"`, starts with `"/admin/"`, `pathname === "/login"`, or starts with `"/login/"`. Exported so both `resolveLocaleAction` (rule 2 below) and `proxy()` use the one definition — it must not be duplicated.
 - Produces: `prefersFrench(acceptLanguage: string | null): boolean` — parses a comma-separated `Accept-Language` value, sorts entries by `;q=` weight (default `1` when absent), and returns whether the top entry's primary subtag (text before any `-`) is `"fr"`. Returns `false` for `null`/empty input.
-- Produces: `resolveLocaleAction(pathname: string, cookieLocale: string | null, acceptLanguage: string | null): LocaleAction`, implementing the cascade below exactly (order matters — admin/login must be checked before the cookie is read):
+- Produces: `resolveLocaleAction(pathname: string, cookieLocale: string | null, acceptLanguage: string | null): LocaleAction`, implementing the cascade below exactly (order matters — `isStaffPath` must be checked before the cookie is read):
   1. `pathname === "/en"` or starts with `"/en/"` → `{ kind: "redirect", path: <pathname with the leading "/en" removed, or "/" if that is empty> }`.
-  2. `pathname === "/admin"`, starts with `"/admin/"`, `pathname === "/login"`, or starts with `"/login/"` → `{ kind: "rewrite", path: "/en" + pathname }`.
+  2. `isStaffPath(pathname)` → `{ kind: "rewrite", path: "/en" + pathname }`.
   3. `pathname === "/fr"` or starts with `"/fr/"` → `{ kind: "next" }`.
   4. Otherwise: let `locale = cookieLocale === "en" || cookieLocale === "fr" ? cookieLocale : (prefersFrench(acceptLanguage) ? "fr" : DEFAULT_LOCALE)`. If `locale === "fr"` → `{ kind: "redirect", path: "/fr" + (pathname === "/" ? "" : pathname) }`. Otherwise → `{ kind: "rewrite", path: "/en" + pathname }`.
-- Produces: `proxy(request: NextRequest): NextResponse` (default export) and `config = { matcher: [...] }` in `src/proxy.ts`. Thin adapter: reads `request.nextUrl.pathname`, `request.cookies.get(LOCALE_COOKIE)?.value ?? null`, `request.headers.get("accept-language")`, calls `resolveLocaleAction`, and translates its result into `NextResponse.next()` / `.rewrite(new URL(path, request.url))` / `.redirect(new URL(path, request.url))`. On every `"redirect"` to an `/fr...` path, and on every `"next"` for an already-`/fr` path, sets `response.cookies.set(LOCALE_COOKIE, "fr", { path: "/", maxAge: 60 * 60 * 24 * 365 })`. The `matcher` excludes `_next/static`, `_next/image`, `favicon.ico`, `icon.svg`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, and common static-file extensions, following the negative-match pattern in this fork's `proxy.js` file-convention docs (`node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/proxy.md`, "Negative matching").
+- Produces in `src/proxy.ts`: `isRedirect(response: NextResponse): boolean` (`response.status >= 300 && response.status < 400`); `toLocaleResponse(action: LocaleAction, request: NextRequest, carryCookiesFrom?: NextResponse): NextResponse` — builds `.next()` / `.rewrite(new URL(path, request.url))` / `.redirect(new URL(path, request.url))` from `action`, copies every cookie from `carryCookiesFrom` onto the result when given (mirrors the existing cookie-copying pattern already used in `updateSupabaseSession`'s own redirect branch), and additionally sets `LOCALE_COOKIE` to `"fr"` (path `/`, 1-year `maxAge`) whenever `action.kind === "redirect" && action.path.startsWith("/fr")` or `action.kind === "next"` (the already-on-`/fr` passthrough case); the exported `proxy(request: NextRequest): Promise<NextResponse>` (default export), which: reads `pathname = request.nextUrl.pathname`; if `isStaffPath(pathname)`, awaits `updateSupabaseSession(request)`, returns it immediately if `isRedirect(...)` is true, otherwise keeps it to pass as `carryCookiesFrom`; computes `resolveLocaleAction(pathname, request.cookies.get(LOCALE_COOKIE)?.value ?? null, request.headers.get("accept-language"))`; returns `toLocaleResponse(action, request, carryCookiesFrom)`. `export const config = { matcher: [...] }` replaces today's narrow array with the broad negative-match pattern excluding `_next/static`, `_next/image`, `favicon.ico`, `icon.svg`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, and common static-file extensions (`node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/proxy.md`, "Negative matching").
 
 - [ ] **Step 1: Write failing tests covering every Review Focus case and the happy paths**
 
@@ -175,15 +189,45 @@ test.each([
 
 - [ ] **Step 4: Run tests, confirm they pass.**
 
-- [ ] **Step 5: Implement `src/proxy.ts`** as the thin adapter described above. No test file for this step — it has no logic of its own beyond wiring, and `next`'s proxy runtime isn't something Vitest exercises directly; Task 3's build and e2e checks are what exercise it end-to-end.
+- [ ] **Step 5: Write failing tests for the merged `proxy()`**, mocking `updateSupabaseSession` (`vi.mock("@/lib/supabase/proxy", ...)`), using real `NextRequest`/`NextResponse` instances from `next/server`:
 
-- [ ] **Step 6: Run `npx tsc --noEmit`, confirm no errors.**
+```ts
+// tests/unit/proxy.test.ts
+test("a signed-out visit to /admin returns the supabase redirect untouched, never applying locale rewriting", async () => {
+  mockUpdateSupabaseSession.mockResolvedValue(NextResponse.redirect(new URL("https://x.test/login")));
+  const response = await proxy(new NextRequest("https://x.test/admin"));
+  expect(response.status).toBe(307);
+  expect(response.headers.get("location")).toBe("https://x.test/login");
+});
+test("a signed-in visit to /admin gets the locale rewrite, carrying the supabase response's cookies", async () => {
+  const sessionResponse = NextResponse.next();
+  sessionResponse.cookies.set("sb-token", "refreshed");
+  mockUpdateSupabaseSession.mockResolvedValue(sessionResponse);
+  const response = await proxy(new NextRequest("https://x.test/admin"));
+  expect(response.cookies.get("sb-token")?.value).toBe("refreshed");
+  // rewritten target is internal (NextResponse.rewrite doesn't expose a public getter
+  // for its target in all versions) — assert via the `x-middleware-rewrite` header,
+  // or whatever this fork's NextResponse.rewrite exposes; check at implementation time.
+});
+test("a public page never calls updateSupabaseSession", async () => {
+  await proxy(new NextRequest("https://x.test/cars"));
+  expect(mockUpdateSupabaseSession).not.toHaveBeenCalled();
+});
+```
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 6: Run tests, confirm they fail.**
+
+- [ ] **Step 7: Implement `src/proxy.ts`** per the `isRedirect`/`toLocaleResponse`/`proxy`/`config` interfaces above.
+
+- [ ] **Step 8: Run tests, confirm they pass.**
+
+- [ ] **Step 9: Run `npx tsc --noEmit`, confirm no errors.**
+
+- [ ] **Step 10: Commit**
 
 ```bash
-git add src/i18n/resolve-locale.ts src/proxy.ts tests/unit/i18n/resolve-locale.test.ts
-git commit -m "feat(i18n): add locale resolution logic and proxy.ts"
+git add src/i18n/resolve-locale.ts src/proxy.ts tests/unit/i18n/resolve-locale.test.ts tests/unit/proxy.test.ts
+git commit -m "feat(i18n): add locale resolution, merged into the existing proxy.ts"
 ```
 
 ---
@@ -196,7 +240,7 @@ git commit -m "feat(i18n): add locale resolution logic and proxy.ts"
 - Modify: `src/app/[lang]/layout.tsx` (post-move).
 
 **Interfaces:**
-- Consumes: `getDictionary()`, `DictionaryProvider` (Task 1); `proxy` (Task 2, already created, now takes effect because the `[lang]` tree it targets exists).
+- Consumes: `getDictionary()`, `DictionaryProvider` (Task 1); `proxy` (Task 2, already merged into `src/proxy.ts`, now takes effect because the `[lang]` tree it targets exists).
 - Produces: every existing route reachable at its current unprefixed URL (via `proxy`'s rewrite) plus a parallel `/fr/...` URL, with no other behavior change yet (translation is Tasks 4–10; this task is pure plumbing).
 
 - [ ] **Step 1: Capture the pre-move URL baseline.** Run `npm run build`, then:
