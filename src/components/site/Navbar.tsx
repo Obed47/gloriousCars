@@ -6,18 +6,18 @@ import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowUpRight, Heart, Menu, Search, X } from "lucide-react";
 import { Logo } from "./Logo";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Button } from "@/components/ui/Button";
 import { useFavorites } from "@/components/providers/FavoritesProvider";
 import { useDialogFocus } from "@/hooks/useDialogFocus";
+import { useDictionary } from "@/i18n/dictionary-context";
+import type { Locale } from "@/i18n/locales";
 import { SITE } from "@/lib/site";
 
-const LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/cars", label: "Cars" },
-  { href: "/about", label: "About Us" },
-  { href: "/services", label: "Services" },
-  { href: "/contact", label: "Contact" },
-];
+/** The current locale, read straight off the pathname (`/fr…` vs. unprefixed). */
+function localeFromPathname(pathname: string): Locale {
+  return pathname === "/fr" || pathname.startsWith("/fr/") ? "fr" : "en";
+}
 
 /**
  * Quick links in the search overlay. Each one opens the matching filter, so it
@@ -39,6 +39,16 @@ export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { count, hydrated } = useFavorites();
+  const dict = useDictionary();
+  const locale = localeFromPathname(pathname);
+
+  const LINKS = [
+    { href: "/", label: dict.nav.home },
+    { href: "/cars", label: dict.nav.cars },
+    { href: "/about", label: dict.nav.about },
+    { href: "/services", label: dict.nav.services },
+    { href: "/contact", label: dict.nav.contact },
+  ];
 
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -192,6 +202,8 @@ export function Navbar() {
                 Find a Car
               </Button>
             </div>
+
+            <LanguageSwitcher locale={locale} />
 
             <button
               type="button"

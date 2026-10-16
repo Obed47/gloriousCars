@@ -1,22 +1,25 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Logo } from "./Logo";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import {
   FacebookIcon,
   InstagramIcon,
   LinkedInIcon,
   TikTokIcon,
 } from "@/components/ui/icons";
+import { useDictionary } from "@/i18n/dictionary-context";
+import type { Locale } from "@/i18n/locales";
 import { SITE } from "@/lib/site";
 import { buildWhatsAppUrl, generalInquiryMessage } from "@/lib/whatsapp";
 
-const NAV = [
-  { href: "/", label: "Home" },
-  { href: "/cars", label: "Cars" },
-  { href: "/about", label: "About" },
-  { href: "/services", label: "Services" },
-  { href: "/contact", label: "Contact" },
-];
+/** The current locale, read straight off the pathname (`/fr…` vs. unprefixed). */
+function localeFromPathname(pathname: string): Locale {
+  return pathname === "/fr" || pathname.startsWith("/fr/") ? "fr" : "en";
+}
 
 const SERVICES = [
   { href: "/services#sales", label: "Vehicle Sales" },
@@ -34,6 +37,18 @@ const SOCIAL = [
 
 export function Footer() {
   const year = new Date().getFullYear();
+  const pathname = usePathname();
+  const dict = useDictionary();
+  const locale = localeFromPathname(pathname);
+
+  const NAV = [
+    { href: "/", label: dict.nav.home },
+    { href: "/cars", label: dict.nav.cars },
+    { href: "/about", label: dict.nav.about },
+    { href: "/services", label: dict.nav.services },
+    { href: "/contact", label: dict.nav.contact },
+  ];
+
   return (
     <footer className="bg-ink text-silver">
       <div className="wrap grid grid-cols-1 gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.3fr] lg:py-20">
@@ -140,6 +155,7 @@ export function Footer() {
             <Link href="/terms" className="hover:text-white">
               Terms &amp; Conditions
             </Link>
+            <LanguageSwitcher locale={locale} />
           </div>
         </div>
       </div>
