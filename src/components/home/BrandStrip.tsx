@@ -1,15 +1,18 @@
 import Link from "next/link";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
+import { getDictionary } from "@/i18n/get-dictionary";
 import type { BrandSummary } from "@/lib/repository";
 
-export function BrandStrip({ brands }: { brands: BrandSummary[] }) {
+export async function BrandStrip({ brands }: { brands: BrandSummary[] }) {
+  const dict = await getDictionary();
+
   return (
     <section className="section-y bg-surface">
       <div className="wrap">
         <SectionHeading
-          eyebrow="Explore by Brand"
-          title="Start with a marque you trust"
+          eyebrow={dict.home.brandStrip.eyebrow}
+          title={dict.home.brandStrip.title}
         />
 
         <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
@@ -23,7 +26,10 @@ export function BrandStrip({ brands }: { brands: BrandSummary[] }) {
                   {brand.name}
                 </span>
                 <span className="text-[0.6875rem] text-muted">
-                  {brand.count} {brand.count === 1 ? "vehicle" : "vehicles"}
+                  {brand.count}{" "}
+                  {brand.count === 1
+                    ? dict.home.brandStrip.vehicleSingular
+                    : dict.home.brandStrip.vehiclePlural}
                 </span>
               </Link>
             </Reveal>

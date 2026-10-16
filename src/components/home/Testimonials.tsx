@@ -4,9 +4,11 @@ import { useRef } from "react";
 import { ArrowLeft, ArrowRight, Quote } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { StarRating } from "@/components/ui/StarRating";
+import { useDictionary } from "@/i18n/dictionary-context";
 import type { Review } from "@/data/reviews";
 
 export function Testimonials({ reviews }: { reviews: Review[] }) {
+  const dict = useDictionary();
   const trackRef = useRef<HTMLDivElement>(null);
 
   function scrollByCard(dir: 1 | -1) {
@@ -22,15 +24,15 @@ export function Testimonials({ reviews }: { reviews: Review[] }) {
       <div className="wrap">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <SectionHeading
-            eyebrow="Customer Reviews"
-            title="Driven by trust"
-            description="A few words from people who found their car with us."
+            eyebrow={dict.home.testimonials.eyebrow}
+            title={dict.home.testimonials.title}
+            description={dict.home.testimonials.description}
           />
           <div className="flex gap-2">
             <button
               type="button"
               onClick={() => scrollByCard(-1)}
-              aria-label="Previous reviews"
+              aria-label={dict.home.testimonials.previousLabel}
               className="flex size-11 items-center justify-center rounded-lg border border-line-strong bg-surface text-ink transition-colors hover:border-ink hover:bg-mist"
             >
               <ArrowLeft className="size-4" aria-hidden />
@@ -38,7 +40,7 @@ export function Testimonials({ reviews }: { reviews: Review[] }) {
             <button
               type="button"
               onClick={() => scrollByCard(1)}
-              aria-label="Next reviews"
+              aria-label={dict.home.testimonials.nextLabel}
               className="flex size-11 items-center justify-center rounded-lg border border-line-strong bg-surface text-ink transition-colors hover:border-ink hover:bg-mist"
             >
               <ArrowRight className="size-4" aria-hidden />
@@ -50,7 +52,7 @@ export function Testimonials({ reviews }: { reviews: Review[] }) {
           ref={trackRef}
           role="region"
           tabIndex={0}
-          aria-label="Customer reviews"
+          aria-label={dict.home.testimonials.regionLabel}
           className="no-scrollbar mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
         >
           {reviews.map((review) => (

@@ -7,6 +7,7 @@ import { CarGlyph } from "@/components/ui/icons";
 import { formatPriceCompact } from "@/lib/format";
 import { queryToSearchString } from "@/lib/searchParams";
 import { priceSteps } from "@/lib/filtering";
+import { useDictionary } from "@/i18n/dictionary-context";
 import type { FilterOptions } from "@/lib/types";
 
 interface Selection {
@@ -57,6 +58,7 @@ function Field({
 }
 
 export function QuickSearch({ options }: { options: FilterOptions }) {
+  const dict = useDictionary();
   const router = useRouter();
   const [sel, setSel] = useState<Selection>(EMPTY);
 
@@ -88,11 +90,15 @@ export function QuickSearch({ options }: { options: FilterOptions }) {
     <form
       onSubmit={submit}
       className="card relative -mt-14 flex flex-col gap-5 p-5 shadow-lift sm:p-7"
-      aria-label="Quick vehicle search"
+      aria-label={dict.home.quickSearch.ariaLabel}
     >
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Field label="Brand" value={sel.brand} onChange={set("brand")}>
-          <option value="">Any brand</option>
+        <Field
+          label={dict.home.quickSearch.brandLabel}
+          value={sel.brand}
+          onChange={set("brand")}
+        >
+          <option value="">{dict.home.quickSearch.anyBrand}</option>
           {options.brands.map((b) => (
             <option key={b} value={b}>
               {b}
@@ -100,8 +106,12 @@ export function QuickSearch({ options }: { options: FilterOptions }) {
           ))}
         </Field>
 
-        <Field label="Fuel" value={sel.fuel} onChange={set("fuel")}>
-          <option value="">Any fuel</option>
+        <Field
+          label={dict.home.quickSearch.fuelLabel}
+          value={sel.fuel}
+          onChange={set("fuel")}
+        >
+          <option value="">{dict.home.quickSearch.anyFuel}</option>
           {options.fuelTypes.map((f) => (
             <option key={f} value={f}>
               {f}
@@ -110,11 +120,11 @@ export function QuickSearch({ options }: { options: FilterOptions }) {
         </Field>
 
         <Field
-          label="Transmission"
+          label={dict.home.quickSearch.transmissionLabel}
           value={sel.transmission}
           onChange={set("transmission")}
         >
-          <option value="">Any transmission</option>
+          <option value="">{dict.home.quickSearch.anyTransmission}</option>
           {options.transmissions.map((t) => (
             <option key={t} value={t}>
               {t}
@@ -122,8 +132,12 @@ export function QuickSearch({ options }: { options: FilterOptions }) {
           ))}
         </Field>
 
-        <Field label="Year from" value={sel.yearMin} onChange={set("yearMin")}>
-          <option value="">Any year</option>
+        <Field
+          label={dict.home.quickSearch.yearFromLabel}
+          value={sel.yearMin}
+          onChange={set("yearMin")}
+        >
+          <option value="">{dict.home.quickSearch.anyYear}</option>
           {options.years.map((y) => (
             <option key={y} value={y}>
               {y}
@@ -132,14 +146,14 @@ export function QuickSearch({ options }: { options: FilterOptions }) {
         </Field>
 
         <Field
-          label="Max price"
+          label={dict.home.quickSearch.maxPriceLabel}
           value={sel.priceMax}
           onChange={set("priceMax")}
         >
-          <option value="">No maximum</option>
+          <option value="">{dict.home.quickSearch.noMaximum}</option>
           {priceTiers.map((p) => (
             <option key={p} value={p}>
-              Up to {formatPriceCompact(p, "XAF")}
+              {dict.home.quickSearch.upTo} {formatPriceCompact(p, "XAF")}
             </option>
           ))}
         </Field>
@@ -162,7 +176,7 @@ export function QuickSearch({ options }: { options: FilterOptions }) {
           className="group inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-accent px-7 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent-strong sm:w-auto"
         >
           <Search className="size-4" aria-hidden />
-          Search Cars
+          {dict.home.quickSearch.searchCars}
         </button>
       </div>
     </form>

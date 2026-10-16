@@ -7,48 +7,35 @@ import {
 } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
+import { getDictionary } from "@/i18n/get-dictionary";
 
-const REASONS = [
-  {
-    Icon: BadgeCheck,
-    title: "Carefully selected vehicles",
-    body: "Every car is chosen with quality and reliability in mind, then inspected before it reaches the listing.",
-  },
-  {
-    Icon: FileText,
-    title: "Transparent information",
-    body: "Clear specifications, honest pricing, real mileage and full vehicle details — no fine print surprises.",
-  },
-  {
-    Icon: CalendarCheck,
-    title: "Easy test drives",
-    body: "Choose a date, time and location that suit you. Confirmation comes straight to your phone.",
-  },
-  {
-    Icon: MessagesSquare,
-    title: "Direct assistance",
-    body: "Talk to our team the moment you have a question — no call queues, no scripts, just answers on WhatsApp.",
-  },
-  {
-    Icon: ShieldCheck,
-    title: "Trusted service",
-    body: "Professional support from first search to handover, and after you drive away.",
-  },
+const REASON_ICONS = [
+  BadgeCheck,
+  FileText,
+  CalendarCheck,
+  MessagesSquare,
+  ShieldCheck,
 ];
 
-export function WhyChooseUs() {
+export async function WhyChooseUs() {
+  const dict = await getDictionary();
+  const reasons = dict.home.whyChooseUs.reasons.map((reason, i) => ({
+    ...reason,
+    Icon: REASON_ICONS[i],
+  }));
+
   return (
     <section className="section-y">
       <div className="wrap">
         <SectionHeading
-          eyebrow="Why Choose Us"
-          title="Buying a car should feel this straightforward"
+          eyebrow={dict.home.whyChooseUs.eyebrow}
+          title={dict.home.whyChooseUs.title}
           align="center"
           className="mx-auto"
         />
 
         <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {REASONS.map(({ Icon, title, body }, i) => (
+          {reasons.map(({ Icon, title, body }, i) => (
             <Reveal key={title} delay={(i % 3) * 0.08}>
               <article
                 className={`group relative flex h-full flex-col justify-between overflow-hidden rounded-xl border p-6 transition-[border-color,background-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:shadow-lift ${

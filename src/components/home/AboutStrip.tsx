@@ -2,9 +2,12 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { VehicleImage } from "@/components/vehicles/VehicleImage";
+import { getDictionary } from "@/i18n/get-dictionary";
 import { SITE } from "@/lib/site";
 
-export function AboutStrip() {
+export async function AboutStrip() {
+  const dict = await getDictionary();
+
   return (
     <section className="section-y bg-surface">
       <div className="wrap grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
@@ -13,7 +16,7 @@ export function AboutStrip() {
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-card">
             <VehicleImage
               src="/hero_cars.png"
-              alt="A lineup of quality vehicles available at Glorious Cars"
+              alt={dict.home.aboutStrip.imageAlt}
               fit="contain"
               sizes="(max-width: 1024px) 100vw, 50vw"
             />
@@ -22,9 +25,9 @@ export function AboutStrip() {
 
         <Reveal delay={0.08}>
           <SectionHeading
-            eyebrow="About Glorious Cars"
-            title="More than a car. A better way to move."
-            description="Every vehicle we list is chosen for quality and reliability, inspected properly, and described honestly — the mileage is the mileage and the photos are the actual car. From first search to signed paperwork, a real person is one WhatsApp message away."
+            eyebrow={dict.home.aboutStrip.eyebrow}
+            title={dict.home.aboutStrip.title}
+            description={dict.home.aboutStrip.description}
           />
 
           <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8">
@@ -40,7 +43,7 @@ export function AboutStrip() {
 
           <div className="mt-10">
             <Button href="/about" variant="outline" withArrow>
-              Our story
+              {dict.home.aboutStrip.cta}
             </Button>
           </div>
         </Reveal>

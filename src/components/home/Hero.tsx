@@ -5,8 +5,10 @@ import { useRef } from "react";
 import { motion, useScroll, useSpring, useTransform } from "motion/react";
 import { Button } from "@/components/ui/Button";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 export function Hero() {
+  const dict = useDictionary();
   const heroRef = useRef<HTMLElement>(null);
   const reduced = usePrefersReducedMotion();
   const { scrollYProgress } = useScroll({
@@ -53,17 +55,18 @@ export function Hero() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
           <h1 className="text-4xl font-extrabold uppercase leading-[0.94] tracking-[-0.03em] sm:text-6xl lg:text-[5.8rem]">
-            Find the right car,
+            {dict.home.hero.headlineLine1}
             <br />
-            <span className="text-accent-on-dark">ready to drive.</span>
+            <span className="text-accent-on-dark">
+              {dict.home.hero.headlineLine2}
+            </span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-silver sm:text-base">
-            Browse quality cars for sale in Yaoundé, Douala and across Cameroon,
-            compare your options and find one that fits your life.
+            {dict.home.hero.description}
           </p>
           <div className="mt-7 flex justify-center">
             <Button href="/cars" size="md" withArrow>
-              Explore Cars
+              {dict.home.hero.cta}
             </Button>
           </div>
         </motion.div>
@@ -81,7 +84,7 @@ export function Hero() {
           />
           <Image
             src="/hero_cars.png"
-            alt="A lineup of trusted vehicles available at Glorious Cars"
+            alt={dict.home.hero.imageAlt}
             width={2048}
             height={683}
             preload

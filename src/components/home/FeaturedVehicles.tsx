@@ -1,19 +1,21 @@
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { VehicleGrid } from "@/components/vehicles/VehicleGrid";
 import { Button } from "@/components/ui/Button";
+import { getDictionary } from "@/i18n/get-dictionary";
 import type { Vehicle } from "@/lib/types";
 
-export function FeaturedVehicles({ vehicles }: { vehicles: Vehicle[] }) {
+export async function FeaturedVehicles({ vehicles }: { vehicles: Vehicle[] }) {
   if (vehicles.length === 0) return null;
+  const dict = await getDictionary();
 
   return (
     <section id="featured" className="section-y scroll-mt-24">
       <div className="wrap">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <SectionHeading
-            eyebrow="Featured Vehicles"
-            title="Some of our most sought-after cars"
-            description="Hand-picked from current stock. Pick one to see the full gallery, specs and to book a test drive."
+            eyebrow={dict.home.featuredVehicles.eyebrow}
+            title={dict.home.featuredVehicles.title}
+            description={dict.home.featuredVehicles.description}
           />
           <Button
             href="/cars"
@@ -21,7 +23,7 @@ export function FeaturedVehicles({ vehicles }: { vehicles: Vehicle[] }) {
             withArrow
             className="shrink-0 self-start sm:self-auto"
           >
-            View all vehicles
+            {dict.home.featuredVehicles.viewAll}
           </Button>
         </div>
 

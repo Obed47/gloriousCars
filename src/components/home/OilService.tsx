@@ -2,27 +2,18 @@ import Image from "next/image";
 import { Cog, Droplet, ShieldCheck, Wrench } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
+import { getDictionary } from "@/i18n/get-dictionary";
 import engineOil from "../../../public/services/engine-oil.jpg";
 
-const POINTS = [
-  {
-    Icon: Droplet,
-    title: "Quality engine oil",
-    body: "Fresh, sealed oil in the grade your engine calls for — synthetic or semi-synthetic.",
-  },
-  {
-    Icon: Cog,
-    title: "Gearbox oil",
-    body: "The right fluid for manual or automatic gearboxes, for smooth, quiet shifting.",
-  },
-  {
-    Icon: Wrench,
-    title: "Changed before delivery",
-    body: "Old oil drained and new oil filled to the correct level by our team, before the keys are in your hands.",
-  },
-];
+const POINT_ICONS = [Droplet, Cog, Wrench];
 
-export function OilService() {
+export async function OilService() {
+  const dict = await getDictionary();
+  const points = dict.home.oilService.points.map((point, i) => ({
+    ...point,
+    Icon: POINT_ICONS[i],
+  }));
+
   return (
     <section
       id="oil-service"
@@ -39,10 +30,10 @@ export function OilService() {
       <div className="wrap relative grid grid-cols-1 gap-8 sm:gap-10 lg:grid-cols-2 lg:gap-x-16 lg:gap-y-10">
         <Reveal className="lg:col-start-2 lg:self-end">
           <SectionHeading
-            eyebrow="Before key handover"
+            eyebrow={dict.home.oilService.eyebrow}
             tone="light"
-            title="Fresh engine & gearbox oil in every car"
-            description="Before any car leaves us, we replace its engine and gearbox oil with quality oil of the correct grade. You drive away on fresh oil from day one, with nothing to sort out yourself."
+            title={dict.home.oilService.title}
+            description={dict.home.oilService.description}
           />
         </Reveal>
 
@@ -50,7 +41,7 @@ export function OilService() {
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 shadow-lift sm:aspect-[16/10] lg:aspect-[4/5]">
             <Image
               src={engineOil}
-              alt="Clean golden engine oil being poured into a car engine"
+              alt={dict.home.oilService.imageAlt}
               fill
               placeholder="blur"
               quality={70}
@@ -65,16 +56,16 @@ export function OilService() {
             </span>
             <p className="text-sm leading-snug text-silver">
               <span className="block font-semibold text-white">
-                Matched to your car
+                {dict.home.oilService.matchedTitle}
               </span>
-              Oil chosen to your manufacturer&rsquo;s specification.
+              {dict.home.oilService.matchedBody}
             </p>
           </div>
         </Reveal>
 
         <Reveal delay={0.08} className="lg:col-start-2 lg:self-start">
           <ul className="grid grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6 lg:grid-cols-1">
-            {POINTS.map(({ Icon, title, body }) => (
+            {points.map(({ Icon, title, body }) => (
               <li
                 key={title}
                 className="flex gap-4 sm:flex-col sm:gap-3 lg:flex-row lg:gap-4"
