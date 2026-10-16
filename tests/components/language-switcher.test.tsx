@@ -16,4 +16,14 @@ describe("LanguageSwitcher", () => {
     render(<LanguageSwitcher locale="fr" />);
     expect(screen.getByRole("link", { name: /english/i })).toHaveAttribute("href", "/cars");
   });
+  test("on the english site root, the switcher links to the french root (/fr, not /fr/)", () => {
+    vi.mocked(usePathname).mockReturnValue("/");
+    render(<LanguageSwitcher locale="en" />);
+    expect(screen.getByRole("link", { name: /français/i })).toHaveAttribute("href", "/fr");
+  });
+  test("on the french site root, the switcher links to the unprefixed root", () => {
+    vi.mocked(usePathname).mockReturnValue("/fr");
+    render(<LanguageSwitcher locale="fr" />);
+    expect(screen.getByRole("link", { name: /english/i })).toHaveAttribute("href", "/");
+  });
 });

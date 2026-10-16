@@ -21,6 +21,14 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
+// Footer is a Server Component that reads the root `[lang]` param via
+// `next/root-params`; outside Next's own build/runtime that module is a
+// placeholder that throws, so it needs the same mock get-dictionary.test.ts
+// uses. Left unresolved, `lang()` yields `undefined`, which both `Footer`
+// and `getDictionary()` treat as the default English locale — matching
+// every assertion below unchanged.
+vi.mock("next/root-params", () => ({ lang: vi.fn() }));
+
 beforeEach(() => {
   nav.pathname = "/";
   nav.push.mockReset();
@@ -141,19 +149,22 @@ describe("CompareTray", () => {
 });
 
 describe("Footer", () => {
-  it("shows the current year in the copyright line", () => {
+  // Footer is an async Server Component, so it must be awaited before the
+  // resolved element is handed to `render` — React's client reconciler
+  // (what RTL uses here) can't call an async component itself.
+  it("shows the current year in the copyright line", async () => {
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date("2027-03-01T10:00:00Z"));
     try {
-      render(<Footer />);
+      render(await Footer());
       expect(screen.getByText(/© 2027/)).toBeInTheDocument();
     } finally {
       vi.useRealTimers();
     }
   });
 
-  it("links to the legal pages and shows the opening hours", () => {
-    render(<Footer />);
+  it("links to the legal pages and shows the opening hours", async () => {
+    render(await Footer());
     expect(screen.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/privacy");
     expect(screen.getByText("Monday – Friday")).toBeInTheDocument();
   });

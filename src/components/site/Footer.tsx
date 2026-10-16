@@ -1,7 +1,5 @@
-"use client";
-
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { lang } from "next/root-params";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Logo } from "./Logo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -11,14 +9,19 @@ import {
   LinkedInIcon,
   TikTokIcon,
 } from "@/components/ui/icons";
-import { useDictionary } from "@/i18n/dictionary-context";
-import type { Locale } from "@/i18n/locales";
+import { getDictionary } from "@/i18n/get-dictionary";
+import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/i18n/locales";
 import { SITE } from "@/lib/site";
 import { buildWhatsAppUrl, generalInquiryMessage } from "@/lib/whatsapp";
 
-/** The current locale, read straight off the pathname (`/fr…` vs. unprefixed). */
-function localeFromPathname(pathname: string): Locale {
-  return pathname === "/fr" || pathname.startsWith("/fr/") ? "fr" : "en";
+// Footer is a Server Component: it reads the root `[lang]` param straight
+// off `next/root-params` (the same mechanism `getDictionary` uses), rather
+// than prop-drilling through the layout or becoming a Client Component.
+function isLocale(value: unknown): value is Locale {
+  return (
+    typeof value === "string" &&
+    (LOCALES as readonly string[]).includes(value)
+  );
 }
 
 const SERVICES = [
@@ -35,11 +38,11 @@ const SOCIAL = [
   { href: SITE.social.linkedin, label: "LinkedIn", Icon: LinkedInIcon },
 ];
 
-export function Footer() {
+export async function Footer() {
   const year = new Date().getFullYear();
-  const pathname = usePathname();
-  const dict = useDictionary();
-  const locale = localeFromPathname(pathname);
+  const dict = await getDictionary();
+  const localeParam = await lang();
+  const locale: Locale = isLocale(localeParam) ? localeParam : DEFAULT_LOCALE;
 
   const NAV = [
     { href: "/", label: dict.nav.home },
