@@ -5,10 +5,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AboutVehicle } from "@/components/detail/AboutVehicle";
 import { DetailCTAs } from "@/components/detail/DetailCTAs";
 import { Gallery } from "@/components/detail/Gallery";
+import { SpecGrid } from "@/components/detail/SpecGrid";
 import { TestDriveModal } from "@/components/detail/TestDriveModal";
 import { FavoritesProvider } from "@/components/providers/FavoritesProvider";
 import { CompareProvider } from "@/components/providers/CompareProvider";
 import { DetailSaveRow } from "@/components/detail/DetailSaveRow";
+import { Badge, statusLabel, statusTone } from "@/components/ui/Badge";
+import { dictionaries } from "@/i18n/dictionaries";
 import { SITE } from "@/lib/site";
 import { makeVehicle, photo } from "../fixtures/vehicles";
 
@@ -230,4 +233,45 @@ describe("description and specification lists", () => {
     expect(screen.getByRole("button", { name: "Read less" })).toHaveAttribute("aria-expanded", "true");
   });
 
+});
+
+describe("SpecGrid", () => {
+  it("shows its spec labels in English by default", () => {
+    render(<SpecGrid vehicle={vehicle} dict={dictionaries.en} />);
+    expect(screen.getByText("Mileage")).toBeInTheDocument();
+    expect(screen.getByText("Fuel")).toBeInTheDocument();
+    expect(screen.getByText("Transmission")).toBeInTheDocument();
+  });
+
+  it("shows its spec labels in French under the French dictionary", () => {
+    render(<SpecGrid vehicle={vehicle} dict={dictionaries.fr} />);
+    expect(screen.getByText("Kilométrage")).toBeInTheDocument();
+    expect(screen.getByText("Carburant")).toBeInTheDocument();
+    // The vehicle's own fuel/transmission values are never translated.
+    expect(screen.getByText("Petrol")).toBeInTheDocument();
+    expect(screen.getByText("Automatic")).toBeInTheDocument();
+  });
+});
+
+describe("Badge status label", () => {
+  it("statusLabel reads English status text from the English dictionary", () => {
+    expect(statusLabel("Available", dictionaries.en)).toBe("Available");
+    expect(statusLabel("Reserved", dictionaries.en)).toBe("Reserved");
+    expect(statusLabel("Sold", dictionaries.en)).toBe("Sold");
+  });
+
+  it("statusLabel reads French status text from the French dictionary", () => {
+    expect(statusLabel("Available", dictionaries.fr)).toBe("Disponible");
+    expect(statusLabel("Reserved", dictionaries.fr)).toBe("Réservé");
+    expect(statusLabel("Sold", dictionaries.fr)).toBe("Vendu");
+  });
+
+  it("renders the dictionary-sourced label inside the Badge", () => {
+    render(
+      <Badge tone={statusTone("Reserved")}>
+        {statusLabel("Reserved", dictionaries.fr)}
+      </Badge>,
+    );
+    expect(screen.getByText("Réservé")).toBeInTheDocument();
+  });
 });

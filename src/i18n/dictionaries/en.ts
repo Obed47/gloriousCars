@@ -237,6 +237,69 @@ export const en = {
     compare: "Compare",
     comparisonFull: "Comparison is full (max 3)",
   },
+  vehicleDetail: {
+    breadcrumb: {
+      ariaLabel: "Breadcrumb",
+      carsForSale: "Cars for sale",
+    },
+    summary: {
+      mileageLabel: "Mileage",
+      fuelLabel: "Fuel",
+      gearboxLabel: "Gearbox",
+      availableInPrefix: "Available in",
+      referencePrefix: "Reference",
+      listedForSaleByPrefix: "Listed for sale by",
+    },
+    specs: {
+      year: "Year",
+      mileage: "Mileage",
+      fuel: "Fuel",
+      transmission: "Transmission",
+      seats: "Seats",
+    },
+    headings: {
+      specsEyebrow: "At a glance",
+      specsTitle: "Key specifications",
+      aboutEyebrow: "Overview",
+      aboutTitle: "About this vehicle",
+      relatedEyebrow: "You might also like",
+      relatedTitle: "Similar vehicles",
+    },
+    cta: {
+      inquireWhatsApp: "Order / Inquire on WhatsApp",
+      inquireSimilar: "Ask about similar cars",
+      bookTestDrive: "Book a Test Drive",
+      testDriveShort: "Test Drive",
+    },
+    about: {
+      readMore: "Read more",
+      readLess: "Read less",
+    },
+    saveRow: {
+      save: "Save",
+      saved: "Saved",
+      comparing: "Comparing",
+    },
+    gallery: {
+      openFullscreen: "Open full-screen gallery",
+      closeGallery: "Close gallery",
+      previousImage: "Previous image",
+      nextImage: "Next image",
+      viewPrefix: "View",
+      gallerySuffix: "gallery",
+    },
+    metadata: {
+      forSaleSuffix: "for sale",
+      exploreVehiclePrefix: "Explore the",
+      descriptionSuffix:
+        "Full specifications, images and test-drive availability at",
+    },
+  },
+  statusBadge: {
+    available: "Available",
+    reserved: "Reserved",
+    sold: "Sold",
+  },
 };
 
 export type Dictionary = typeof en;

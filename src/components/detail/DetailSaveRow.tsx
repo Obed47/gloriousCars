@@ -4,9 +4,11 @@ import { useState } from "react";
 import { GitCompareArrows, Heart } from "lucide-react";
 import { useFavorites } from "@/components/providers/FavoritesProvider";
 import { useCompare } from "@/components/providers/CompareProvider";
+import { useDictionary } from "@/i18n/dictionary-context";
 import type { Vehicle } from "@/lib/types";
 
 export function DetailSaveRow({ vehicle }: { vehicle: Vehicle }) {
+  const dict = useDictionary();
   const { isFavorite, toggleFavorite, hydrated: favH } = useFavorites();
   const { isComparing, toggleCompare, canAddMore, hydrated: cmpH } = useCompare();
   const [pop, setPop] = useState(false);
@@ -35,7 +37,7 @@ export function DetailSaveRow({ vehicle }: { vehicle: Vehicle }) {
           className={`size-4 ${fav ? "fill-accent text-accent" : ""}`}
           aria-hidden
         />
-        {fav ? "Saved" : "Save"}
+        {fav ? dict.vehicleDetail.saveRow.saved : dict.vehicleDetail.saveRow.save}
       </button>
 
       <button
@@ -43,7 +45,7 @@ export function DetailSaveRow({ vehicle }: { vehicle: Vehicle }) {
         onClick={() => toggleCompare(vehicle.id)}
         disabled={compareDisabled}
         aria-pressed={comparing}
-        title={compareDisabled ? "Comparison is full (max 3)" : undefined}
+        title={compareDisabled ? dict.vehicleCard.comparisonFull : undefined}
         className={`inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
           comparing
             ? "border-accent/30 bg-accent-soft text-accent"
@@ -51,7 +53,7 @@ export function DetailSaveRow({ vehicle }: { vehicle: Vehicle }) {
         }`}
       >
         <GitCompareArrows className="size-4" aria-hidden />
-        {comparing ? "Comparing" : "Compare"}
+        {comparing ? dict.vehicleDetail.saveRow.comparing : dict.vehicleCard.compare}
       </button>
     </div>
   );

@@ -5,6 +5,7 @@ import { useDialogFocus } from "@/hooks/useDialogFocus";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
+import { useDictionary } from "@/i18n/dictionary-context";
 import type { VehicleImage } from "@/lib/types";
 
 export function Gallery({
@@ -14,6 +15,7 @@ export function Gallery({
   images: VehicleImage[];
   title: string;
 }) {
+  const dict = useDictionary();
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [lightbox, setLightbox] = useState(false);
@@ -121,7 +123,7 @@ export function Gallery({
         <button
           type="button"
           onClick={() => setLightbox(true)}
-          aria-label="Open full-screen gallery"
+          aria-label={dict.vehicleDetail.gallery.openFullscreen}
           className="absolute right-3 top-3 flex size-9 items-center justify-center rounded-lg bg-ink/70 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
         >
           <Expand className="size-4" aria-hidden />
@@ -129,8 +131,16 @@ export function Gallery({
 
         {count > 1 && (
           <>
-            <GalleryArrow side="left" onClick={() => go(-1)} />
-            <GalleryArrow side="right" onClick={() => go(1)} />
+            <GalleryArrow
+              side="left"
+              onClick={() => go(-1)}
+              label={dict.vehicleDetail.gallery.previousImage}
+            />
+            <GalleryArrow
+              side="right"
+              onClick={() => go(1)}
+              label={dict.vehicleDetail.gallery.nextImage}
+            />
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-ink/70 px-2.5 py-1 text-[0.6875rem] font-medium text-white backdrop-blur">
               {index + 1} / {count}
             </div>
@@ -146,7 +156,7 @@ export function Gallery({
               key={img.url + i}
               type="button"
               onClick={() => jump(i)}
-              aria-label={`View ${img.angle}`}
+              aria-label={`${dict.vehicleDetail.gallery.viewPrefix} ${img.angle}`}
               aria-current={i === index}
               className={`relative aspect-4/3 w-24 shrink-0 overflow-hidden rounded-lg transition-all ${
                 i === index
@@ -179,7 +189,7 @@ export function Gallery({
             transition={{ duration: 0.2 }}
             role="dialog"
             aria-modal="true"
-            aria-label={`${title} gallery`}
+            aria-label={`${title} ${dict.vehicleDetail.gallery.gallerySuffix}`}
           >
             <div className="flex items-center justify-between px-5 py-4 text-white">
               <span className="text-sm font-medium">
@@ -188,7 +198,7 @@ export function Gallery({
               <button
                 type="button"
                 onClick={() => setLightbox(false)}
-                aria-label="Close gallery"
+                aria-label={dict.vehicleDetail.gallery.closeGallery}
                 className="flex size-10 items-center justify-center rounded-lg hover:bg-white/10"
               >
                 <X className="size-6" aria-hidden />
@@ -223,8 +233,18 @@ export function Gallery({
 
               {count > 1 && (
                 <>
-                  <GalleryArrow side="left" onClick={() => go(-1)} light />
-                  <GalleryArrow side="right" onClick={() => go(1)} light />
+                  <GalleryArrow
+                    side="left"
+                    onClick={() => go(-1)}
+                    label={dict.vehicleDetail.gallery.previousImage}
+                    light
+                  />
+                  <GalleryArrow
+                    side="right"
+                    onClick={() => go(1)}
+                    label={dict.vehicleDetail.gallery.nextImage}
+                    light
+                  />
                 </>
               )}
             </div>
@@ -236,7 +256,7 @@ export function Gallery({
                     key={img.url + i}
                     type="button"
                     onClick={() => jump(i)}
-                    aria-label={`View ${img.angle}`}
+                    aria-label={`${dict.vehicleDetail.gallery.viewPrefix} ${img.angle}`}
                     className={`relative aspect-4/3 w-16 shrink-0 overflow-hidden rounded-md transition-opacity ${
                       i === index
                         ? "ring-2 ring-white"
@@ -265,10 +285,12 @@ export function Gallery({
 function GalleryArrow({
   side,
   onClick,
+  label,
   light = false,
 }: {
   side: "left" | "right";
   onClick: () => void;
+  label: string;
   light?: boolean;
 }) {
   const Icon = side === "left" ? ChevronLeft : ChevronRight;
@@ -276,7 +298,7 @@ function GalleryArrow({
     <button
       type="button"
       onClick={onClick}
-      aria-label={side === "left" ? "Previous image" : "Next image"}
+      aria-label={label}
       className={`absolute top-1/2 -translate-y-1/2 ${
         side === "left" ? "left-3" : "right-3"
       } flex size-10 items-center justify-center rounded-full backdrop-blur transition-colors ${

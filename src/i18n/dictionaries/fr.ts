@@ -240,4 +240,67 @@ export const fr: Dictionary = {
     compare: "Comparer",
     comparisonFull: "La comparaison est pleine (max 3)",
   },
+  vehicleDetail: {
+    breadcrumb: {
+      ariaLabel: "Fil d'Ariane",
+      carsForSale: "Voitures à vendre",
+    },
+    summary: {
+      mileageLabel: "Kilométrage",
+      fuelLabel: "Carburant",
+      gearboxLabel: "Boîte",
+      availableInPrefix: "Disponible à",
+      referencePrefix: "Référence",
+      listedForSaleByPrefix: "Mis en vente par",
+    },
+    specs: {
+      year: "Année",
+      mileage: "Kilométrage",
+      fuel: "Carburant",
+      transmission: "Boîte de vitesses",
+      seats: "Places",
+    },
+    headings: {
+      specsEyebrow: "En un coup d'œil",
+      specsTitle: "Caractéristiques principales",
+      aboutEyebrow: "Aperçu",
+      aboutTitle: "À propos de ce véhicule",
+      relatedEyebrow: "Vous pourriez aussi aimer",
+      relatedTitle: "Véhicules similaires",
+    },
+    cta: {
+      inquireWhatsApp: "Commander / Demander sur WhatsApp",
+      inquireSimilar: "Demander des voitures similaires",
+      bookTestDrive: "Réserver un essai de conduite",
+      testDriveShort: "Essai de conduite",
+    },
+    about: {
+      readMore: "Voir plus",
+      readLess: "Voir moins",
+    },
+    saveRow: {
+      save: "Enregistrer",
+      saved: "Enregistré",
+      comparing: "Comparé",
+    },
+    gallery: {
+      openFullscreen: "Ouvrir la galerie en plein écran",
+      closeGallery: "Fermer la galerie",
+      previousImage: "Image précédente",
+      nextImage: "Image suivante",
+      viewPrefix: "Voir",
+      gallerySuffix: "galerie",
+    },
+    metadata: {
+      forSaleSuffix: "à vendre",
+      exploreVehiclePrefix: "Découvrez",
+      descriptionSuffix:
+        "Fiche technique complète, photos et disponibilité pour un essai de conduite chez",
+    },
+  },
+  statusBadge: {
+    available: "Disponible",
+    reserved: "Réservé",
+    sold: "Vendu",
+  },
 };

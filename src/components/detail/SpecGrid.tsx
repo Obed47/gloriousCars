@@ -1,14 +1,29 @@
 import { Calendar, Fuel, Gauge, Settings2, Users } from "lucide-react";
+import type { Dictionary } from "@/i18n/dictionaries";
 import { formatMileage } from "@/lib/format";
 import type { Vehicle } from "@/lib/types";
 
-export function SpecGrid({ vehicle }: { vehicle: Vehicle }) {
+export function SpecGrid({
+  vehicle,
+  dict,
+}: {
+  vehicle: Vehicle;
+  dict: Dictionary;
+}) {
   const specs = [
-    { Icon: Calendar, label: "Year", value: String(vehicle.year) },
-    { Icon: Gauge, label: "Mileage", value: formatMileage(vehicle.mileage) },
-    { Icon: Fuel, label: "Fuel", value: vehicle.fuelType },
-    { Icon: Settings2, label: "Transmission", value: vehicle.transmission },
-    { Icon: Users, label: "Seats", value: String(vehicle.seats) },
+    { Icon: Calendar, label: dict.vehicleDetail.specs.year, value: String(vehicle.year) },
+    {
+      Icon: Gauge,
+      label: dict.vehicleDetail.specs.mileage,
+      value: formatMileage(vehicle.mileage),
+    },
+    { Icon: Fuel, label: dict.vehicleDetail.specs.fuel, value: vehicle.fuelType },
+    {
+      Icon: Settings2,
+      label: dict.vehicleDetail.specs.transmission,
+      value: vehicle.transmission,
+    },
+    { Icon: Users, label: dict.vehicleDetail.specs.seats, value: String(vehicle.seats) },
   ];
 
   return (

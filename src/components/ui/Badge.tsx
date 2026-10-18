@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { Dictionary } from "@/i18n/dictionaries";
 import type { VehicleStatus } from "@/lib/types";
 
 type Tone = "featured" | "available" | "reserved" | "sold" | "neutral";
@@ -35,4 +36,17 @@ export function statusTone(status: VehicleStatus): Tone {
     : status === "Reserved"
       ? "reserved"
       : "sold";
+}
+
+/**
+ * `vehicle.status` is a fixed three-value enum defined in code (not
+ * open-ended staff content), so — unlike `fuelType`/`transmission` — its
+ * display label is translated via `dict.statusBadge.*`.
+ */
+export function statusLabel(status: VehicleStatus, dict: Dictionary): string {
+  return status === "Available"
+    ? dict.statusBadge.available
+    : status === "Reserved"
+      ? dict.statusBadge.reserved
+      : dict.statusBadge.sold;
 }

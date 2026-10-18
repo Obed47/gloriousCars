@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 export function AboutVehicle({ description }: { description: string }) {
+  const dict = useDictionary();
   const [expanded, setExpanded] = useState(false);
   const isLong = description.length > 280;
 
@@ -24,7 +26,7 @@ export function AboutVehicle({ description }: { description: string }) {
           className="inline-flex items-center gap-1 self-start text-sm font-semibold text-accent"
           aria-expanded={expanded}
         >
-          {expanded ? "Read less" : "Read more"}
+          {expanded ? dict.vehicleDetail.about.readLess : dict.vehicleDetail.about.readMore}
           <ChevronDown
             className={`size-4 transition-transform ${expanded ? "rotate-180" : ""}`}
             aria-hidden
