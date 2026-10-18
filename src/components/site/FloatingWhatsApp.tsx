@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { WhatsAppIcon } from "@/components/ui/icons";
+import { useDictionary } from "@/i18n/dictionary-context";
 import { buildWhatsAppUrl, generalInquiryMessage } from "@/lib/whatsapp";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 
@@ -11,6 +12,7 @@ const DETAIL_ROUTE = /^\/cars\/[^/]+\/[^/]+$/;
 const STAFF_ROUTE = /^\/(admin|login)(\/|$)/;
 
 export function FloatingWhatsApp() {
+  const dict = useDictionary();
   const pathname = usePathname();
   const reduced = usePrefersReducedMotion();
   const [shown, setShown] = useState(false);
@@ -29,7 +31,7 @@ export function FloatingWhatsApp() {
     <AnimatePresence>
       {shown && !hidden && (
         <motion.a
-          href={buildWhatsAppUrl(generalInquiryMessage())}
+          href={buildWhatsAppUrl(generalInquiryMessage(dict))}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Chat with us on WhatsApp"

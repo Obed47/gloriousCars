@@ -209,6 +209,19 @@ describe("ContactForm", () => {
     expect(text).toContain("Is the RAV4 still available?");
     expect(screen.getByText("We've opened WhatsApp for you")).toBeInTheDocument();
   });
+
+  it("renders French subject options under the French dictionary", () => {
+    render(
+      <DictionaryProvider dictionary={dictionaries.fr}>
+        <ContactForm />
+      </DictionaryProvider>,
+    );
+    expect(screen.getByRole("combobox", { name: "Sujet" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Question générale" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: "Réserver un essai de conduite" }),
+    ).toBeInTheDocument();
+  });
 });
 
 describe("VehicleCard", () => {

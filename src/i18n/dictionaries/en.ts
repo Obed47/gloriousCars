@@ -300,6 +300,192 @@ export const en = {
     reserved: "Reserved",
     sold: "Sold",
   },
+  whatsapp: {
+    vehicleInquiry: {
+      greeting: "Hello {name}, I'm interested in this vehicle:",
+      vehicleLabel: "Vehicle",
+      referenceLabel: "Reference",
+      yearLabel: "Year",
+      priceLabel: "Price",
+      mileageLabel: "Mileage",
+      fuelLabel: "Fuel",
+      transmissionLabel: "Transmission",
+      locationLabel: "Location",
+      closing:
+        "I'd like to know more and how I can proceed with the purchase.",
+    },
+    testDrive: {
+      greeting: "Hello {name}, I'd like to book a test drive.",
+      vehicleLabel: "Vehicle",
+      refLabel: "Ref",
+      nameLabel: "Name",
+      phoneLabel: "Phone",
+      emailLabel: "Email",
+      preferredDateLabel: "Preferred date",
+      preferredTimeLabel: "Preferred time",
+      preferredLocationLabel: "Preferred location",
+      noteLabel: "Note",
+    },
+    generalInquiry:
+      "Hello {name}, I'd like more information about your vehicles.",
+  },
+  about: {
+    metadata: {
+      title: "About us",
+      descriptionSuffix:
+        "is a trusted vehicle marketplace for quality cars for sale in Yaoundé, Douala and across Cameroon, built on transparency and direct service.",
+    },
+    hero: {
+      eyebrow: "About Glorious Cars",
+      title: "More than a car. A better way to move.",
+      description:
+        "We started Glorious Cars because buying a used car should not require a leap of faith. Every vehicle we list is chosen for quality, inspected properly and described honestly  and a real person is always one message away.",
+      imageAlt: "A lineup of quality vehicles available at Glorious Cars",
+      statsDisclaimer: "Figures shown are placeholders for this demo.",
+    },
+    approach: {
+      eyebrow: "Our approach",
+      title: "Quality first, then everything else",
+      paragraphs: [
+        "Sourcing is deliberate. We buy vehicles with clean histories and verifiable service records, then put each one through a multi-point inspection before it is photographed and listed. If a car does not meet the standard, it does not go on the site.",
+        "Information is complete. The mileage on the listing is the mileage on the odometer. The photos are the actual car, not a stock image. Key specifications and known imperfections are documented so you can make a decision before you visit. For any other detail, ask us on WhatsApp.",
+        "Service is direct. From the first question to the handover of keys, you deal with our team over WhatsApp and in person no call centres, no scripts, and no pressure to decide on the spot.",
+      ],
+    },
+  },
+  services: {
+    metadata: {
+      title: "Services",
+      descriptionPrefix:
+        "Vehicle sales, test drives, consultation and buying assistance from",
+      descriptionSuffix:
+        ", with fresh engine and gearbox oil in every car we deliver.",
+    },
+    hero: {
+      eyebrow: "Services",
+      title: "Everything around the car, handled",
+      description:
+        "From first search to signed paperwork, these are the ways we help you move.",
+    },
+    items: {
+      sales: {
+        title: "Vehicle Sales",
+        body: "A curated, inspected inventory across brands and budgets. Browse online, filter to what fits, and reserve the car you want.",
+        ctaLabel: "Browse inventory",
+      },
+      testDrives: {
+        title: "Test Drives",
+        body: "Book a test drive at a date, time and location that work for you. We can bring the vehicle to a location near you where possible.",
+        ctaLabel: "See available cars",
+      },
+      consultation: {
+        title: "Vehicle Consultation",
+        body: "Not sure which car suits your needs? Tell us your budget, usage and priorities and we will shortlist options — honestly, including ones we do not have in stock.",
+        ctaLabel: "Ask our team",
+      },
+      assistance: {
+        title: "Financing & Assistance",
+        body: "Guidance through paperwork, transfer, insurance introductions and financing partners. We keep the process moving so you can drive away sooner.",
+        ctaLabel: "Talk about options",
+      },
+      oilService: {
+        title: "Engine & Gearbox Oil",
+        body: "Every car we deliver gets fresh, quality engine and gearbox oil, matched to the manufacturer's specification and changed by our team before handover.",
+      },
+    },
+    cta: {
+      heading: "Have a question about any of this?",
+      whatsappButton: "Message us on WhatsApp",
+      contactButton: "Contact page",
+    },
+  },
+  contact: {
+    metadata: {
+      title: "Contact",
+      descriptionPrefix: "Contact",
+      descriptionMiddle:
+        "about cars for sale in Yaoundé, Douala and across Cameroon — WhatsApp, phone, email or visit our showroom in",
+      descriptionSuffix: ".",
+    },
+    hero: {
+      eyebrow: "Contact",
+      title: "Talk to our team",
+      description:
+        "The fastest way to reach us is WhatsApp — most messages get a reply within the hour during opening times.",
+    },
+    whatsappCard: {
+      title: "WhatsApp",
+      subtitle: "Chat with us now — fastest response",
+    },
+    cards: {
+      phone: "Phone",
+      email: "Email",
+      showroom: "Showroom",
+    },
+    openingHours: {
+      title: "Opening hours",
+    },
+    form: {
+      nameLabel: "Name",
+      phoneLabel: "Phone",
+      emailLabel: "Email",
+      subjectLabel: "Subject",
+      messageLabel: "Message",
+      subjects: [
+        "General enquiry",
+        "Buying a vehicle",
+        "Booking a test drive",
+        "Selling my car",
+        "Something else",
+      ],
+      messageGreeting: "Hello {name},",
+      submitButton: "Send via WhatsApp",
+      disclaimer:
+        "This opens WhatsApp with your message pre-filled — nothing is sent until you press send there.",
+      successEyebrow: "Message ready",
+      successHeading: "We've opened WhatsApp for you",
+      successBodyPrefix:
+        "Send the pre-filled message and our team will reply shortly. Prefer email? Write to",
+      successBodySuffix: ".",
+      editMessageButton: "Edit message",
+    },
+  },
+  testDrive: {
+    title: "Book your test drive",
+    description: "Experience the vehicle before you make your decision.",
+    confirmedTitle: "Your test drive is requested",
+    confirmedDescription:
+      "Your details have been opened in WhatsApp. Our team will contact you shortly to confirm your appointment.",
+    closeAriaLabel: "Close",
+    refLabel: "Ref",
+    fields: {
+      fullName: "Full name",
+      phoneNumber: "Phone number",
+      email: "Email",
+      preferredDate: "Preferred date",
+      preferredTime: "Preferred time",
+      preferredLocation: "Preferred location",
+      additionalMessage: "Additional message",
+    },
+    messagePlaceholder: "Anything we should know before your visit?",
+    submitButton: "Confirm Test Drive",
+    errors: {
+      nameRequired: "Please enter your name.",
+      phoneRequired: "We need a phone number to confirm.",
+      emailInvalid: "That email doesn't look right.",
+      dateRequired: "Choose a preferred date.",
+      dateInPast: "Choose a date from today onwards.",
+      timeRequired: "Pick a time slot.",
+    },
+    confirmation: {
+      vehicleLabel: "Vehicle",
+      dateLabel: "Date",
+      timeLabel: "Time",
+      locationLabel: "Location",
+      reopenButton: "Open WhatsApp again",
+      doneButton: "Done",
+    },
+  },
 };
 
 export type Dictionary = typeof en;

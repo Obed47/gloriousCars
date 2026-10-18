@@ -30,7 +30,7 @@ export async function HomeCta() {
             {dict.home.homeCta.exploreCars}
           </Button>
           <Button
-            href={buildWhatsAppUrl(generalInquiryMessage())}
+            href={buildWhatsAppUrl(generalInquiryMessage(dict))}
             external
             size="lg"
             variant="whatsapp"

@@ -11,6 +11,7 @@ import { FavoritesProvider } from "@/components/providers/FavoritesProvider";
 import { CompareProvider } from "@/components/providers/CompareProvider";
 import { DetailSaveRow } from "@/components/detail/DetailSaveRow";
 import { Badge, statusLabel, statusTone } from "@/components/ui/Badge";
+import { DictionaryProvider } from "@/i18n/dictionary-context";
 import { dictionaries } from "@/i18n/dictionaries";
 import { SITE } from "@/lib/site";
 import { makeVehicle, photo } from "../fixtures/vehicles";
@@ -139,6 +140,23 @@ describe("TestDriveModal: keyboard focus", () => {
     await user.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(trigger).toHaveFocus();
+  });
+});
+
+describe("TestDriveModal: French dictionary", () => {
+  it("shows French field labels, dialog title and submit button", () => {
+    render(
+      <DictionaryProvider dictionary={dictionaries.fr}>
+        <TestDriveModal vehicle={vehicle} open onClose={() => {}} />
+      </DictionaryProvider>,
+    );
+    expect(
+      screen.getByRole("dialog", { name: "Réservez votre essai de conduite" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText(/Nom complet/)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Confirmer l'essai de conduite" }),
+    ).toBeInTheDocument();
   });
 });
 

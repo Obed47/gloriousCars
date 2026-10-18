@@ -8,6 +8,7 @@ import { VehicleGridSkeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { WhatsAppIcon } from "@/components/ui/icons";
+import { useDictionary } from "@/i18n/dictionary-context";
 import { formatMileage, formatPrice } from "@/lib/format";
 import { vehiclePath, vehicleFullTitle } from "@/lib/slug";
 import { buildWhatsAppUrl, vehicleInquiryMessage } from "@/lib/whatsapp";
@@ -31,6 +32,7 @@ const ROWS: Row[] = [
 ];
 
 export function CompareView({ vehicles }: { vehicles: Vehicle[] }) {
+  const dict = useDictionary();
   const { compareIds, removeCompare, clearCompare, hydrated, max } = useCompare();
 
   if (!hydrated) return <VehicleGridSkeleton count={3} />;
@@ -183,7 +185,7 @@ export function CompareView({ vehicles }: { vehicles: Vehicle[] }) {
               {selected.map((v) => (
                 <td key={v.id} className={`${colWidth} border-l border-line p-4`}>
                   <a
-                    href={buildWhatsAppUrl(vehicleInquiryMessage(v))}
+                    href={buildWhatsAppUrl(vehicleInquiryMessage(v, dict))}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] text-xs font-semibold text-[#053019] hover:bg-[#20bd5a]"

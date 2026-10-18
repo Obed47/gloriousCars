@@ -5,6 +5,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { CalendarCheck, Check, MapPin, X } from "lucide-react";
 import Image from "next/image";
 import { WhatsAppIcon } from "@/components/ui/icons";
+import { useDictionary } from "@/i18n/dictionary-context";
+import type { Dictionary } from "@/i18n/dictionaries";
 import { SITE } from "@/lib/site";
 import { formatPrice, localDateString } from "@/lib/format";
 import { useDialogFocus } from "@/hooks/useDialogFocus";
@@ -47,6 +49,7 @@ export function TestDriveModal({
   open: boolean;
   onClose: () => void;
 }) {
+  const dict = useDictionary();
   const [form, setForm] = useState<FormState>(emptyForm);
   const [errors, setErrors] = useState<
     Partial<Record<keyof FormState, string>>
@@ -89,13 +92,13 @@ export function TestDriveModal({
 
   function validate(): boolean {
     const next: Partial<Record<keyof FormState, string>> = {};
-    if (!form.name.trim()) next.name = "Please enter your name.";
-    if (!form.phone.trim()) next.phone = "We need a phone number to confirm.";
+    if (!form.name.trim()) next.name = dict.testDrive.errors.nameRequired;
+    if (!form.phone.trim()) next.phone = dict.testDrive.errors.phoneRequired;
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      next.email = "That email doesn't look right.";
-    if (!form.date) next.date = "Choose a preferred date.";
-    else if (form.date < today) next.date = "Choose a date from today onwards.";
-    if (!form.time) next.time = "Pick a time slot.";
+      next.email = dict.testDrive.errors.emailInvalid;
+    if (!form.date) next.date = dict.testDrive.errors.dateRequired;
+    else if (form.date < today) next.date = dict.testDrive.errors.dateInPast;
+    if (!form.time) next.time = dict.testDrive.errors.timeRequired;
     setErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -116,7 +119,7 @@ export function TestDriveModal({
     location: form.location,
     message: form.message || undefined,
   };
-  const waHref = buildWhatsAppUrl(testDriveMessage(vehicle, details));
+  const waHref = buildWhatsAppUrl(testDriveMessage(vehicle, details, dict));
 
   return (
     <AnimatePresence>
@@ -148,19 +151,19 @@ export function TestDriveModal({
                   className="text-lg font-extrabold uppercase tracking-tight text-ink"
                 >
                   {confirmed
-                    ? "Your test drive is requested"
-                    : "Book your test drive"}
+                    ? dict.testDrive.confirmedTitle
+                    : dict.testDrive.title}
                 </h2>
                 <p className="mt-1 text-sm text-muted">
                   {confirmed
-                    ? "Your details have been opened in WhatsApp. Our team will contact you shortly to confirm your appointment."
-                    : "Experience the vehicle before you make your decision."}
+                    ? dict.testDrive.confirmedDescription
+                    : dict.testDrive.description}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={onClose}
-                aria-label="Close"
+                aria-label={dict.testDrive.closeAriaLabel}
                 className="flex size-9 shrink-0 items-center justify-center rounded-lg text-muted hover:bg-black/5 hover:text-ink"
               >
                 <X className="size-5" aria-hidden />
@@ -185,8 +188,8 @@ export function TestDriveModal({
                   {vehicleFullTitle(vehicle)}
                 </p>
                 <p className="text-xs text-muted">
-                  {formatPrice(vehicle.price, vehicle.currency)} · Ref{" "}
-                  {vehicle.reference}
+                  {formatPrice(vehicle.price, vehicle.currency)} ·{" "}
+                  {dict.testDrive.refLabel} {vehicle.reference}
                 </p>
               </div>
             </div>
@@ -197,6 +200,7 @@ export function TestDriveModal({
                 form={form}
                 waHref={waHref}
                 onClose={onClose}
+                dict={dict}
               />
             ) : (
               <form
@@ -206,7 +210,7 @@ export function TestDriveModal({
               >
                 <TextField
                   ref={firstFieldRef}
-                  label="Full name"
+                  label={dict.testDrive.fields.fullName}
                   required
                   value={form.name}
                   onChange={set("name")}
@@ -215,7 +219,7 @@ export function TestDriveModal({
                 />
                 <div className="grid gap-4 sm:grid-cols-2">
                   <TextField
-                    label="Phone number"
+                    label={dict.testDrive.fields.phoneNumber}
                     required
                     type="tel"
                     value={form.phone}
@@ -224,7 +228,7 @@ export function TestDriveModal({
                     autoComplete="tel"
                   />
                   <TextField
-                    label="Email"
+                    label={dict.testDrive.fields.email}
                     type="email"
                     value={form.email}
                     onChange={set("email")}
@@ -234,7 +238,7 @@ export function TestDriveModal({
                 </div>
 
                 <TextField
-                  label="Preferred date"
+                  label={dict.testDrive.fields.preferredDate}
                   required
                   type="date"
                   min={today}
@@ -245,7 +249,7 @@ export function TestDriveModal({
 
                 <fieldset>
                   <legend className="mb-1.5 text-sm font-semibold text-ink">
-                    Preferred time <span className="text-accent">*</span>
+                    {dict.testDrive.fields.preferredTime} <span className="text-accent">*</span>
                   </legend>
                   <div className="grid grid-cols-3 gap-2">
                     {TIME_SLOTS.map((slot) => {
@@ -274,7 +278,7 @@ export function TestDriveModal({
 
                 <label className="flex flex-col gap-1.5">
                   <span className="text-sm font-semibold text-ink">
-                    Preferred location
+                    {dict.testDrive.fields.preferredLocation}
                   </span>
                   <select
                     value={form.location}
@@ -291,14 +295,14 @@ export function TestDriveModal({
 
                 <label className="flex flex-col gap-1.5">
                   <span className="text-sm font-semibold text-ink">
-                    Additional message
+                    {dict.testDrive.fields.additionalMessage}
                   </span>
                   <textarea
                     value={form.message}
                     onChange={(e) => set("message")(e.target.value)}
                     rows={3}
                     className="resize-none rounded-lg border border-line-strong bg-surface p-3 text-sm text-ink outline-none focus-visible:border-accent focus-visible:ring-4 focus-visible:ring-accent/15"
-                    placeholder="Anything we should know before your visit?"
+                    placeholder={dict.testDrive.messagePlaceholder}
                   />
                 </label>
 
@@ -307,7 +311,7 @@ export function TestDriveModal({
                   className="mt-1 inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-accent text-sm font-semibold text-white transition-colors hover:bg-accent-strong"
                 >
                   <CalendarCheck className="size-4" aria-hidden />
-                  Confirm Test Drive
+                  {dict.testDrive.submitButton}
                 </button>
               </form>
             )}
@@ -323,11 +327,13 @@ function Confirmation({
   form,
   waHref,
   onClose,
+  dict,
 }: {
   vehicle: Vehicle;
   form: FormState;
   waHref: string;
   onClose: () => void;
+  dict: Dictionary;
 }) {
   return (
     <div className="flex flex-col gap-5 overflow-y-auto p-5">
@@ -348,13 +354,13 @@ function Confirmation({
       </div>
 
       <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 rounded-xl bg-mist p-4 text-sm">
-        <dt className="font-semibold text-muted">Vehicle</dt>
+        <dt className="font-semibold text-muted">{dict.testDrive.confirmation.vehicleLabel}</dt>
         <dd className="text-ink">{vehicleFullTitle(vehicle)}</dd>
-        <dt className="font-semibold text-muted">Date</dt>
+        <dt className="font-semibold text-muted">{dict.testDrive.confirmation.dateLabel}</dt>
         <dd className="text-ink">{form.date}</dd>
-        <dt className="font-semibold text-muted">Time</dt>
+        <dt className="font-semibold text-muted">{dict.testDrive.confirmation.timeLabel}</dt>
         <dd className="text-ink">{form.time}</dd>
-        <dt className="font-semibold text-muted">Location</dt>
+        <dt className="font-semibold text-muted">{dict.testDrive.confirmation.locationLabel}</dt>
         <dd className="text-ink">{form.location}</dd>
       </dl>
 
@@ -365,14 +371,14 @@ function Confirmation({
         className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[#25D366] text-sm font-semibold text-[#053019] transition-colors hover:bg-[#20bd5a]"
       >
         <WhatsAppIcon className="size-5" />
-        Open WhatsApp again
+        {dict.testDrive.confirmation.reopenButton}
       </a>
       <button
         type="button"
         onClick={onClose}
         className="text-sm font-medium text-muted hover:text-ink"
       >
-        Done
+        {dict.testDrive.confirmation.doneButton}
       </button>
     </div>
   );

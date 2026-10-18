@@ -12,73 +12,108 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
 import { WhatsAppIcon } from "@/components/ui/icons";
 import { HowItWorks } from "@/components/home/HowItWorks";
+import { localePaths } from "@/i18n/alternates";
+import { dictionaries } from "@/i18n/dictionaries";
+import { getDictionary } from "@/i18n/get-dictionary";
+import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/i18n/locales";
 import { SITE } from "@/lib/site";
 import {
   buildWhatsAppUrl,
   generalInquiryMessage,
 } from "@/lib/whatsapp";
 
-export const metadata: Metadata = {
-  title: "Services",
-  description: `Vehicle sales, test drives, consultation and buying assistance from ${SITE.name}, with fresh engine and gearbox oil in every car we deliver.`,
-  alternates: { canonical: "/services" },
-};
+// Nested under the `[lang]` segment, so this page's own `params` already
+// carry `lang` — no need for `next/root-params`'s `lang()` here for the
+// metadata, same as src/app/[lang]/cars/page.tsx.
+function isLocale(value: unknown): value is Locale {
+  return (
+    typeof value === "string" &&
+    (LOCALES as readonly string[]).includes(value)
+  );
+}
 
-const SERVICES = [
-  {
-    id: "sales",
-    Icon: Car,
-    title: "Vehicle Sales",
-    body: "A curated, inspected inventory across brands and budgets. Browse online, filter to what fits, and reserve the car you want.",
-    cta: { label: "Browse inventory", href: "/cars" },
-  },
-  {
-    id: "test-drives",
-    Icon: CalendarCheck,
-    title: "Test Drives",
-    body: "Book a test drive at a date, time and location that work for you. We can bring the vehicle to a location near you where possible.",
-    cta: { label: "See available cars", href: "/cars" },
-  },
-  {
-    id: "consultation",
-    Icon: MessagesSquare,
-    title: "Vehicle Consultation",
-    body: "Not sure which car suits your needs? Tell us your budget, usage and priorities and we will shortlist options — honestly, including ones we do not have in stock.",
-    cta: {
-      label: "Ask our team",
-      href: buildWhatsAppUrl(generalInquiryMessage()),
-      external: true,
-    },
-  },
-  {
-    id: "assistance",
-    Icon: Banknote,
-    title: "Financing & Assistance",
-    body: "Guidance through paperwork, transfer, insurance introductions and financing partners. We keep the process moving so you can drive away sooner.",
-    cta: {
-      label: "Talk about options",
-      href: buildWhatsAppUrl(generalInquiryMessage()),
-      external: true,
-    },
-  },
-  {
-    id: "oil-service",
-    Icon: Droplet,
-    title: "Engine & Gearbox Oil",
-    body: "Every car we deliver gets fresh, quality engine and gearbox oil, matched to the manufacturer's specification and changed by our team before handover.",
-  },
-];
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  const locale: Locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
+  const dict = dictionaries[locale];
+  const { canonical, languages } = localePaths("/services", locale);
+  const description = `${dict.services.metadata.descriptionPrefix} ${SITE.name}${dict.services.metadata.descriptionSuffix}`;
 
-export default function ServicesPage() {
+  return {
+    title: dict.services.metadata.title,
+    description,
+    alternates: { canonical, languages },
+    openGraph: {
+      title: `${dict.services.metadata.title} | ${SITE.name}`,
+      description,
+      url: canonical,
+      locale: locale === "fr" ? "fr_FR" : "en_US",
+      alternateLocale: locale === "fr" ? "en_US" : "fr_FR",
+    },
+  };
+}
+
+export default async function ServicesPage() {
+  const dict = await getDictionary();
+
+  const SERVICES = [
+    {
+      id: "sales",
+      Icon: Car,
+      title: dict.services.items.sales.title,
+      body: dict.services.items.sales.body,
+      cta: { label: dict.services.items.sales.ctaLabel, href: "/cars" },
+    },
+    {
+      id: "test-drives",
+      Icon: CalendarCheck,
+      title: dict.services.items.testDrives.title,
+      body: dict.services.items.testDrives.body,
+      cta: { label: dict.services.items.testDrives.ctaLabel, href: "/cars" },
+    },
+    {
+      id: "consultation",
+      Icon: MessagesSquare,
+      title: dict.services.items.consultation.title,
+      body: dict.services.items.consultation.body,
+      cta: {
+        label: dict.services.items.consultation.ctaLabel,
+        href: buildWhatsAppUrl(generalInquiryMessage(dict)),
+        external: true,
+      },
+    },
+    {
+      id: "assistance",
+      Icon: Banknote,
+      title: dict.services.items.assistance.title,
+      body: dict.services.items.assistance.body,
+      cta: {
+        label: dict.services.items.assistance.ctaLabel,
+        href: buildWhatsAppUrl(generalInquiryMessage(dict)),
+        external: true,
+      },
+    },
+    {
+      id: "oil-service",
+      Icon: Droplet,
+      title: dict.services.items.oilService.title,
+      body: dict.services.items.oilService.body,
+    },
+  ];
+
   return (
     <>
       <section className="section-y">
         <div className="wrap">
           <SectionHeading
             as="h1"
-            eyebrow="Services"
-            title="Everything around the car, handled"
-            description="From first search to signed paperwork, these are the ways we help you move."
+            eyebrow={dict.services.hero.eyebrow}
+            title={dict.services.hero.title}
+            description={dict.services.hero.description}
             align="center"
             className="mx-auto"
           />
@@ -136,20 +171,20 @@ export default function ServicesPage() {
       <section className="bg-ink text-white">
         <div className="wrap flex flex-col items-start gap-6 py-16 lg:py-20">
           <h2 className="max-w-2xl text-2xl font-extrabold tracking-tight sm:text-3xl">
-            Have a question about any of this?
+            {dict.services.cta.heading}
           </h2>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button
-              href={buildWhatsAppUrl(generalInquiryMessage())}
+              href={buildWhatsAppUrl(generalInquiryMessage(dict))}
               external
               variant="whatsapp"
               size="lg"
             >
               <WhatsAppIcon className="size-5" />
-              Message us on WhatsApp
+              {dict.services.cta.whatsappButton}
             </Button>
             <Button href="/contact" size="lg" variant="outline-light">
-              Contact page
+              {dict.services.cta.contactButton}
             </Button>
           </div>
         </div>

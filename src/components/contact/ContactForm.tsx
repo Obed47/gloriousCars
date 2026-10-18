@@ -3,18 +3,13 @@
 import { useState } from "react";
 import { Send } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/icons";
+import { useDictionary } from "@/i18n/dictionary-context";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { SITE } from "@/lib/site";
 
-const SUBJECTS = [
-  "General enquiry",
-  "Buying a vehicle",
-  "Booking a test drive",
-  "Selling my car",
-  "Something else",
-];
-
 export function ContactForm() {
+  const dict = useDictionary();
+  const SUBJECTS = dict.contact.form.subjects;
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -28,12 +23,12 @@ export function ContactForm() {
     setForm((f) => ({ ...f, [k]: v }));
 
   const composed = [
-    `Hello ${SITE.name},`,
+    dict.contact.form.messageGreeting.replace("{name}", SITE.name),
     ``,
-    `Subject: ${form.subject}`,
-    ...(form.name ? [`Name: ${form.name}`] : []),
-    ...(form.email ? [`Email: ${form.email}`] : []),
-    ...(form.phone ? [`Phone: ${form.phone}`] : []),
+    `${dict.contact.form.subjectLabel}: ${form.subject}`,
+    ...(form.name ? [`${dict.contact.form.nameLabel}: ${form.name}`] : []),
+    ...(form.email ? [`${dict.contact.form.emailLabel}: ${form.email}`] : []),
+    ...(form.phone ? [`${dict.contact.form.phoneLabel}: ${form.phone}`] : []),
     ``,
     form.message,
   ].join("\n");
@@ -52,27 +47,26 @@ export function ContactForm() {
   if (sent) {
     return (
       <div className="card flex flex-col items-start gap-3 p-6">
-        <span className="eyebrow text-accent">Message ready</span>
+        <span className="eyebrow text-accent">{dict.contact.form.successEyebrow}</span>
         <h3 className="text-lg font-bold text-ink">
-          We&apos;ve opened WhatsApp for you
+          {dict.contact.form.successHeading}
         </h3>
         <p className="text-sm text-muted">
-          Send the pre-filled message and our team will reply shortly. Prefer
-          email? Write to{" "}
+          {dict.contact.form.successBodyPrefix}{" "}
           <a
             href={`mailto:${SITE.email}`}
             className="font-medium text-accent hover:underline"
           >
             {SITE.email}
           </a>
-          .
+          {dict.contact.form.successBodySuffix}
         </p>
         <button
           type="button"
           onClick={() => setSent(false)}
           className="mt-1 text-sm font-medium text-muted hover:text-ink"
         >
-          Edit message
+          {dict.contact.form.editMessageButton}
         </button>
       </div>
     );
@@ -82,7 +76,7 @@ export function ContactForm() {
     <form onSubmit={handleSubmit} className="card flex flex-col gap-4 p-6">
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-1.5">
-          <span className="text-sm font-semibold text-ink">Name</span>
+          <span className="text-sm font-semibold text-ink">{dict.contact.form.nameLabel}</span>
           <input
             required
             value={form.name}
@@ -92,7 +86,7 @@ export function ContactForm() {
           />
         </label>
         <label className="flex flex-col gap-1.5">
-          <span className="text-sm font-semibold text-ink">Phone</span>
+          <span className="text-sm font-semibold text-ink">{dict.contact.form.phoneLabel}</span>
           <input
             value={form.phone}
             onChange={(e) => set("phone")(e.target.value)}
@@ -104,7 +98,7 @@ export function ContactForm() {
       </div>
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-sm font-semibold text-ink">Email</span>
+        <span className="text-sm font-semibold text-ink">{dict.contact.form.emailLabel}</span>
         <input
           required
           value={form.email}
@@ -116,7 +110,7 @@ export function ContactForm() {
       </label>
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-sm font-semibold text-ink">Subject</span>
+        <span className="text-sm font-semibold text-ink">{dict.contact.form.subjectLabel}</span>
         <select
           value={form.subject}
           onChange={(e) => set("subject")(e.target.value)}
@@ -129,7 +123,7 @@ export function ContactForm() {
       </label>
 
       <label className="flex flex-col gap-1.5">
-        <span className="text-sm font-semibold text-ink">Message</span>
+        <span className="text-sm font-semibold text-ink">{dict.contact.form.messageLabel}</span>
         <textarea
           required
           rows={4}
@@ -144,12 +138,11 @@ export function ContactForm() {
         className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-accent text-sm font-semibold text-white transition-colors hover:bg-accent-strong"
       >
         <WhatsAppIcon className="size-4" />
-        Send via WhatsApp
+        {dict.contact.form.submitButton}
         <Send className="size-4" aria-hidden />
       </button>
       <p className="text-center text-xs text-muted">
-        This opens WhatsApp with your message pre-filled — nothing is sent until
-        you press send there.
+        {dict.contact.form.disclaimer}
       </p>
     </form>
   );

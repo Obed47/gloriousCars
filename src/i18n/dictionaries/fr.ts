@@ -303,4 +303,192 @@ export const fr: Dictionary = {
     reserved: "Réservé",
     sold: "Vendu",
   },
+  whatsapp: {
+    vehicleInquiry: {
+      greeting: "Bonjour {name}, ce véhicule m'intéresse :",
+      vehicleLabel: "Véhicule",
+      referenceLabel: "Référence",
+      yearLabel: "Année",
+      priceLabel: "Prix",
+      mileageLabel: "Kilométrage",
+      fuelLabel: "Carburant",
+      transmissionLabel: "Boîte de vitesses",
+      locationLabel: "Lieu",
+      closing:
+        "J'aimerais en savoir plus et connaître les étapes pour l'achat.",
+    },
+    testDrive: {
+      greeting: "Bonjour {name}, j'aimerais réserver un essai de conduite.",
+      vehicleLabel: "Véhicule",
+      refLabel: "Réf",
+      nameLabel: "Nom",
+      phoneLabel: "Téléphone",
+      emailLabel: "E-mail",
+      preferredDateLabel: "Date souhaitée",
+      preferredTimeLabel: "Heure souhaitée",
+      preferredLocationLabel: "Lieu souhaité",
+      noteLabel: "Note",
+    },
+    generalInquiry:
+      "Bonjour {name}, j'aimerais avoir plus d'informations sur vos véhicules.",
+  },
+  about: {
+    metadata: {
+      title: "À propos",
+      descriptionSuffix:
+        "est une concession de confiance pour des voitures de qualité à vendre à Yaoundé, Douala et partout au Cameroun, fondée sur la transparence et un service direct.",
+    },
+    hero: {
+      eyebrow: "À propos de Glorious Cars",
+      title: "Plus qu'une voiture. Une meilleure façon de rouler.",
+      description:
+        "Nous avons créé Glorious Cars parce qu'acheter une voiture d'occasion ne devrait pas être un pari. Chaque véhicule que nous proposons est choisi pour sa qualité, correctement inspecté et décrit en toute honnêteté — et une vraie personne n'est jamais qu'à un message de vous.",
+      imageAlt:
+        "Une sélection de véhicules de qualité disponibles chez Glorious Cars",
+      statsDisclaimer:
+        "Les chiffres affichés sont des exemples pour cette démonstration.",
+    },
+    approach: {
+      eyebrow: "Notre démarche",
+      title: "La qualité d'abord, tout le reste suit",
+      paragraphs: [
+        "L'approvisionnement est réfléchi. Nous achetons des véhicules à l'historique clair et aux carnets d'entretien vérifiables, puis nous faisons passer à chacun d'eux une inspection à plusieurs points avant qu'il ne soit photographié et mis en ligne. Si une voiture ne répond pas à nos critères, elle ne paraît pas sur le site.",
+        "L'information est complète. Le kilométrage affiché est celui du compteur. Les photos sont celles de la voiture réelle, pas une image d'illustration. Les caractéristiques clés et les défauts connus sont indiqués pour que vous puissiez décider avant votre visite. Pour tout autre détail, demandez-nous sur WhatsApp.",
+        "Le service est direct. De la première question à la remise des clés, vous échangez avec notre équipe sur WhatsApp et en personne — sans centre d'appels, sans discours préparé et sans pression pour décider sur place.",
+      ],
+    },
+  },
+  services: {
+    metadata: {
+      title: "Services",
+      descriptionPrefix:
+        "Vente de véhicules, essais de conduite, conseil et accompagnement à l'achat chez",
+      descriptionSuffix:
+        ", avec une huile moteur et de boîte neuve dans chaque voiture que nous livrons.",
+    },
+    hero: {
+      eyebrow: "Services",
+      title: "Tout ce qui touche à la voiture, pris en charge",
+      description:
+        "De la première recherche à la signature des papiers, voici comment nous vous accompagnons.",
+    },
+    items: {
+      sales: {
+        title: "Vente de véhicules",
+        body: "Un inventaire sélectionné et inspecté, toutes marques et tous budgets. Parcourez en ligne, filtrez selon vos critères et réservez la voiture qui vous convient.",
+        ctaLabel: "Voir l'inventaire",
+      },
+      testDrives: {
+        title: "Essais de conduite",
+        body: "Réservez un essai de conduite à la date, l'heure et le lieu qui vous conviennent. Nous pouvons amener le véhicule près de chez vous si possible.",
+        ctaLabel: "Voir les voitures disponibles",
+      },
+      consultation: {
+        title: "Conseil automobile",
+        body: "Vous ne savez pas quelle voiture correspond à vos besoins ? Donnez-nous votre budget, votre usage et vos priorités, et nous vous proposerons une sélection — honnêtement, y compris des modèles que nous n'avons pas en stock.",
+        ctaLabel: "Demander à notre équipe",
+      },
+      assistance: {
+        title: "Financement et accompagnement",
+        body: "Accompagnement pour les papiers, le transfert, les assurances et les partenaires de financement. Nous faisons avancer le dossier pour que vous preniez la route plus vite.",
+        ctaLabel: "Discuter des options",
+      },
+      oilService: {
+        title: "Huile moteur et boîte",
+        body: "Chaque voiture que nous livrons reçoit une huile moteur et de boîte neuve et de qualité, adaptée aux spécifications du constructeur et changée par notre équipe avant la remise.",
+      },
+    },
+    cta: {
+      heading: "Une question sur l'un de ces services ?",
+      whatsappButton: "Écrivez-nous sur WhatsApp",
+      contactButton: "Page contact",
+    },
+  },
+  contact: {
+    metadata: {
+      title: "Contact",
+      descriptionPrefix: "Contactez",
+      descriptionMiddle:
+        "au sujet des voitures à vendre à Yaoundé, Douala et partout au Cameroun — WhatsApp, téléphone, e-mail ou visitez notre showroom à",
+      descriptionSuffix: ".",
+    },
+    hero: {
+      eyebrow: "Contact",
+      title: "Parlez à notre équipe",
+      description:
+        "Le moyen le plus rapide de nous joindre est WhatsApp — la plupart des messages reçoivent une réponse dans l'heure pendant nos horaires d'ouverture.",
+    },
+    whatsappCard: {
+      title: "WhatsApp",
+      subtitle: "Discutez avec nous maintenant — réponse la plus rapide",
+    },
+    cards: {
+      phone: "Téléphone",
+      email: "E-mail",
+      showroom: "Showroom",
+    },
+    openingHours: {
+      title: "Horaires d'ouverture",
+    },
+    form: {
+      nameLabel: "Nom",
+      phoneLabel: "Téléphone",
+      emailLabel: "E-mail",
+      subjectLabel: "Sujet",
+      messageLabel: "Message",
+      subjects: [
+        "Question générale",
+        "Acheter un véhicule",
+        "Réserver un essai de conduite",
+        "Vendre ma voiture",
+        "Autre chose",
+      ],
+      messageGreeting: "Bonjour {name},",
+      submitButton: "Envoyer via WhatsApp",
+      disclaimer:
+        "Cela ouvre WhatsApp avec votre message prérempli — rien n'est envoyé avant que vous n'appuyiez sur envoyer là-bas.",
+      successEyebrow: "Message prêt",
+      successHeading: "Nous avons ouvert WhatsApp pour vous",
+      successBodyPrefix:
+        "Envoyez le message prérempli et notre équipe vous répondra rapidement. Vous préférez l'e-mail ? Écrivez à",
+      successBodySuffix: ".",
+      editMessageButton: "Modifier le message",
+    },
+  },
+  testDrive: {
+    title: "Réservez votre essai de conduite",
+    description: "Découvrez le véhicule avant de prendre votre décision.",
+    confirmedTitle: "Votre essai de conduite est demandé",
+    confirmedDescription:
+      "Vos informations ont été ouvertes dans WhatsApp. Notre équipe vous contactera prochainement pour confirmer votre rendez-vous.",
+    closeAriaLabel: "Fermer",
+    refLabel: "Réf",
+    fields: {
+      fullName: "Nom complet",
+      phoneNumber: "Numéro de téléphone",
+      email: "E-mail",
+      preferredDate: "Date souhaitée",
+      preferredTime: "Heure souhaitée",
+      preferredLocation: "Lieu souhaité",
+      additionalMessage: "Message complémentaire",
+    },
+    messagePlaceholder: "Y a-t-il autre chose à savoir avant votre visite ?",
+    submitButton: "Confirmer l'essai de conduite",
+    errors: {
+      nameRequired: "Veuillez indiquer votre nom.",
+      phoneRequired: "Un numéro de téléphone est nécessaire pour confirmer.",
+      emailInvalid: "Cette adresse e-mail ne semble pas correcte.",
+      dateRequired: "Choisissez une date souhaitée.",
+      dateInPast: "Choisissez une date à partir d'aujourd'hui.",
+      timeRequired: "Choisissez un créneau horaire.",
+    },
+    confirmation: {
+      vehicleLabel: "Véhicule",
+      dateLabel: "Date",
+      timeLabel: "Heure",
+      locationLabel: "Lieu",
+      reopenButton: "Rouvrir WhatsApp",
+      doneButton: "Terminé",
+    },
+  },
 };

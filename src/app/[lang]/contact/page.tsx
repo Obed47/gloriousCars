@@ -3,31 +3,65 @@ import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { WhatsAppIcon } from "@/components/ui/icons";
+import { localePaths } from "@/i18n/alternates";
+import { dictionaries } from "@/i18n/dictionaries";
+import { getDictionary } from "@/i18n/get-dictionary";
+import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/i18n/locales";
 import { SITE } from "@/lib/site";
 import { buildWhatsAppUrl, generalInquiryMessage } from "@/lib/whatsapp";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description: `Contact ${SITE.name} about cars for sale in Yaoundé, Douala and across Cameroon — WhatsApp, phone, email or visit our showroom in ${SITE.address.city}.`,
-  alternates: { canonical: "/contact" },
-};
+// Nested under the `[lang]` segment, so this page's own `params` already
+// carry `lang` — no need for `next/root-params`'s `lang()` here for the
+// metadata, same as src/app/[lang]/cars/page.tsx.
+function isLocale(value: unknown): value is Locale {
+  return (
+    typeof value === "string" &&
+    (LOCALES as readonly string[]).includes(value)
+  );
+}
 
-export default function ContactPage() {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  const locale: Locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
+  const dict = dictionaries[locale];
+  const { canonical, languages } = localePaths("/contact", locale);
+  const description = `${dict.contact.metadata.descriptionPrefix} ${SITE.name} ${dict.contact.metadata.descriptionMiddle} ${SITE.address.city}${dict.contact.metadata.descriptionSuffix}`;
+
+  return {
+    title: dict.contact.metadata.title,
+    description,
+    alternates: { canonical, languages },
+    openGraph: {
+      title: `${dict.contact.metadata.title} | ${SITE.name}`,
+      description,
+      url: canonical,
+      locale: locale === "fr" ? "fr_FR" : "en_US",
+      alternateLocale: locale === "fr" ? "en_US" : "fr_FR",
+    },
+  };
+}
+
+export default async function ContactPage() {
+  const dict = await getDictionary();
   const tel = SITE.phoneDisplay.replace(/\s/g, "");
 
   return (
     <div className="wrap py-12 sm:py-16">
       <SectionHeading
         as="h1"
-        eyebrow="Contact"
-        title="Talk to our team"
-        description="The fastest way to reach us is WhatsApp — most messages get a reply within the hour during opening times."
+        eyebrow={dict.contact.hero.eyebrow}
+        title={dict.contact.hero.title}
+        description={dict.contact.hero.description}
       />
 
       <div className="mt-12 grid grid-cols-1 gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
         <div className="flex flex-col gap-4">
           <a
-            href={buildWhatsAppUrl(generalInquiryMessage())}
+            href={buildWhatsAppUrl(generalInquiryMessage(dict))}
             target="_blank"
             rel="noopener noreferrer"
             className="group flex items-center gap-4 rounded-xl border border-[#25D366]/30 bg-[#25D366]/10 p-5 transition-colors hover:bg-[#25D366]/15"
@@ -36,28 +70,30 @@ export default function ContactPage() {
               <WhatsAppIcon className="size-5" />
             </span>
             <span className="flex flex-col">
-              <span className="text-sm font-bold text-ink">WhatsApp</span>
+              <span className="text-sm font-bold text-ink">
+                {dict.contact.whatsappCard.title}
+              </span>
               <span className="text-sm text-muted">
-                Chat with us now — fastest response
+                {dict.contact.whatsappCard.subtitle}
               </span>
             </span>
           </a>
 
           <ContactCard
             Icon={Phone}
-            title="Phone"
+            title={dict.contact.cards.phone}
             lines={[SITE.phoneDisplay]}
             href={`tel:${tel}`}
           />
           <ContactCard
             Icon={Mail}
-            title="Email"
+            title={dict.contact.cards.email}
             lines={[SITE.email]}
             href={`mailto:${SITE.email}`}
           />
           <ContactCard
             Icon={MapPin}
-            title="Showroom"
+            title={dict.contact.cards.showroom}
             lines={[
               SITE.address.line,
               `${SITE.address.city}, ${SITE.address.country}`,
@@ -68,7 +104,9 @@ export default function ContactPage() {
               <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-mist text-ink">
                 <Clock className="size-5" aria-hidden />
               </span>
-              <span className="text-sm font-bold text-ink">Opening hours</span>
+              <span className="text-sm font-bold text-ink">
+                {dict.contact.openingHours.title}
+              </span>
             </div>
             <ul className="mt-3 space-y-1.5 text-sm text-muted">
               {SITE.hours.map((h) => (

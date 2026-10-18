@@ -11,7 +11,7 @@ import type { Vehicle } from "@/lib/types";
 export function DetailCTAs({ vehicle }: { vehicle: Vehicle }) {
   const dict = useDictionary();
   const [open, setOpen] = useState(false);
-  const waHref = buildWhatsAppUrl(vehicleInquiryMessage(vehicle));
+  const waHref = buildWhatsAppUrl(vehicleInquiryMessage(vehicle, dict));
   const sold = vehicle.status === "Sold";
 
   return (

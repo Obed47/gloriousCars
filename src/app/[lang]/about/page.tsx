@@ -5,15 +5,50 @@ import { VehicleImage } from "@/components/vehicles/VehicleImage";
 import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { HomeCta } from "@/components/home/HomeCta";
+import { localePaths } from "@/i18n/alternates";
+import { dictionaries } from "@/i18n/dictionaries";
+import { getDictionary } from "@/i18n/get-dictionary";
+import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/i18n/locales";
 import { SITE } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "About us",
-  description: `${SITE.name} is a trusted vehicle marketplace for quality cars for sale in Yaoundé, Douala and across Cameroon, built on transparency and direct service.`,
-  alternates: { canonical: "/about" },
-};
+// Nested under the `[lang]` segment, so this page's own `params` already
+// carry `lang` — no need for `next/root-params`'s `lang()` here for the
+// metadata, same as src/app/[lang]/cars/page.tsx.
+function isLocale(value: unknown): value is Locale {
+  return (
+    typeof value === "string" &&
+    (LOCALES as readonly string[]).includes(value)
+  );
+}
 
-export default function AboutPage() {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  const locale: Locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
+  const dict = dictionaries[locale];
+  const { canonical, languages } = localePaths("/about", locale);
+  const description = `${SITE.name} ${dict.about.metadata.descriptionSuffix}`;
+
+  return {
+    title: dict.about.metadata.title,
+    description,
+    alternates: { canonical, languages },
+    openGraph: {
+      title: `${dict.about.metadata.title} | ${SITE.name}`,
+      description,
+      url: canonical,
+      locale: locale === "fr" ? "fr_FR" : "en_US",
+      alternateLocale: locale === "fr" ? "en_US" : "fr_FR",
+    },
+  };
+}
+
+export default async function AboutPage() {
+  const dict = await getDictionary();
+
   return (
     <>
       <section className="section-y">
@@ -21,9 +56,9 @@ export default function AboutPage() {
           <Reveal>
             <SectionHeading
               as="h1"
-              eyebrow="About Glorious Cars"
-              title="More than a car. A better way to move."
-              description="We started Glorious Cars because buying a used car should not require a leap of faith. Every vehicle we list is chosen for quality, inspected properly and described honestly  and a real person is always one message away."
+              eyebrow={dict.about.hero.eyebrow}
+              title={dict.about.hero.title}
+              description={dict.about.hero.description}
             />
             <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8">
               {SITE.stats.map((s) => (
@@ -36,7 +71,7 @@ export default function AboutPage() {
               ))}
             </dl>
             <p className="mt-4 text-xs text-muted">
-              Figures shown are placeholders for this demo.
+              {dict.about.hero.statsDisclaimer}
             </p>
           </Reveal>
 
@@ -44,7 +79,7 @@ export default function AboutPage() {
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-card">
               <VehicleImage
                 src="/hero_cars.png"
-                alt="A lineup of quality vehicles available at Glorious Cars"
+                alt={dict.about.hero.imageAlt}
                 fit="contain"
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
@@ -56,28 +91,13 @@ export default function AboutPage() {
       <section className="section-y bg-surface">
         <div className="wrap grid grid-cols-1 gap-10 lg:grid-cols-3">
           <SectionHeading
-            eyebrow="Our approach"
-            title="Quality first, then everything else"
+            eyebrow={dict.about.approach.eyebrow}
+            title={dict.about.approach.title}
           />
           <div className="flex flex-col gap-4 text-[0.9375rem] leading-relaxed text-muted lg:col-span-2">
-            <p>
-              Sourcing is deliberate. We buy vehicles with clean histories and
-              verifiable service records, then put each one through a
-              multi-point inspection before it is photographed and listed. If a
-              car does not meet the standard, it does not go on the site.
-            </p>
-            <p>
-              Information is complete. The mileage on the listing is the mileage
-              on the odometer. The photos are the actual car, not a stock image.
-              Key specifications and known imperfections are documented so you
-              can make a decision before you visit. For any other detail, ask
-              us on WhatsApp.
-            </p>
-            <p>
-              Service is direct. From the first question to the handover of
-              keys, you deal with our team over WhatsApp and in person no call
-              centres, no scripts, and no pressure to decide on the spot.
-            </p>
+            {dict.about.approach.paragraphs.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
           </div>
         </div>
       </section>

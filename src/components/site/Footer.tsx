@@ -112,7 +112,7 @@ export async function Footer() {
             {SITE.phoneDisplay}
           </a>
           <a
-            href={buildWhatsAppUrl(generalInquiryMessage())}
+            href={buildWhatsAppUrl(generalInquiryMessage(dict))}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2.5 text-sm text-silver/85 transition-colors hover:text-white"
