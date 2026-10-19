@@ -35,15 +35,27 @@ describe("sitemap.xml bilingual entries", () => {
     expect(fr?.changeFrequency).toBe(en?.changeFrequency);
   });
 
-  it("carries hreflang alternates pointing both ways on the English and French entries", async () => {
+  it("carries absolute hreflang alternates pointing both ways on the English and French entries", async () => {
     const { default: sitemap } = await import("@/app/sitemap");
     const entries = await sitemap();
 
     const en = entries.find((e) => e.url === `${SITE_URL}/cars`);
     const fr = entries.find((e) => e.url === `${SITE_URL}/fr/cars`);
 
-    expect(en?.alternates?.languages).toMatchObject({ en: "/cars", fr: "/fr/cars" });
-    expect(fr?.alternates?.languages).toMatchObject({ en: "/cars", fr: "/fr/cars" });
+    // sitemap.ts's alternates.languages is emitted as-is into <xhtml:link
+    // href="...">, with no metadataBase resolution step (unlike page-level
+    // generateMetadata), so these must be absolute, not localePaths()'s
+    // bare relative paths.
+    const expected = {
+      en: `${SITE_URL}/cars`,
+      fr: `${SITE_URL}/fr/cars`,
+      "x-default": `${SITE_URL}/cars`,
+    };
+    expect(en?.alternates?.languages).toMatchObject(expected);
+    expect(fr?.alternates?.languages).toMatchObject(expected);
+    expect(Object.values(en?.alternates?.languages ?? {})).toEqual(
+      expect.arrayContaining([expect.stringMatching(/^https?:\/\//)]),
+    );
   });
 
   it("keeps every existing English URL present and unchanged", async () => {

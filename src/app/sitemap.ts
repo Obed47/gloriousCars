@@ -21,16 +21,24 @@ type RouteSpec = {
  * Expands one route spec into its English and French sitemap entries. Both
  * share the same priority/changeFrequency/lastModified, and each carries
  * `alternates.languages` (from `localePaths`) pointing at the other.
+ *
+ * Unlike page-level `generateMetadata`, `sitemap.ts`'s `alternates.languages`
+ * is emitted as-is into `<xhtml:link href="...">`, with no `metadataBase`
+ * resolution step — so `localePaths()`'s relative paths must be made
+ * absolute here before they're used.
  */
 function bilingualEntries(spec: RouteSpec): MetadataRoute.Sitemap {
   return LOCALES.map((locale) => {
     const { canonical, languages } = localePaths(spec.path, locale);
+    const absoluteLanguages = Object.fromEntries(
+      Object.entries(languages).map(([hreflang, path]) => [hreflang, `${SITE.url}${path}`]),
+    ) as typeof languages;
     return {
       url: `${SITE.url}${canonical}`,
       priority: spec.priority,
       changeFrequency: spec.changeFrequency,
       ...(spec.lastModified ? { lastModified: spec.lastModified } : {}),
-      alternates: { languages },
+      alternates: { languages: absoluteLanguages },
     };
   });
 }
