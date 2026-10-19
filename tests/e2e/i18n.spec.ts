@@ -8,13 +8,13 @@ const ORIGIN = `http://localhost:${E2E_PORT}`;
 /** The primary header nav. Holds the language switcher, but its link list is
  *  hidden below the `lg` breakpoint, so it isn't used for text assertions. */
 function primaryNav(page: import("@playwright/test").Page) {
-  return page.getByRole("navigation", { name: "Primary" });
+  return page.getByRole("navigation", { name: /^(Primary|Principale)$/ });
 }
 
 /** The footer nav: always rendered regardless of viewport, so link-name
  *  assertions here work on both the desktop and mobile Playwright projects. */
 function footerNav(page: import("@playwright/test").Page) {
-  return page.getByRole("navigation", { name: "Footer navigation" });
+  return page.getByRole("navigation", { name: /^(Footer navigation|Navigation du pied de page)$/ });
 }
 
 test.describe("locale detection", () => {
@@ -149,7 +149,7 @@ test.describe("server and client agree on the current path", () => {
     await page.goto("/cars");
     await expect(page.locator('nav[aria-label="Primary"] a[aria-current="page"]')).toHaveAttribute("href", "/cars");
     await page.goto("/fr/cars");
-    await expect(page.locator('nav[aria-label="Primary"] a[aria-current="page"]')).toHaveAttribute("href", "/fr/cars");
+    await expect(page.locator('nav[aria-label="Principale"] a[aria-current="page"]')).toHaveAttribute("href", "/fr/cars");
   });
 
   test("the server-rendered language switcher on /cars targets /fr/cars, never /fr/en/…", async ({ request }) => {
@@ -166,6 +166,16 @@ test.describe("server and client agree on the current path", () => {
   test("on a French vehicle page the WhatsApp bubble is raised clear of the action bar", async ({ page }) => {
     await page.goto(`/fr${CARS.bmwWhite.path}`);
     await expect(page.getByRole("link", { name: "Discuter avec nous sur WhatsApp" })).toHaveClass(/bottom-24/);
+  });
+
+  test("the footer and navbar landmarks are translated on French pages", async ({ page }) => {
+    await page.goto("/fr");
+    await expect(page.getByRole("navigation", { name: "Principale" })).toBeAttached();
+    const footer = page.getByRole("contentinfo");
+    await expect(footer.getByRole("navigation", { name: "Navigation du pied de page" })).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Politique de confidentialité" })).toHaveAttribute("href", "/fr/privacy");
+    await expect(footer.getByText("Tous droits réservés.", { exact: false })).toBeVisible();
+    await expect(footer.getByText("Chat on WhatsApp")).toHaveCount(0);
   });
 
   test("the skip link is translated on French pages", async ({ page }) => {

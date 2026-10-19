@@ -24,12 +24,40 @@ export const en = {
     searchPlaceholder: "Search make or car name…",
     closeSearch: "Close search",
     popular: "Popular",
+    primaryLabel: "Primary",
+    menu: "Menu",
+    closeMenu: "Close menu",
     popularSearches: {
       hybrid: "Hybrid",
       electric: "Electric",
       automatic: "Automatic",
       underPrice: "Under XAF 40M",
     },
+  },
+  footer: {
+    navigationHeading: "Navigation",
+    navigationLabel: "Footer navigation",
+    servicesHeading: "Services",
+    contactHeading: "Contact",
+    services: {
+      sales: "Vehicle Sales",
+      testDrives: "Test Drives",
+      consultation: "Vehicle Consultation",
+      assistance: "Financing & Assistance",
+    },
+    chatOnWhatsapp: "Chat on WhatsApp",
+    addressLine: "Biyem-Assi Branch",
+    country: "Cameroon",
+    /** Labels for `SITE.hours`, keyed by each entry's `key`. */
+    hours: {
+      weekdays: "Monday – Friday",
+      saturday: "Saturday",
+      sunday: "Sunday",
+    },
+    byAppointment: "By appointment",
+    rightsReserved: "All rights reserved.",
+    privacyPolicy: "Privacy Policy",
+    terms: "Terms & Conditions",
   },
   /** Labels for `SITE.stats`, keyed by each entry's `key`. */
   stats: {

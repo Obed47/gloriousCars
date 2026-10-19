@@ -47,9 +47,12 @@ export const SITE = {
   serviceAreas: ["Yaoundé", "Douala", "Cameroon"],
 
   hours: [
-    { days: "Monday – Friday", time: "08:00 – 18:00" },
-    { days: "Saturday", time: "09:00 – 16:00" },
-    { days: "Sunday", time: "By appointment" },
+    // `key` picks the translated day label from the dictionary's
+    // `footer.hours` (and `timeKey`, where set, a translated time from
+    // `footer`); `days`/`time` are the English copy, kept byte-identical.
+    { key: "weekdays", days: "Monday – Friday", time: "08:00 – 18:00" },
+    { key: "saturday", days: "Saturday", time: "09:00 – 16:00" },
+    { key: "sunday", days: "Sunday", time: "By appointment", timeKey: "byAppointment" },
   ],
 
   /** Test-drive / pickup locations offered in the booking flow. */

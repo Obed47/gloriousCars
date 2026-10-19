@@ -137,7 +137,7 @@ export function Navbar() {
           className={`wrap flex items-center justify-between gap-4 transition-[height] duration-300 ${
             scrolled ? "h-16" : "h-20"
           }`}
-          aria-label="Primary"
+          aria-label={dict.nav.primaryLabel}
         >
           <Logo tone={heroHeader ? "light" : "dark"} preload />
 
@@ -309,14 +309,14 @@ export function Navbar() {
             transition={{ duration: 0.24 }}
             role="dialog"
             aria-modal="true"
-            aria-label="Menu"
+            aria-label={dict.nav.menu}
           >
             <div className="wrap flex h-20 items-center justify-between">
               <Logo tone="light" />
               <button
                 type="button"
                 onClick={() => setMenuOpen(false)}
-                aria-label="Close menu"
+                aria-label={dict.nav.closeMenu}
                 className="flex size-10 items-center justify-center rounded-lg text-white hover:bg-white/10"
               >
                 <X className="size-6" aria-hidden />

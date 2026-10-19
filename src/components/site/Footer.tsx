@@ -18,12 +18,6 @@ import { buildWhatsAppUrl, generalInquiryMessage } from "@/lib/whatsapp";
 // off `next/root-params` (the same mechanism `getDictionary` uses), rather
 // than prop-drilling through the layout or becoming a Client Component.
 
-const SERVICES = [
-  { href: "/services#sales", label: "Vehicle Sales" },
-  { href: "/services#test-drives", label: "Test Drives" },
-  { href: "/services#consultation", label: "Vehicle Consultation" },
-  { href: "/services#assistance", label: "Financing & Assistance" },
-];
 
 const SOCIAL = [
   { href: SITE.social.facebook, label: "Facebook", Icon: FacebookIcon },
@@ -37,6 +31,13 @@ export async function Footer() {
   const dict = await getDictionary();
   const localeParam = await lang();
   const locale: Locale = isLocale(localeParam) ? localeParam : DEFAULT_LOCALE;
+
+  const SERVICES = [
+    { href: "/services#sales", label: dict.footer.services.sales },
+    { href: "/services#test-drives", label: dict.footer.services.testDrives },
+    { href: "/services#consultation", label: dict.footer.services.consultation },
+    { href: "/services#assistance", label: dict.footer.services.assistance },
+  ];
 
   const NAV = [
     { href: "/", label: dict.nav.home },
@@ -70,8 +71,8 @@ export async function Footer() {
           </div>
         </div>
 
-        <nav aria-label="Footer navigation" className="flex flex-col gap-3">
-          <h2 className="eyebrow text-white">Navigation</h2>
+        <nav aria-label={dict.footer.navigationLabel} className="flex flex-col gap-3">
+          <h2 className="eyebrow text-white">{dict.footer.navigationHeading}</h2>
           {NAV.map((l) => (
             <LocaleLink
               key={l.href}
@@ -83,8 +84,8 @@ export async function Footer() {
           ))}
         </nav>
 
-        <nav aria-label="Services" className="flex flex-col gap-3">
-          <h2 className="eyebrow text-white">Services</h2>
+        <nav aria-label={dict.footer.servicesHeading} className="flex flex-col gap-3">
+          <h2 className="eyebrow text-white">{dict.footer.servicesHeading}</h2>
           {SERVICES.map((l) => (
             <LocaleLink
               key={l.href}
@@ -97,7 +98,7 @@ export async function Footer() {
         </nav>
 
         <div className="flex flex-col gap-3">
-          <h2 className="eyebrow text-white">Contact</h2>
+          <h2 className="eyebrow text-white">{dict.footer.contactHeading}</h2>
           <a
             href={`tel:${SITE.phoneDisplay.replace(/\s/g, "")}`}
             className="flex items-center gap-2.5 text-sm text-silver/85 transition-colors hover:text-white"
@@ -112,7 +113,7 @@ export async function Footer() {
             className="flex items-center gap-2.5 text-sm text-silver/85 transition-colors hover:text-white"
           >
             <MessageCircle className="size-4 shrink-0" aria-hidden />
-            Chat on WhatsApp
+            {dict.footer.chatOnWhatsapp}
           </a>
           <a
             href={`mailto:${SITE.email}`}
@@ -124,16 +125,16 @@ export async function Footer() {
           <p className="flex items-start gap-2.5 text-sm text-silver/85">
             <MapPin className="mt-0.5 size-4 shrink-0" aria-hidden />
             <span>
-              {SITE.address.line}
+              {dict.footer.addressLine}
               <br />
-              {SITE.address.city}, {SITE.address.country}
+              {SITE.address.city}, {dict.footer.country}
             </span>
           </p>
           <ul className="mt-1 space-y-1 text-xs text-silver/80">
             {SITE.hours.map((h) => (
-              <li key={h.days} className="flex justify-between gap-4">
-                <span>{h.days}</span>
-                <span>{h.time}</span>
+              <li key={h.key} className="flex justify-between gap-4">
+                <span>{dict.footer.hours[h.key]}</span>
+                <span>{"timeKey" in h ? dict.footer[h.timeKey] : h.time}</span>
               </li>
             ))}
           </ul>
@@ -143,14 +144,14 @@ export async function Footer() {
       <div className="border-t border-white/10">
         <div className="wrap flex flex-col gap-3 py-6 text-xs text-silver/80 sm:flex-row sm:items-center sm:justify-between">
           <p>
-            © {year} {SITE.legalName}. All rights reserved.
+            © {year} {SITE.legalName}. {dict.footer.rightsReserved}
           </p>
           <div className="flex gap-6">
             <LocaleLink href="/privacy" className="hover:text-white">
-              Privacy Policy
+              {dict.footer.privacyPolicy}
             </LocaleLink>
             <LocaleLink href="/terms" className="hover:text-white">
-              Terms &amp; Conditions
+              {dict.footer.terms}
             </LocaleLink>
             <LanguageSwitcher />
           </div>

@@ -368,3 +368,55 @@ describe("FloatingWhatsApp route checks", () => {
     expect(await renderBubble(pathname)).not.toBeInTheDocument();
   });
 });
+
+describe("Footer chrome under the French locale", () => {
+  it("translates headings, service links, contact, hours and legal links", async () => {
+    nav.pathname = "/fr";
+    const rootParams = await import("next/root-params");
+    vi.mocked(rootParams.lang).mockResolvedValue("fr");
+    render(await Footer());
+    const footer = screen.getByRole("contentinfo");
+    expect(within(footer).getByRole("navigation", { name: "Navigation du pied de page" })).toBeInTheDocument();
+    expect(within(footer).getByRole("link", { name: "Vente de véhicules" })).toHaveAttribute("href", "/fr/services#sales");
+    expect(within(footer).getByRole("link", { name: "Financement et assistance" })).toBeInTheDocument();
+    expect(within(footer).getByRole("link", { name: /Discuter sur WhatsApp/ })).toBeInTheDocument();
+    expect(within(footer).getByRole("link", { name: "Politique de confidentialité" })).toHaveAttribute("href", "/fr/privacy");
+    expect(within(footer).getByRole("link", { name: "Conditions générales" })).toHaveAttribute("href", "/fr/terms");
+    expect(within(footer).getByText(/Tous droits réservés\./)).toBeInTheDocument();
+    expect(within(footer).getByText("Lundi – Vendredi")).toBeInTheDocument();
+    expect(within(footer).getByText("Sur rendez-vous")).toBeInTheDocument();
+    expect(within(footer).getByText(/Yaoundé, Cameroun/)).toBeInTheDocument();
+    for (const english of ["Vehicle Sales", "Chat on WhatsApp", "Privacy Policy", "Monday – Friday", "By appointment"]) {
+      expect(within(footer).queryByText(english)).not.toBeInTheDocument();
+    }
+  });
+
+  it("keeps the English copy byte-identical under the English locale", async () => {
+    vi.mocked((await import("next/root-params")).lang).mockResolvedValue("en");
+    render(await Footer());
+    const footer = screen.getByRole("contentinfo");
+    expect(within(footer).getByRole("navigation", { name: "Footer navigation" })).toBeInTheDocument();
+    expect(within(footer).getByRole("link", { name: "Terms & Conditions" })).toBeInTheDocument();
+    expect(within(footer).getByText(/All rights reserved\./)).toBeInTheDocument();
+    expect(within(footer).getByText("By appointment")).toBeInTheDocument();
+    expect(within(footer).getByText(/Biyem-Assi Branch/)).toBeInTheDocument();
+  });
+});
+
+describe("Navbar landmarks and mobile menu under the French dictionary", () => {
+  it("translates the Primary, Menu and Close menu labels", async () => {
+    nav.pathname = "/fr";
+    const user = userEvent.setup();
+    render(
+      <FavoritesProvider>
+        <DictionaryProvider dictionary={dictionaries.fr}>
+          <Navbar />
+        </DictionaryProvider>
+      </FavoritesProvider>,
+    );
+    expect(screen.getByRole("navigation", { name: "Principale" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Ouvrir le menu" }));
+    const menu = screen.getByRole("dialog", { name: "Menu" });
+    expect(within(menu).getByRole("button", { name: "Fermer le menu" })).toBeInTheDocument();
+  });
+});
