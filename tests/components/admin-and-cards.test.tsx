@@ -298,4 +298,24 @@ describe("CompareView and FavoritesView", () => {
     renderWithProviders(<FavoritesView vehicles={[bmw]} />);
     expect(await screen.findByText("No saved vehicles yet")).toBeInTheDocument();
   });
+
+  it("explains an empty favourites list in French under the French dictionary", async () => {
+    renderWithProviders(
+      <DictionaryProvider dictionary={dictionaries.fr}>
+        <FavoritesView vehicles={[bmw]} />
+      </DictionaryProvider>,
+    );
+    expect(
+      await screen.findByText("Aucun véhicule enregistré pour le moment"),
+    ).toBeInTheDocument();
+  });
+
+  it("explains an empty comparison in French under the French dictionary", async () => {
+    renderWithProviders(
+      <DictionaryProvider dictionary={dictionaries.fr}>
+        <CompareView vehicles={[bmw]} />
+      </DictionaryProvider>,
+    );
+    expect(await screen.findByText("Rien à comparer pour le moment")).toBeInTheDocument();
+  });
 });

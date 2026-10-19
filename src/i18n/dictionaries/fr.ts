@@ -491,4 +491,127 @@ export const fr: Dictionary = {
       doneButton: "Terminé",
     },
   },
+  privacy: {
+    metadata: {
+      title: "Politique de confidentialité",
+      description: "Comment {name} gère vos informations.",
+    },
+    title: "Politique de confidentialité",
+    disclaimer:
+      "Ce texte est un espace réservé pour la démonstration. Remplacez-le par une politique validée par votre conseiller juridique avant la mise en ligne.",
+    sections: [
+      {
+        heading: "Informations que nous collectons",
+        body: "Lorsque vous réservez un essai de conduite ou nous envoyez une demande, nous collectons les informations que vous fournissez — telles que votre nom, votre numéro de téléphone et votre adresse e-mail — afin de pouvoir vous répondre et organiser votre rendez-vous. Les favoris et les sélections de comparaison sont conservés uniquement dans votre navigateur.",
+      },
+      {
+        heading: "Comment nous les utilisons",
+        body: "Nous utilisons vos informations uniquement pour répondre à votre demande, organiser les essais de conduite et finaliser un achat si vous décidez de poursuivre. Nous ne vendons pas vos données.",
+      },
+      {
+        heading: "WhatsApp",
+        body: "Les messages que vous nous envoyez via WhatsApp sont soumis aux conditions de confidentialité propres à WhatsApp, en complément des nôtres.",
+      },
+    ],
+    contact: {
+      heading: "Contact",
+      prefix: "Des questions sur vos données ? Écrivez-nous à",
+      suffix: ".",
+    },
+  },
+  terms: {
+    metadata: {
+      title: "Conditions générales d'utilisation",
+      description: "Conditions d'utilisation du site {name}.",
+    },
+    title: "Conditions générales d'utilisation",
+    disclaimer:
+      "Ce texte est un espace réservé pour la démonstration. Remplacez-le par des conditions validées par votre conseiller juridique avant la mise en ligne.",
+    sections: [
+      {
+        heading: "Informations sur les véhicules",
+        body: "Nous veillons à décrire chaque véhicule avec précision, notamment le kilométrage, les caractéristiques et l'état général. Les annonces ne constituent pas une offre contractuelle ; la disponibilité et le prix sont confirmés au moment de la vente.",
+      },
+      {
+        heading: "Essais de conduite",
+        body: "Les demandes d'essai de conduite sont soumises à la confirmation de notre équipe et à la présentation d'un permis de conduire valide. Les horaires demandés sont des préférences et non des réservations garanties.",
+      },
+      {
+        heading: "Aucun paiement en ligne",
+        body: "Ce site n'effectue aucun paiement en ligne. Tout achat est finalisé directement avec {legalName}.",
+      },
+      {
+        heading: "Responsabilité",
+        body: "Le site est fourni « tel quel ». Dans la limite autorisée par la loi, {legalName} ne saurait être tenue responsable des pertes indirectes ou consécutives résultant de l'utilisation du site.",
+      },
+    ],
+  },
+  favorites: {
+    metadata: {
+      title: "Mes favoris",
+      description: "Véhicules que vous avez enregistrés.",
+    },
+    heading: {
+      eyebrow: "Enregistrés pour plus tard",
+      title: "Mes favoris",
+      description:
+        "Votre sélection, conservée sur cet appareil. Revenez à tout moment pour reprendre là où vous vous étiez arrêté.",
+    },
+    view: {
+      emptyState: {
+        title: "Aucun véhicule enregistré pour le moment",
+        description:
+          "Touchez le cœur sur un véhicule pour le conserver ici. Les favoris sont stockés sur cet appareil.",
+      },
+      browseAllCars: "Voir toutes les voitures",
+      savedCountSingular: "{count} véhicule enregistré",
+      savedCountPlural: "{count} véhicules enregistrés",
+      clearAll: "Tout effacer",
+    },
+  },
+  compare: {
+    metadata: {
+      title: "Comparer des véhicules",
+      description: "Comparez jusqu'à trois véhicules côte à côte.",
+    },
+    heading: {
+      eyebrow: "Côte à côte",
+      title: "Comparer les véhicules",
+      description:
+        "Comparez les chiffres qui comptent — prix, kilométrage, puissance et plus encore — et repérez les différences en un coup d'œil.",
+    },
+    tray: {
+      ariaLabel: "Plateau de comparaison des véhicules",
+      selectedCount: "{count} sur {max} sélectionnés",
+      clearAll: "Tout effacer",
+      clear: "Effacer",
+      removeFromComparisonPrefix: "Retirer",
+      removeFromComparisonSuffix: "de la comparaison",
+      compareLink: "Comparer",
+    },
+    view: {
+      emptyState: {
+        title: "Rien à comparer pour le moment",
+        description:
+          "Ajoutez jusqu'à {max} véhicules grâce au bouton de comparaison sur une fiche, puis consultez-les côte à côte ici.",
+      },
+      browseAllCars: "Voir toutes les voitures",
+      comparingLabel: "Comparaison de {count} sur {max}",
+      clearAll: "Tout effacer",
+      addVehicle: "Ajouter un véhicule",
+      removePrefix: "Retirer",
+      best: "Meilleur",
+      enquire: "Demande",
+      whatsapp: "WhatsApp",
+      rows: {
+        price: "Prix",
+        year: "Année",
+        mileage: "Kilométrage",
+        fuel: "Carburant",
+        transmission: "Boîte de vitesses",
+        seats: "Places",
+        location: "Lieu",
+      },
+    },
+  },
 };

@@ -486,6 +486,129 @@ export const en = {
       doneButton: "Done",
     },
   },
+  privacy: {
+    metadata: {
+      title: "Privacy Policy",
+      description: "How {name} handles your information.",
+    },
+    title: "Privacy Policy",
+    disclaimer:
+      "This is placeholder text for the demo. Replace it with a policy reviewed by your legal advisor before going live.",
+    sections: [
+      {
+        heading: "Information we collect",
+        body: "When you book a test drive or send an enquiry, we collect the details you provide — such as your name, phone number and email — so that we can respond and arrange your appointment. Favorites and comparison selections are stored only in your browser.",
+      },
+      {
+        heading: "How we use it",
+        body: "We use your information solely to answer your enquiry, arrange test drives, and complete a purchase if you choose to proceed. We do not sell your data.",
+      },
+      {
+        heading: "WhatsApp",
+        body: "Messages you send us via WhatsApp are subject to WhatsApp's own privacy terms in addition to ours.",
+      },
+    ],
+    contact: {
+      heading: "Contact",
+      prefix: "Questions about your data? Email",
+      suffix: ".",
+    },
+  },
+  terms: {
+    metadata: {
+      title: "Terms & Conditions",
+      description: "Terms for using the {name} website.",
+    },
+    title: "Terms & Conditions",
+    disclaimer:
+      "This is placeholder text for the demo. Replace it with terms reviewed by your legal advisor before going live.",
+    sections: [
+      {
+        heading: "Vehicle information",
+        body: "We take care to describe every vehicle accurately, including mileage, specification and condition. Listings are not a contractual offer; availability and price are confirmed at the point of sale.",
+      },
+      {
+        heading: "Test drives",
+        body: "Test drive requests are subject to confirmation by our team and to presenting a valid driving licence. Requested times are preferences, not guaranteed bookings.",
+      },
+      {
+        heading: "No online payment",
+        body: "This website does not process payments. Any purchase is completed directly with {legalName}.",
+      },
+      {
+        heading: "Liability",
+        body: "The website is provided “as is”. To the extent permitted by law, {legalName} is not liable for indirect or consequential loss arising from use of the site.",
+      },
+    ],
+  },
+  favorites: {
+    metadata: {
+      title: "My Favorites",
+      description: "Vehicles you've saved.",
+    },
+    heading: {
+      eyebrow: "Saved for later",
+      title: "My favorites",
+      description:
+        "Your shortlist, kept on this device. Come back any time to pick up where you left off.",
+    },
+    view: {
+      emptyState: {
+        title: "No saved vehicles yet",
+        description:
+          "Tap the heart on any vehicle to keep it here. Favorites are stored on this device.",
+      },
+      browseAllCars: "Browse all cars",
+      savedCountSingular: "{count} saved vehicle",
+      savedCountPlural: "{count} saved vehicles",
+      clearAll: "Clear all",
+    },
+  },
+  compare: {
+    metadata: {
+      title: "Compare vehicles",
+      description: "Compare up to three vehicles side by side.",
+    },
+    heading: {
+      eyebrow: "Side by side",
+      title: "Compare vehicles",
+      description:
+        "Line up the numbers that matter — price, mileage, power and more — and see the differences at a glance.",
+    },
+    tray: {
+      ariaLabel: "Vehicle comparison tray",
+      selectedCount: "{count} of {max} selected",
+      clearAll: "Clear all",
+      clear: "Clear",
+      removeFromComparisonPrefix: "Remove",
+      removeFromComparisonSuffix: "from comparison",
+      compareLink: "Compare",
+    },
+    view: {
+      emptyState: {
+        title: "Nothing to compare yet",
+        description:
+          "Add up to {max} vehicles using the compare button on any card, then see them side by side here.",
+      },
+      browseAllCars: "Browse all cars",
+      comparingLabel: "Comparing {count} of {max}",
+      clearAll: "Clear all",
+      addVehicle: "Add vehicle",
+      removePrefix: "Remove",
+      best: "Best",
+      enquire: "Enquire",
+      whatsapp: "WhatsApp",
+      rows: {
+        price: "Price",
+        year: "Year",
+        mileage: "Mileage",
+        fuel: "Fuel",
+        transmission: "Transmission",
+        seats: "Seats",
+        location: "Location",
+      },
+    },
+  },
 };
 
 export type Dictionary = typeof en;

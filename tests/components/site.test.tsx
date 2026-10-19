@@ -6,6 +6,8 @@ import { FavoritesProvider } from "@/components/providers/FavoritesProvider";
 import { CompareTray } from "@/components/site/CompareTray";
 import { Footer } from "@/components/site/Footer";
 import { Navbar, POPULAR_SEARCHES } from "@/components/site/Navbar";
+import { DictionaryProvider } from "@/i18n/dictionary-context";
+import { dictionaries } from "@/i18n/dictionaries";
 import { toSummary } from "@/lib/repository";
 import { sampleCatalogue } from "../fixtures/vehicles";
 
@@ -145,6 +147,19 @@ describe("CompareTray", () => {
       </CompareProvider>,
     );
     expect(screen.getByRole("link", { name: /compare/i })).toHaveAttribute("href", "/compare");
+  });
+
+  it("shows the selected count in French under the French dictionary", () => {
+    localStorage.setItem("glorious-cars:compare", JSON.stringify([summaries[0].id, summaries[1].id]));
+    render(
+      <CompareProvider>
+        <DictionaryProvider dictionary={dictionaries.fr}>
+          <CompareTray summaries={summaries} />
+        </DictionaryProvider>
+      </CompareProvider>,
+    );
+    const tray = screen.getByRole("region", { name: "Plateau de comparaison des véhicules" });
+    expect(within(tray).getByText("2 sur 3 sélectionnés")).toBeInTheDocument();
   });
 });
 

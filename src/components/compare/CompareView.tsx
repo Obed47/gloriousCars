@@ -9,30 +9,47 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { WhatsAppIcon } from "@/components/ui/icons";
 import { useDictionary } from "@/i18n/dictionary-context";
+import type { Dictionary } from "@/i18n/dictionaries";
 import { formatMileage, formatPrice } from "@/lib/format";
 import { vehiclePath, vehicleFullTitle } from "@/lib/slug";
 import { buildWhatsAppUrl, vehicleInquiryMessage } from "@/lib/whatsapp";
 import type { Vehicle } from "@/lib/types";
 
 type Row = {
-  label: string;
+  label: (rows: Dictionary["compare"]["view"]["rows"]) => string;
   value: (v: Vehicle) => string;
   metric?: (v: Vehicle) => number;
   best?: "min" | "max";
 };
 
 const ROWS: Row[] = [
-  { label: "Price", value: (v) => formatPrice(v.price, v.currency), metric: (v) => v.price, best: "min" },
-  { label: "Year", value: (v) => String(v.year), metric: (v) => v.year, best: "max" },
-  { label: "Mileage", value: (v) => formatMileage(v.mileage), metric: (v) => v.mileage, best: "min" },
-  { label: "Fuel", value: (v) => v.fuelType },
-  { label: "Transmission", value: (v) => v.transmission },
-  { label: "Seats", value: (v) => String(v.seats), metric: (v) => v.seats, best: "max" },
-  { label: "Location", value: (v) => v.location },
+  {
+    label: (rows) => rows.price,
+    value: (v) => formatPrice(v.price, v.currency),
+    metric: (v) => v.price,
+    best: "min",
+  },
+  { label: (rows) => rows.year, value: (v) => String(v.year), metric: (v) => v.year, best: "max" },
+  {
+    label: (rows) => rows.mileage,
+    value: (v) => formatMileage(v.mileage),
+    metric: (v) => v.mileage,
+    best: "min",
+  },
+  { label: (rows) => rows.fuel, value: (v) => v.fuelType },
+  { label: (rows) => rows.transmission, value: (v) => v.transmission },
+  {
+    label: (rows) => rows.seats,
+    value: (v) => String(v.seats),
+    metric: (v) => v.seats,
+    best: "max",
+  },
+  { label: (rows) => rows.location, value: (v) => v.location },
 ];
 
 export function CompareView({ vehicles }: { vehicles: Vehicle[] }) {
   const dict = useDictionary();
+  const t = dict.compare.view;
   const { compareIds, removeCompare, clearCompare, hydrated, max } = useCompare();
 
   if (!hydrated) return <VehicleGridSkeleton count={3} />;
@@ -44,11 +61,11 @@ export function CompareView({ vehicles }: { vehicles: Vehicle[] }) {
   if (selected.length === 0) {
     return (
       <EmptyState
-        title="Nothing to compare yet"
-        description={`Add up to ${max} vehicles using the compare button on any card, then see them side by side here.`}
+        title={t.emptyState.title}
+        description={t.emptyState.description.replace("{max}", String(max))}
         action={
           <Button href="/cars" withArrow>
-            Browse all cars
+            {t.browseAllCars}
           </Button>
         }
       />
@@ -61,14 +78,16 @@ export function CompareView({ vehicles }: { vehicles: Vehicle[] }) {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <p className="text-sm font-semibold text-ink">
-          Comparing {selected.length} of {max}
+          {t.comparingLabel
+            .replace("{count}", String(selected.length))
+            .replace("{max}", String(max))}
         </p>
         <button
           type="button"
           onClick={clearCompare}
           className="text-sm font-medium text-muted hover:text-ink"
         >
-          Clear all
+          {t.clearAll}
         </button>
       </div>
 
@@ -96,7 +115,7 @@ export function CompareView({ vehicles }: { vehicles: Vehicle[] }) {
                       <button
                         type="button"
                         onClick={() => removeCompare(v.id)}
-                        aria-label={`Remove ${vehicleFullTitle(v)}`}
+                        aria-label={`${t.removePrefix} ${vehicleFullTitle(v)}`}
                         className="absolute right-1.5 top-1.5 flex size-6 items-center justify-center rounded-full bg-ink/80 text-white hover:bg-ink"
                       >
                         <X className="size-3.5" aria-hidden />
@@ -118,14 +137,15 @@ export function CompareView({ vehicles }: { vehicles: Vehicle[] }) {
                     className="flex h-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-line-strong py-8 text-sm font-medium text-muted hover:border-ink hover:text-ink"
                   >
                     <Plus className="size-5" aria-hidden />
-                    Add vehicle
+                    {t.addVehicle}
                   </Link>
                 </th>
               )}
             </tr>
           </thead>
           <tbody>
-            {ROWS.map((row) => {
+            {ROWS.map((row, rowIndex) => {
+              const label = row.label(t.rows);
               const metrics = row.metric ? selected.map(row.metric) : [];
               const target =
                 row.metric && row.best
@@ -137,12 +157,12 @@ export function CompareView({ vehicles }: { vehicles: Vehicle[] }) {
               const allSame = new Set(values).size === 1 && selected.length > 1;
 
               return (
-                <tr key={row.label} className="border-t border-line">
+                <tr key={rowIndex} className="border-t border-line">
                   <th
                     scope="row"
                     className="sticky left-0 z-10 bg-surface p-4 text-left text-[0.6875rem] font-semibold uppercase tracking-wide text-muted"
                   >
-                    {row.label}
+                    {label}
                   </th>
                   {selected.map((v, i) => {
                     const isBest =
@@ -164,7 +184,7 @@ export function CompareView({ vehicles }: { vehicles: Vehicle[] }) {
                         {values[i]}
                         {isBest && (
                           <span className="ml-1.5 text-[0.625rem] font-bold uppercase">
-                            Best
+                            {t.best}
                           </span>
                         )}
                       </td>
@@ -180,7 +200,7 @@ export function CompareView({ vehicles }: { vehicles: Vehicle[] }) {
                 scope="row"
                 className="sticky left-0 z-10 bg-surface p-4 text-left text-[0.6875rem] font-semibold uppercase tracking-wide text-muted"
               >
-                Enquire
+                {t.enquire}
               </th>
               {selected.map((v) => (
                 <td key={v.id} className={`${colWidth} border-l border-line p-4`}>
@@ -191,7 +211,7 @@ export function CompareView({ vehicles }: { vehicles: Vehicle[] }) {
                     className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] text-xs font-semibold text-[#053019] hover:bg-[#20bd5a]"
                   >
                     <WhatsAppIcon className="size-4" />
-                    WhatsApp
+                    {t.whatsapp}
                   </a>
                 </td>
               ))}

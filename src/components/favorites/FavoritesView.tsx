@@ -6,9 +6,12 @@ import { VehicleGrid } from "@/components/vehicles/VehicleGrid";
 import { VehicleGridSkeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
+import { useDictionary } from "@/i18n/dictionary-context";
 import type { Vehicle } from "@/lib/types";
 
 export function FavoritesView({ vehicles }: { vehicles: Vehicle[] }) {
+  const dict = useDictionary();
+  const t = dict.favorites.view;
   const { favorites, clearFavorites, hydrated } = useFavorites();
 
   if (!hydrated) {
@@ -23,11 +26,11 @@ export function FavoritesView({ vehicles }: { vehicles: Vehicle[] }) {
   if (saved.length === 0) {
     return (
       <EmptyState
-        title="No saved vehicles yet"
-        description="Tap the heart on any vehicle to keep it here. Favorites are stored on this device."
+        title={t.emptyState.title}
+        description={t.emptyState.description}
         action={
           <Button href="/cars" withArrow>
-            Browse all cars
+            {t.browseAllCars}
           </Button>
         }
       />
@@ -38,7 +41,10 @@ export function FavoritesView({ vehicles }: { vehicles: Vehicle[] }) {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <p className="text-sm font-semibold text-ink">
-          {saved.length} saved {saved.length === 1 ? "vehicle" : "vehicles"}
+          {(saved.length === 1 ? t.savedCountSingular : t.savedCountPlural).replace(
+            "{count}",
+            String(saved.length),
+          )}
         </p>
         <button
           type="button"
@@ -46,7 +52,7 @@ export function FavoritesView({ vehicles }: { vehicles: Vehicle[] }) {
           className="inline-flex items-center gap-1.5 text-sm font-medium text-muted transition-colors hover:text-ink"
         >
           <Trash2 className="size-4" aria-hidden />
-          Clear all
+          {t.clearAll}
         </button>
       </div>
       <VehicleGrid vehicles={saved} />

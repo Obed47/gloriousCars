@@ -1,55 +1,57 @@
 import type { Metadata } from "next";
+import { localePaths } from "@/i18n/alternates";
+import { dictionaries } from "@/i18n/dictionaries";
+import { getDictionary } from "@/i18n/get-dictionary";
+import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/i18n/locales";
 import { SITE } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Terms & Conditions",
-  description: `Terms for using the ${SITE.name} website.`,
-  alternates: { canonical: "/terms" },
-};
+// Nested under the `[lang]` segment, so this page's own `params` already
+// carry `lang` — no need for `next/root-params`'s `lang()` here for the
+// metadata, same as src/app/[lang]/cars/page.tsx.
+function isLocale(value: unknown): value is Locale {
+  return (
+    typeof value === "string" &&
+    (LOCALES as readonly string[]).includes(value)
+  );
+}
 
-export default function TermsPage() {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  const locale: Locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
+  const dict = dictionaries[locale];
+  const { canonical, languages } = localePaths("/terms", locale);
+
+  return {
+    title: dict.terms.metadata.title,
+    description: dict.terms.metadata.description.replace("{name}", SITE.name),
+    alternates: { canonical, languages },
+  };
+}
+
+export default async function TermsPage() {
+  const dict = await getDictionary();
+  const t = dict.terms;
+
   return (
     <div className="wrap max-w-2xl py-12 sm:py-16">
       <h1 className="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
-        Terms &amp; Conditions
+        {t.title}
       </h1>
       <p className="mt-3 rounded-lg bg-mist px-4 py-3 text-sm text-muted">
-        This is placeholder text for the demo. Replace it with terms reviewed by
-        your legal advisor before going live.
+        {t.disclaimer}
       </p>
 
       <div className="mt-8 flex flex-col gap-6 text-[0.9375rem] leading-relaxed text-muted">
-        <section className="flex flex-col gap-2">
-          <h2 className="text-lg font-bold text-ink">Vehicle information</h2>
-          <p>
-            We take care to describe every vehicle accurately, including
-            mileage, specification and condition. Listings are not a contractual
-            offer; availability and price are confirmed at the point of sale.
-          </p>
-        </section>
-        <section className="flex flex-col gap-2">
-          <h2 className="text-lg font-bold text-ink">Test drives</h2>
-          <p>
-            Test drive requests are subject to confirmation by our team and to
-            presenting a valid driving licence. Requested times are preferences,
-            not guaranteed bookings.
-          </p>
-        </section>
-        <section className="flex flex-col gap-2">
-          <h2 className="text-lg font-bold text-ink">No online payment</h2>
-          <p>
-            This website does not process payments. Any purchase is completed
-            directly with {SITE.legalName}.
-          </p>
-        </section>
-        <section className="flex flex-col gap-2">
-          <h2 className="text-lg font-bold text-ink">Liability</h2>
-          <p>
-            The website is provided &ldquo;as is&rdquo;. To the extent permitted
-            by law, {SITE.legalName} is not liable for indirect or consequential
-            loss arising from use of the site.
-          </p>
-        </section>
+        {t.sections.map((section) => (
+          <section key={section.heading} className="flex flex-col gap-2">
+            <h2 className="text-lg font-bold text-ink">{section.heading}</h2>
+            <p>{section.body.replace("{legalName}", SITE.legalName)}</p>
+          </section>
+        ))}
       </div>
     </div>
   );

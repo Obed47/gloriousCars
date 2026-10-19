@@ -5,10 +5,13 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { GitCompareArrows, X } from "lucide-react";
 import { useCompare } from "@/components/providers/CompareProvider";
+import { useDictionary } from "@/i18n/dictionary-context";
 import type { VehicleSummary } from "@/lib/types";
 import { vehicleTitle } from "@/lib/slug";
 
 export function CompareTray({ summaries }: { summaries: VehicleSummary[] }) {
+  const dict = useDictionary();
+  const t = dict.compare.tray;
   const { compareIds, removeCompare, clearCompare, count, max, hydrated } =
     useCompare();
 
@@ -28,20 +31,20 @@ export function CompareTray({ summaries }: { summaries: VehicleSummary[] }) {
           exit={{ opacity: 0, y: 24 }}
           transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
           role="region"
-          aria-label="Vehicle comparison tray"
+          aria-label={t.ariaLabel}
         >
           <div className="flex flex-col gap-3 rounded-2xl border border-line bg-surface/95 p-3 shadow-lift backdrop-blur-md sm:flex-row sm:items-center sm:justify-between sm:pl-5">
             <div className="flex items-center gap-4">
               <div className="hidden sm:block">
                 <p className="text-sm font-bold text-ink">
-                  {count} of {max} selected
+                  {t.selectedCount.replace("{count}", String(count)).replace("{max}", String(max))}
                 </p>
                 <button
                   type="button"
                   onClick={clearCompare}
                   className="text-xs text-muted underline-offset-2 hover:text-ink hover:underline"
                 >
-                  Clear all
+                  {t.clearAll}
                 </button>
               </div>
               <ul className="flex items-center gap-2">
@@ -57,7 +60,7 @@ export function CompareTray({ summaries }: { summaries: VehicleSummary[] }) {
                     <button
                       type="button"
                       onClick={() => removeCompare(s.id)}
-                      aria-label={`Remove ${vehicleTitle(s)} from comparison`}
+                      aria-label={`${t.removeFromComparisonPrefix} ${vehicleTitle(s)} ${t.removeFromComparisonSuffix}`}
                       className="absolute -right-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-ink text-white shadow-sm transition-transform hover:scale-110"
                     >
                       <X className="size-3" aria-hidden />
@@ -80,14 +83,14 @@ export function CompareTray({ summaries }: { summaries: VehicleSummary[] }) {
                 onClick={clearCompare}
                 className="rounded-lg px-3 py-2 text-xs font-medium text-muted hover:bg-black/5 hover:text-ink sm:hidden"
               >
-                Clear
+                {t.clear}
               </button>
               <Link
                 href="/compare"
                 className="group inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-accent px-5 text-sm font-semibold text-white transition-colors hover:bg-accent-strong sm:flex-none"
               >
                 <GitCompareArrows className="size-4" aria-hidden />
-                Compare
+                {t.compareLink}
               </Link>
             </div>
           </div>
