@@ -42,6 +42,15 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  experimental: {
+    // The root layout lives under the `[lang]` dynamic segment, so a URL that
+    // matches no page at all (not even `[lang]`) can't resolve into that
+    // segment's `not-found.tsx` boundary and would otherwise fall back to
+    // Next's bare default 404. `global-not-found.tsx` (src/app/) catches
+    // those instead. See node_modules/next/dist/docs/01-app/03-api-reference/
+    // 03-file-conventions/not-found.md, "global-not-found.js (experimental)".
+    globalNotFound: true,
+  },
 };
 
 export default nextConfig;
