@@ -47,6 +47,13 @@ describe("robots.txt", () => {
     expect(rule).toMatchObject({ disallow: expect.arrayContaining(["/admin", "/login", "/favorites", "/compare"]) });
     expect(rules.sitemap).toBe(`${SITE_URL}/sitemap.xml`);
   });
+
+  it("also keeps the french favorites and compare pages out of search", async () => {
+    const { default: robots } = await import("@/app/robots");
+    const rules = robots();
+    const rule = Array.isArray(rules.rules) ? rules.rules[0] : rules.rules;
+    expect(rule).toMatchObject({ disallow: expect.arrayContaining(["/fr/favorites", "/fr/compare"]) });
+  });
 });
 
 describe("web app manifest", () => {

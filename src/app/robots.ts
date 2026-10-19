@@ -6,7 +6,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/favorites", "/compare", "/admin", "/login"],
+      // /fr/admin and /fr/login are not listed: the proxy redirects them to English.
+      disallow: ["/favorites", "/compare", "/fr/favorites", "/fr/compare", "/admin", "/login"],
     },
     sitemap: `${SITE.url}/sitemap.xml`,
     host: SITE.url,
