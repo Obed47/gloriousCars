@@ -26,7 +26,9 @@ describe("sitemap.xml", () => {
     const { default: sitemap } = await import("@/app/sitemap");
     const urls = (await sitemap()).map((e) => e.url);
     expect(urls.some((u) => u.includes("a4"))).toBe(false);
-    expect(urls.filter((u) => u.includes("/cars/")).length).toBe(sampleCatalogue().length - 1);
+    // Every vehicle now has an English and a French sitemap entry.
+    const englishVehicleUrls = urls.filter((u) => u.includes("/cars/") && !u.includes("/fr/cars/"));
+    expect(englishVehicleUrls.length).toBe(sampleCatalogue().length - 1);
   });
 
   it("gives every vehicle URL a last-modified date", async () => {
