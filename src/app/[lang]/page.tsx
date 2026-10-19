@@ -17,18 +17,12 @@ import {
 import type { Metadata } from "next";
 import { localePaths } from "@/i18n/alternates";
 import { dictionaries } from "@/i18n/dictionaries";
-import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/i18n/locales";
+import { DEFAULT_LOCALE, type Locale, isLocale } from "@/i18n/locales";
 import { SITE } from "@/lib/site";
 
 // This page is the `[lang]` segment itself, so its own `params` already
 // carry `lang` — no need for `next/root-params`'s `lang()` here, unlike
 // shared components such as Footer.tsx.
-function isLocale(value: unknown): value is Locale {
-  return (
-    typeof value === "string" &&
-    (LOCALES as readonly string[]).includes(value)
-  );
-}
 
 export async function generateMetadata({
   params,

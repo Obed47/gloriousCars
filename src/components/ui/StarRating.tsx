@@ -1,4 +1,7 @@
+"use client";
+
 import { Star } from "lucide-react";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 export function StarRating({
   rating,
@@ -9,12 +12,13 @@ export function StarRating({
   size?: number;
   className?: string;
 }) {
+  const dict = useDictionary();
   const rounded = Math.round(rating);
   return (
     <span
       className={`inline-flex items-center gap-0.5 ${className}`}
       role="img"
-      aria-label={`Rated ${rating} out of 5`}
+      aria-label={dict.common.ratedOutOf.replace("{rating}", String(rating))}
     >
       {Array.from({ length: 5 }, (_, i) => (
         <Star

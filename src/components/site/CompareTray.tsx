@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { LocaleLink } from "@/i18n/locale-link";
 import { AnimatePresence, motion } from "motion/react";
 import { GitCompareArrows, X } from "lucide-react";
 import { useCompare } from "@/components/providers/CompareProvider";
@@ -85,13 +85,13 @@ export function CompareTray({ summaries }: { summaries: VehicleSummary[] }) {
               >
                 {t.clear}
               </button>
-              <Link
+              <LocaleLink
                 href="/compare"
                 className="group inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-accent px-5 text-sm font-semibold text-white transition-colors hover:bg-accent-strong sm:flex-none"
               >
                 <GitCompareArrows className="size-4" aria-hidden />
                 {t.compareLink}
-              </Link>
+              </LocaleLink>
             </div>
           </div>
         </motion.div>

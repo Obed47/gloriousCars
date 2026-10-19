@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { notFound } from "next/navigation";
 import "../globals.css";
 
 import { SITE } from "@/lib/site";
@@ -12,14 +13,8 @@ import { CompareTray } from "@/components/site/CompareTray";
 import { SiteJsonLd } from "@/components/seo/SiteJsonLd";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { DictionaryProvider } from "@/i18n/dictionary-context";
-import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/i18n/locales";
+import { isLocale } from "@/i18n/locales";
 
-function isLocale(value: unknown): value is Locale {
-  return (
-    typeof value === "string" &&
-    (LOCALES as readonly string[]).includes(value)
-  );
-}
 
 // Self-hosted Montserrat (variable). Source: @fontsource-variable/montserrat.
 // The latin subset covers Latin-1 (é, è, ç, ã…) used across the content.
@@ -118,13 +113,21 @@ export default async function RootLayout({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  const locale: Locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
+  // `[lang]` is the top-level segment, so any first path segment the proxy
+  // doesn't touch lands here — its matcher skips anything that looks like a
+  // static file, which made `/apple-touch-icon.png` or `/wp-config.txt` render
+  // the home page as a cached 200. Only real locales get a site; everything
+  // else 404s (via global-not-found.tsx). Scoped to this segment on purpose:
+  // `dynamicParams = false` would be inherited by the vehicle detail route,
+  // whose newly listed cars must render without a rebuild.
+  if (!isLocale(lang)) notFound();
+  const locale = lang;
   const summaries = await getVehicleSummaries();
   const dictionary = await getDictionary();
 
   return (
     <html
-      lang={lang}
+      lang={locale}
       data-scroll-behavior="smooth"
       className={`${montserrat.variable} h-full`}
     >
@@ -141,7 +144,7 @@ export default async function RootLayout({
               href="#main"
               className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
             >
-              Skip to content
+              {dictionary.common.skipToContent}
             </a>
             <Navbar />
             <main id="main" className="flex-1">

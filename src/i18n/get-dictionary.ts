@@ -1,16 +1,10 @@
 import { lang } from "next/root-params";
 import { dictionaries, type Dictionary } from "./dictionaries";
-import { DEFAULT_LOCALE, LOCALES, type Locale } from "./locales";
+import { DEFAULT_LOCALE, isLocale } from "./locales";
 
 // Files that import from `next/root-params` don't need `import "server-only"`
 // — that import already fails at build time inside a Client Component.
 
-function isLocale(value: unknown): value is Locale {
-  return (
-    typeof value === "string" &&
-    (LOCALES as readonly string[]).includes(value)
-  );
-}
 
 /**
  * Server-only. Resolves the dictionary for the current route's `lang` root

@@ -8,18 +8,12 @@ import { HomeCta } from "@/components/home/HomeCta";
 import { localePaths } from "@/i18n/alternates";
 import { dictionaries } from "@/i18n/dictionaries";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/i18n/locales";
+import { DEFAULT_LOCALE, type Locale, isLocale } from "@/i18n/locales";
 import { SITE } from "@/lib/site";
 
 // Nested under the `[lang]` segment, so this page's own `params` already
 // carry `lang` — no need for `next/root-params`'s `lang()` here for the
 // metadata, same as src/app/[lang]/cars/page.tsx.
-function isLocale(value: unknown): value is Locale {
-  return (
-    typeof value === "string" &&
-    (LOCALES as readonly string[]).includes(value)
-  );
-}
 
 export async function generateMetadata({
   params,
@@ -62,11 +56,11 @@ export default async function AboutPage() {
             />
             <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8">
               {SITE.stats.map((s) => (
-                <div key={s.label} className="flex flex-col gap-1">
+                <div key={s.key} className="flex flex-col gap-1">
                   <dt className="text-3xl font-extrabold tracking-tight text-ink">
                     {s.value}
                   </dt>
-                  <dd className="text-sm text-muted">{s.label}</dd>
+                  <dd className="text-sm text-muted">{dict.stats[s.key]}</dd>
                 </div>
               ))}
             </dl>

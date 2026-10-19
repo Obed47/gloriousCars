@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { LocaleLink } from "@/i18n/locale-link";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { getDictionary } from "@/i18n/get-dictionary";
@@ -18,7 +18,7 @@ export async function BrandStrip({ brands }: { brands: BrandSummary[] }) {
         <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {brands.map((brand, i) => (
             <Reveal key={brand.slug} delay={(i % 6) * 0.05} y={14}>
-              <Link
+              <LocaleLink
                 href={`/cars?brand=${encodeURIComponent(brand.name)}`}
                 className="group flex h-24 flex-col items-center justify-center gap-1 rounded-xl px-3 text-center border border-line bg-surface transition-all duration-200 hover:-translate-y-0.5 hover:border-ink hover:shadow-card"
               >
@@ -31,7 +31,7 @@ export async function BrandStrip({ brands }: { brands: BrandSummary[] }) {
                     ? dict.home.brandStrip.vehicleSingular
                     : dict.home.brandStrip.vehiclePlural}
                 </span>
-              </Link>
+              </LocaleLink>
             </Reveal>
           ))}
         </div>

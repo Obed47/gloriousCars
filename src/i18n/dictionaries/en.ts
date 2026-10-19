@@ -6,6 +6,9 @@ export const en = {
   common: {
     viewSite: "View site",
     loading: "Loading…",
+    skipToContent: "Skip to content",
+    /** `{rating}` is replaced with the star rating, e.g. "Rated 5 out of 5". */
+    ratedOutOf: "Rated {rating} out of 5",
   },
   nav: {
     home: "Home",
@@ -13,6 +16,27 @@ export const en = {
     about: "About",
     services: "Services",
     contact: "Contact",
+    findCar: "Find a Car",
+    favorites: "Favorites",
+    openMenu: "Open menu",
+    searchVehicles: "Search vehicles",
+    searchTerm: "Search term",
+    searchPlaceholder: "Search make or car name…",
+    closeSearch: "Close search",
+    popular: "Popular",
+    popularSearches: {
+      hybrid: "Hybrid",
+      electric: "Electric",
+      automatic: "Automatic",
+      underPrice: "Under XAF 40M",
+    },
+  },
+  /** Labels for `SITE.stats`, keyed by each entry's `key`. */
+  stats: {
+    vehiclesInStock: "Vehicles in stock",
+    happyClients: "Happy clients",
+    yearsOnTheRoad: "Years on the road",
+    whatsappAssistance: "WhatsApp assistance",
   },
   languageSwitcher: {
     switchToFrench: "Switch to French",

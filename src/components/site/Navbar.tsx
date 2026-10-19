@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowUpRight, Heart, Menu, Search, X } from "lucide-react";
 import { Logo } from "./Logo";
@@ -11,36 +10,41 @@ import { Button } from "@/components/ui/Button";
 import { useFavorites } from "@/components/providers/FavoritesProvider";
 import { useDialogFocus } from "@/hooks/useDialogFocus";
 import { useDictionary } from "@/i18n/dictionary-context";
-import type { Locale } from "@/i18n/locales";
+import type { Dictionary } from "@/i18n/dictionaries";
+import { LocaleLink } from "@/i18n/locale-link";
+import { localizeHref } from "@/i18n/paths";
+import { useLocalizedPathname } from "@/i18n/use-localized-pathname";
 import { SITE } from "@/lib/site";
-
-/** The current locale, read straight off the pathname (`/fr…` vs. unprefixed). */
-function localeFromPathname(pathname: string): Locale {
-  return pathname === "/fr" || pathname.startsWith("/fr/") ? "fr" : "en";
-}
 
 /**
  * Quick links in the search overlay. Each one opens the matching filter, so it
- * always leads to results.
+ * always leads to results. `href` is unprefixed; it's localized on click.
  */
-export const POPULAR_SEARCHES: { label: string; href: string }[] = [
-  { label: "BMW", href: "/cars?brand=BMW" },
-  { label: "Hybrid", href: "/cars?fuel=Hybrid" },
-  { label: "Electric", href: "/cars?fuel=Electric" },
-  { label: "Automatic", href: "/cars?transmission=Automatic" },
-  { label: "Under XAF 40M", href: "/cars?priceMax=40000000" },
+export const POPULAR_SEARCHES: {
+  label: (nav: Dictionary["nav"]) => string;
+  href: string;
+}[] = [
+  { label: () => "BMW", href: "/cars?brand=BMW" },
+  { label: (nav) => nav.popularSearches.hybrid, href: "/cars?fuel=Hybrid" },
+  { label: (nav) => nav.popularSearches.electric, href: "/cars?fuel=Electric" },
+  { label: (nav) => nav.popularSearches.automatic, href: "/cars?transmission=Automatic" },
+  { label: (nav) => nav.popularSearches.underPrice, href: "/cars?priceMax=40000000" },
 ];
 
+/** `pathname` and `href` are both unprefixed (see `useLocalizedPathname`). */
 function isActive(pathname: string, href: string): boolean {
-  return href === "/" ? pathname === "/" : pathname.startsWith(href);
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function Navbar() {
-  const pathname = usePathname();
+  // The unprefixed path: `usePathname()` alone is `/en/cars` on the server
+  // but `/cars` in the browser, so active links and the hero header style
+  // disagreed between the two renders (and `/fr` was never `/`).
+  const { pathname, locale } = useLocalizedPathname();
   const router = useRouter();
   const { count, hydrated } = useFavorites();
   const dict = useDictionary();
-  const locale = localeFromPathname(pathname);
 
   const LINKS = [
     { href: "/", label: dict.nav.home },
@@ -106,13 +110,15 @@ export function Navbar() {
     const q = value.trim();
     setSearchOpen(false);
     setTerm("");
-    router.push(q ? `/cars?search=${encodeURIComponent(q)}` : "/cars");
+    router.push(
+      localizeHref(q ? `/cars?search=${encodeURIComponent(q)}` : "/cars", locale),
+    );
   }
 
   function openSearchPreset(href: string) {
     setSearchOpen(false);
     setTerm("");
-    router.push(href);
+    router.push(localizeHref(href, locale));
   }
 
   const favBadge = hydrated && count > 0 ? count : null;
@@ -140,7 +146,7 @@ export function Navbar() {
               const active = isActive(pathname, link.href);
               return (
                 <li key={link.href}>
-                  <Link
+                  <LocaleLink
                     href={link.href}
                     aria-current={active ? "page" : undefined}
                     className={[
@@ -160,7 +166,7 @@ export function Navbar() {
                         aria-hidden
                       />
                     )}
-                  </Link>
+                  </LocaleLink>
                 </li>
               );
             })}
@@ -170,7 +176,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              aria-label="Search vehicles"
+              aria-label={dict.nav.searchVehicles}
               className={`flex size-10 items-center justify-center rounded-lg transition-colors ${
                 heroHeader
                   ? "text-white hover:bg-white/10"
@@ -180,9 +186,9 @@ export function Navbar() {
               <Search className="size-[1.15rem]" aria-hidden />
             </button>
 
-            <Link
+            <LocaleLink
               href="/favorites"
-              aria-label={`Favorites${favBadge ? ` (${favBadge})` : ""}`}
+              aria-label={`${dict.nav.favorites}${favBadge ? ` (${favBadge})` : ""}`}
               className={`relative flex size-10 items-center justify-center rounded-lg transition-colors ${
                 heroHeader
                   ? "text-white hover:bg-white/10"
@@ -195,20 +201,20 @@ export function Navbar() {
                   {favBadge}
                 </span>
               )}
-            </Link>
+            </LocaleLink>
 
             <div className="ml-1 hidden sm:block">
               <Button href="/cars" size="sm" withArrow>
-                Find a Car
+                {dict.nav.findCar}
               </Button>
             </div>
 
-            <LanguageSwitcher locale={locale} compact />
+            <LanguageSwitcher compact />
 
             <button
               type="button"
               onClick={() => setMenuOpen(true)}
-              aria-label="Open menu"
+              aria-label={dict.nav.openMenu}
               aria-expanded={menuOpen}
               className={`flex size-10 items-center justify-center rounded-lg transition-colors lg:hidden ${
                 heroHeader
@@ -237,7 +243,7 @@ export function Navbar() {
             onClick={() => setSearchOpen(false)}
             role="dialog"
             aria-modal="true"
-            aria-label="Search vehicles"
+            aria-label={dict.nav.searchVehicles}
           >
             <motion.div
               ref={searchRef}
@@ -260,29 +266,29 @@ export function Navbar() {
                   autoFocus
                   value={term}
                   onChange={(e) => setTerm(e.target.value)}
-                  placeholder="Search make or car name…"
+                  placeholder={dict.nav.searchPlaceholder}
                   className="h-14 w-full bg-transparent text-base text-ink outline-none placeholder:text-muted"
-                  aria-label="Search term"
+                  aria-label={dict.nav.searchTerm}
                 />
                 <button
                   type="button"
                   onClick={() => setSearchOpen(false)}
-                  aria-label="Close search"
+                  aria-label={dict.nav.closeSearch}
                   className="flex size-8 items-center justify-center rounded-md text-muted hover:bg-black/5 hover:text-ink"
                 >
                   <X className="size-4" aria-hidden />
                 </button>
               </form>
               <div className="mt-3 flex flex-wrap gap-2 px-1 pb-1">
-                <span className="eyebrow py-1 text-muted">Popular</span>
+                <span className="eyebrow py-1 text-muted">{dict.nav.popular}</span>
                 {POPULAR_SEARCHES.map((item) => (
                   <button
-                    key={item.label}
+                    key={item.href}
                     type="button"
                     onClick={() => openSearchPreset(item.href)}
                     className="rounded-full border border-line bg-surface px-3 py-1 text-xs font-medium text-muted transition-colors hover:border-ink hover:text-ink"
                   >
-                    {item.label}
+                    {item.label(dict.nav)}
                   </button>
                 ))}
               </div>
@@ -326,7 +332,7 @@ export function Navbar() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.06 + i * 0.05, duration: 0.3 }}
                   >
-                    <Link
+                    <LocaleLink
                       href={link.href}
                       className="flex items-center justify-between border-b border-white/10 py-5 text-2xl font-bold tracking-tight"
                     >
@@ -335,14 +341,14 @@ export function Navbar() {
                         className="size-5 text-silver"
                         aria-hidden
                       />
-                    </Link>
+                    </LocaleLink>
                   </motion.li>
                 ))}
               </ul>
 
               <div className="flex flex-col gap-4">
                 <Button href="/cars" size="lg" fullWidth withArrow>
-                  Find a Car
+                  {dict.nav.findCar}
                 </Button>
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-silver">
                   <a href={`tel:${SITE.phoneDisplay.replace(/\s/g, "")}`}>

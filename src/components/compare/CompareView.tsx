@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { LocaleLink } from "@/i18n/locale-link";
 import { Plus, X } from "lucide-react";
 import { useCompare } from "@/components/providers/CompareProvider";
 import { VehicleGridSkeleton } from "@/components/ui/Skeleton";
@@ -121,24 +121,24 @@ export function CompareView({ vehicles }: { vehicles: Vehicle[] }) {
                         <X className="size-3.5" aria-hidden />
                       </button>
                     </div>
-                    <Link
+                    <LocaleLink
                       href={vehiclePath(v)}
                       className="font-bold leading-snug text-ink hover:text-accent"
                     >
                       {vehicleFullTitle(v)}
-                    </Link>
+                    </LocaleLink>
                   </div>
                 </th>
               ))}
               {selected.length < max && (
                 <th className={`${colWidth} border-l border-line p-4 align-middle`}>
-                  <Link
+                  <LocaleLink
                     href="/cars"
                     className="flex h-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-line-strong py-8 text-sm font-medium text-muted hover:border-ink hover:text-ink"
                   >
                     <Plus className="size-5" aria-hidden />
                     {t.addVehicle}
-                  </Link>
+                  </LocaleLink>
                 </th>
               )}
             </tr>

@@ -32,11 +32,11 @@ export async function AboutStrip() {
 
           <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8">
             {SITE.stats.map((stat) => (
-              <div key={stat.label} className="flex flex-col gap-1">
+              <div key={stat.key} className="flex flex-col gap-1">
                 <dt className="text-3xl font-extrabold tracking-tight text-ink">
                   {stat.value}
                 </dt>
-                <dd className="text-sm text-muted">{stat.label}</dd>
+                <dd className="text-sm text-muted">{dict.stats[stat.key]}</dd>
               </div>
             ))}
           </dl>

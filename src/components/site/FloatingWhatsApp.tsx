@@ -1,19 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { WhatsAppIcon } from "@/components/ui/icons";
 import { useDictionary } from "@/i18n/dictionary-context";
+import { useLocalizedPathname } from "@/i18n/use-localized-pathname";
 import { buildWhatsAppUrl, generalInquiryMessage } from "@/lib/whatsapp";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 
+// Both are matched against the unprefixed path, so `/fr/cars/…` counts too.
 const DETAIL_ROUTE = /^\/cars\/[^/]+\/[^/]+$/;
 const STAFF_ROUTE = /^\/(admin|login)(\/|$)/;
 
 export function FloatingWhatsApp() {
   const dict = useDictionary();
-  const pathname = usePathname();
+  const { pathname } = useLocalizedPathname();
   const reduced = usePrefersReducedMotion();
   const [shown, setShown] = useState(false);
 

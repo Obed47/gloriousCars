@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { LocaleLink } from "@/i18n/locale-link";
 import { useState } from "react";
 import {
   ArrowRight,
@@ -148,12 +148,12 @@ export function VehicleCard({
         </div>
 
         <h3 className="text-[1.0625rem] font-bold leading-snug text-ink">
-          <Link
+          <LocaleLink
             href={href}
             className="after:absolute after:inset-0 after:z-10 after:content-['']"
           >
             {title}
-          </Link>
+          </LocaleLink>
         </h3>
 
         <ul className="flex flex-wrap gap-x-3.5 gap-y-1.5 text-[0.8125rem] text-muted">

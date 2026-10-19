@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { LocaleLink } from "@/i18n/locale-link";
 import {
   Banknote,
   CalendarCheck,
@@ -15,7 +15,7 @@ import { HowItWorks } from "@/components/home/HowItWorks";
 import { localePaths } from "@/i18n/alternates";
 import { dictionaries } from "@/i18n/dictionaries";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/i18n/locales";
+import { DEFAULT_LOCALE, type Locale, isLocale } from "@/i18n/locales";
 import { SITE } from "@/lib/site";
 import {
   buildWhatsAppUrl,
@@ -25,12 +25,6 @@ import {
 // Nested under the `[lang]` segment, so this page's own `params` already
 // carry `lang` — no need for `next/root-params`'s `lang()` here for the
 // metadata, same as src/app/[lang]/cars/page.tsx.
-function isLocale(value: unknown): value is Locale {
-  return (
-    typeof value === "string" &&
-    (LOCALES as readonly string[]).includes(value)
-  );
-}
 
 export async function generateMetadata({
   params,
@@ -152,12 +146,12 @@ export default async function ServicesPage() {
                       {cta.label}
                     </a>
                   ) : cta ? (
-                    <Link
+                    <LocaleLink
                       href={cta.href}
                       className="inline-flex items-center gap-1 self-start text-sm font-semibold text-accent hover:gap-2"
                     >
                       {cta.label} →
-                    </Link>
+                    </LocaleLink>
                   ) : null}
                 </article>
               </Reveal>

@@ -8,6 +8,8 @@ export const fr: Dictionary = {
   common: {
     viewSite: "Voir le site",
     loading: "Chargement…",
+    skipToContent: "Aller au contenu",
+    ratedOutOf: "Noté {rating} sur 5",
   },
   nav: {
     home: "Accueil",
@@ -15,6 +17,26 @@ export const fr: Dictionary = {
     about: "À propos",
     services: "Services",
     contact: "Contact",
+    findCar: "Trouver une voiture",
+    favorites: "Favoris",
+    openMenu: "Ouvrir le menu",
+    searchVehicles: "Rechercher des véhicules",
+    searchTerm: "Terme de recherche",
+    searchPlaceholder: "Rechercher une marque ou un modèle…",
+    closeSearch: "Fermer la recherche",
+    popular: "Populaires",
+    popularSearches: {
+      hybrid: "Hybride",
+      electric: "Électrique",
+      automatic: "Automatique",
+      underPrice: "Moins de 40 M XAF",
+    },
+  },
+  stats: {
+    vehiclesInStock: "Véhicules en stock",
+    happyClients: "Clients satisfaits",
+    yearsOnTheRoad: "Années d'expérience",
+    whatsappAssistance: "Assistance WhatsApp",
   },
   languageSwitcher: {
     switchToFrench: "Passer au français",
@@ -281,7 +303,7 @@ export const fr: Dictionary = {
     saveRow: {
       save: "Enregistrer",
       saved: "Enregistré",
-      comparing: "Comparé",
+      comparing: "En comparaison",
     },
     gallery: {
       openFullscreen: "Ouvrir la galerie en plein écran",

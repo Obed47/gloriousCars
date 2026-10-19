@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { LocaleLink } from "@/i18n/locale-link";
 import { notFound } from "next/navigation";
 import { ChevronRight, MapPin } from "lucide-react";
 
@@ -30,17 +30,11 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { localePaths } from "@/i18n/alternates";
 import { dictionaries } from "@/i18n/dictionaries";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/i18n/locales";
+import { DEFAULT_LOCALE, type Locale, isLocale } from "@/i18n/locales";
 
 // Nested under the `[lang]` segment, so this page's own `params` already
 // carry `lang` — no need for `next/root-params`'s `lang()` here for the
 // metadata, same as src/app/[lang]/cars/page.tsx.
-function isLocale(value: unknown): value is Locale {
-  return (
-    typeof value === "string" &&
-    (LOCALES as readonly string[]).includes(value)
-  );
-}
 
 type Params = { lang: Locale; brand: string; slug: string };
 
@@ -137,20 +131,20 @@ export default async function VehicleDetailPage({
           aria-label={dict.vehicleDetail.breadcrumb.ariaLabel}
           className="flex flex-wrap items-center gap-1 text-xs text-muted"
         >
-          <Link href="/" className="hover:text-ink">
+          <LocaleLink href="/" className="hover:text-ink">
             {dict.nav.home}
-          </Link>
+          </LocaleLink>
           <ChevronRight className="size-3" aria-hidden />
-          <Link href="/cars" className="hover:text-ink">
+          <LocaleLink href="/cars" className="hover:text-ink">
             {dict.nav.cars}
-          </Link>
+          </LocaleLink>
           <ChevronRight className="size-3" aria-hidden />
-          <Link
+          <LocaleLink
             href={`/cars?brand=${encodeURIComponent(vehicle.brand)}`}
             className="hover:text-ink"
           >
             {vehicle.brand}
-          </Link>
+          </LocaleLink>
           <ChevronRight className="size-3" aria-hidden />
           <span className="text-ink">{vehicle.name}</span>
         </nav>

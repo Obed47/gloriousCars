@@ -8,6 +8,8 @@ import { formatPriceCompact } from "@/lib/format";
 import { queryToSearchString } from "@/lib/searchParams";
 import { priceSteps } from "@/lib/filtering";
 import { useDictionary } from "@/i18n/dictionary-context";
+import { localizeHref } from "@/i18n/paths";
+import { useLocale } from "@/i18n/use-localized-pathname";
 import type { FilterOptions } from "@/lib/types";
 
 interface Selection {
@@ -60,6 +62,7 @@ function Field({
 export function QuickSearch({ options }: { options: FilterOptions }) {
   const dict = useDictionary();
   const router = useRouter();
+  const locale = useLocale();
   const [sel, setSel] = useState<Selection>(EMPTY);
 
   const set = (key: keyof Selection) => (v: string) =>
@@ -83,7 +86,7 @@ export function QuickSearch({ options }: { options: FilterOptions }) {
       minYear: sel.yearMin ? Number(sel.yearMin) : undefined,
       maxPrice: sel.priceMax ? Number(sel.priceMax) : undefined,
     });
-    router.push(qs ? `/cars?${qs}` : "/cars");
+    router.push(localizeHref(qs ? `/cars?${qs}` : "/cars", locale));
   }
 
   return (

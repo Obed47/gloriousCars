@@ -1,4 +1,5 @@
 import type { Locale } from "./locales";
+import { localizeHref } from "./paths";
 
 /**
  * SEO alternates (canonical + hreflang) for a page, derived from its
@@ -12,8 +13,7 @@ export function localePaths(
   canonical: string;
   languages: { en: string; fr: string; "x-default": string };
 } {
-  const frenchPath =
-    unprefixedPath === "/" ? "/fr" : `/fr${unprefixedPath}`;
+  const frenchPath = localizeHref(unprefixedPath, "fr");
 
   return {
     canonical: locale === "fr" ? frenchPath : unprefixedPath,

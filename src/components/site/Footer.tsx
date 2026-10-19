@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { lang } from "next/root-params";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Logo } from "./Logo";
@@ -10,19 +9,14 @@ import {
   TikTokIcon,
 } from "@/components/ui/icons";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/i18n/locales";
+import { LocaleLink } from "@/i18n/locale-link";
+import { DEFAULT_LOCALE, type Locale, isLocale } from "@/i18n/locales";
 import { SITE, SITE_COPY } from "@/lib/site";
 import { buildWhatsAppUrl, generalInquiryMessage } from "@/lib/whatsapp";
 
 // Footer is a Server Component: it reads the root `[lang]` param straight
 // off `next/root-params` (the same mechanism `getDictionary` uses), rather
 // than prop-drilling through the layout or becoming a Client Component.
-function isLocale(value: unknown): value is Locale {
-  return (
-    typeof value === "string" &&
-    (LOCALES as readonly string[]).includes(value)
-  );
-}
 
 const SERVICES = [
   { href: "/services#sales", label: "Vehicle Sales" },
@@ -79,26 +73,26 @@ export async function Footer() {
         <nav aria-label="Footer navigation" className="flex flex-col gap-3">
           <h2 className="eyebrow text-white">Navigation</h2>
           {NAV.map((l) => (
-            <Link
+            <LocaleLink
               key={l.href}
               href={l.href}
               className="text-sm text-silver/85 transition-colors hover:text-white"
             >
               {l.label}
-            </Link>
+            </LocaleLink>
           ))}
         </nav>
 
         <nav aria-label="Services" className="flex flex-col gap-3">
           <h2 className="eyebrow text-white">Services</h2>
           {SERVICES.map((l) => (
-            <Link
+            <LocaleLink
               key={l.href}
               href={l.href}
               className="text-sm text-silver/85 transition-colors hover:text-white"
             >
               {l.label}
-            </Link>
+            </LocaleLink>
           ))}
         </nav>
 
@@ -152,13 +146,13 @@ export async function Footer() {
             © {year} {SITE.legalName}. All rights reserved.
           </p>
           <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-white">
+            <LocaleLink href="/privacy" className="hover:text-white">
               Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-white">
+            </LocaleLink>
+            <LocaleLink href="/terms" className="hover:text-white">
               Terms &amp; Conditions
-            </Link>
-            <LanguageSwitcher locale={locale} />
+            </LocaleLink>
+            <LanguageSwitcher />
           </div>
         </div>
       </div>

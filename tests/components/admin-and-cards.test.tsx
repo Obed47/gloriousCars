@@ -18,6 +18,7 @@ import { renderWithProviders } from "../support/render";
 const mocks = vi.hoisted(() => ({
   upload: vi.fn(),
   discard: vi.fn(),
+  pathname: "/admin",
 }));
 
 vi.mock("@/app/[lang]/admin/actions", () => ({
@@ -33,12 +34,13 @@ vi.mock("@/lib/admin/imageUpload", () => ({
 }));
 
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/admin",
+  usePathname: () => mocks.pathname,
   useRouter: () => ({ push() {}, replace() {}, refresh() {} }),
   useSearchParams: () => new URLSearchParams(),
 }));
 
 beforeEach(() => {
+  mocks.pathname = "/admin";
   mocks.upload.mockReset();
   mocks.discard.mockReset();
 });
@@ -248,6 +250,19 @@ describe("VehicleCard", () => {
     expect(screen.getByRole("link", { name: "BMW X5 xDrive40i" })).toHaveAttribute(
       "href",
       "/cars/bmw/bmw-x5-xdrive40i-2024-pc-bmw-x5-0241",
+    );
+  });
+
+  it("on a french page, links to the french detail page", () => {
+    mocks.pathname = "/fr/cars";
+    renderWithProviders(
+      <DictionaryProvider dictionary={dictionaries.fr}>
+        <VehicleCard vehicle={makeVehicle()} />
+      </DictionaryProvider>,
+    );
+    expect(screen.getByRole("link", { name: "BMW X5 xDrive40i" })).toHaveAttribute(
+      "href",
+      "/fr/cars/bmw/bmw-x5-xdrive40i-2024-pc-bmw-x5-0241",
     );
   });
 

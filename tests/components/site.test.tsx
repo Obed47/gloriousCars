@@ -70,7 +70,9 @@ describe("Navbar search", () => {
 
   it("every popular quick link opens the matching filter", async () => {
     const user = await openSearch();
-    for (const { label, href } of POPULAR_SEARCHES) {
+    for (const item of POPULAR_SEARCHES) {
+      const { href } = item;
+      const label = item.label(dictionaries.en.nav);
       // Look the dialog up again each time: it unmounts after every preset.
       const dialog = screen.getByRole("dialog", { name: "Search vehicles" });
       await user.click(within(dialog).getByRole("button", { name: label }));
@@ -224,3 +226,145 @@ describe("SiteJsonLd", () => {
   });
 });
 
+
+// `usePathname()` reports the proxy's internal rewritten path (`/en/cars`)
+// while a page renders on the server, and the browser's path (`/cars`) once
+// it hydrates. Routing logic must give the same answer for both.
+describe("Navbar routing state under the internal rewritten path", () => {
+  function renderNavbar(dictionary = dictionaries.en) {
+    return render(
+      <FavoritesProvider>
+        <DictionaryProvider dictionary={dictionary}>
+          <Navbar />
+        </DictionaryProvider>
+      </FavoritesProvider>,
+    );
+  }
+
+  it.each(["/en/cars", "/cars"])(
+    "on %s, marks Cars active and the switcher targets /fr/cars",
+    (pathname) => {
+      nav.pathname = pathname;
+      renderNavbar();
+      const cars = screen.getByRole("link", { name: "Cars" });
+      expect(cars).toHaveAttribute("aria-current", "page");
+      expect(cars).toHaveAttribute("href", "/cars");
+      expect(screen.getByRole("link", { name: "Home" })).not.toHaveAttribute("aria-current");
+      expect(screen.getByRole("link", { name: /^(FR|Français)/ })).toHaveAttribute("href", "/fr/cars");
+    },
+  );
+
+  it("on a french page, links point at the french urls and Véhicules is active", () => {
+    nav.pathname = "/fr/cars";
+    renderNavbar(dictionaries.fr);
+    const cars = screen.getByRole("link", { name: "Véhicules" });
+    expect(cars).toHaveAttribute("aria-current", "page");
+    expect(cars).toHaveAttribute("href", "/fr/cars");
+    expect(screen.getByRole("link", { name: "Accueil" })).toHaveAttribute("href", "/fr");
+    expect(screen.getByRole("link", { name: "À propos" })).toHaveAttribute("href", "/fr/about");
+    expect(screen.getByRole("link", { name: "Favoris" })).toHaveAttribute("href", "/fr/favorites");
+    expect(screen.getByRole("link", { name: /Trouver une voiture/ })).toHaveAttribute("href", "/fr/cars");
+    expect(screen.getByRole("link", { name: /^(EN|English)/ })).toHaveAttribute("href", "/cars");
+  });
+
+  it.each([
+    ["/", dictionaries.en],
+    ["/en", dictionaries.en],
+    ["/fr", dictionaries.fr],
+  ])("uses the hero header style on the home page (%s)", (pathname, dictionary) => {
+    nav.pathname = pathname;
+    const { container } = renderNavbar(dictionary);
+    expect(container.querySelector("header")).toHaveClass("bg-ink");
+  });
+
+  it("uses the regular header style away from the home page", () => {
+    nav.pathname = "/fr/cars";
+    const { container } = renderNavbar(dictionaries.fr);
+    expect(container.querySelector("header")).not.toHaveClass("bg-ink");
+  });
+});
+
+describe("Navbar under the French dictionary", () => {
+  it("translates its chrome and keeps searches on the french site", async () => {
+    nav.pathname = "/fr";
+    const user = userEvent.setup();
+    render(
+      <FavoritesProvider>
+        <DictionaryProvider dictionary={dictionaries.fr}>
+          <Navbar />
+        </DictionaryProvider>
+      </FavoritesProvider>,
+    );
+    expect(screen.getByRole("button", { name: "Ouvrir le menu" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Rechercher des véhicules" }));
+    const dialog = screen.getByRole("dialog", { name: "Rechercher des véhicules" });
+    expect(within(dialog).getByText("Populaires")).toBeInTheDocument();
+    expect(within(dialog).getByRole("button", { name: "Fermer la recherche" })).toBeInTheDocument();
+    const input = within(dialog).getByRole("textbox", { name: "Terme de recherche" });
+    expect(input).toHaveAttribute("placeholder", "Rechercher une marque ou un modèle…");
+    for (const label of ["Hybride", "Électrique", "Automatique", "Moins de 40 M XAF"]) {
+      expect(within(dialog).getByRole("button", { name: label })).toBeInTheDocument();
+    }
+    await user.click(within(dialog).getByRole("button", { name: "Hybride" }));
+    expect(nav.push).toHaveBeenLastCalledWith("/fr/cars?fuel=Hybrid");
+
+    await user.click(screen.getByRole("button", { name: "Rechercher des véhicules" }));
+    await user.type(screen.getByRole("textbox", { name: "Terme de recherche" }), "rav4{enter}");
+    expect(nav.push).toHaveBeenLastCalledWith("/fr/cars?search=rav4");
+  });
+});
+
+describe("Footer links under the French locale", () => {
+  it("points every internal link at the french url", async () => {
+    nav.pathname = "/fr/about";
+    const rootParams = await import("next/root-params");
+    vi.mocked(rootParams.lang).mockResolvedValue("fr");
+    render(
+      <DictionaryProvider dictionary={dictionaries.fr}>
+        {await Footer()}
+      </DictionaryProvider>,
+    );
+    const footer = screen.getByRole("contentinfo");
+    const internal = within(footer)
+      .getAllByRole("link")
+      .map((a) => a.getAttribute("href") ?? "")
+      .filter((href) => href.startsWith("/"));
+    expect(internal.length).toBeGreaterThan(5);
+    // The language switcher is the one link that leaves the french site.
+    const french = internal.filter((href) => href !== "/about");
+    for (const href of french) expect(href).toMatch(/^\/fr(\/|#|$)/);
+    expect(internal).toContain("/fr/services#sales");
+    expect(internal).toContain("/fr/privacy");
+  });
+});
+
+describe("FloatingWhatsApp route checks", () => {
+  async function renderBubble(pathname: string) {
+    nav.pathname = pathname;
+    vi.useFakeTimers();
+    try {
+      render(<FloatingWhatsApp />);
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(900);
+      });
+    } finally {
+      vi.useRealTimers();
+    }
+    return screen.queryByRole("link", { name: "Chat with us on WhatsApp" });
+  }
+
+  it.each(["/cars/bmw/x5-2021", "/en/cars/bmw/x5-2021", "/fr/cars/bmw/x5-2021"])(
+    "is raised clear of the action bar on the detail page %s",
+    async (pathname) => {
+      expect(await renderBubble(pathname)).toHaveClass("bottom-24");
+    },
+  );
+
+  it("sits low on other pages", async () => {
+    expect(await renderBubble("/fr/cars")).toHaveClass("bottom-5");
+  });
+
+  it.each(["/admin", "/en/admin", "/en/login"])("is hidden on staff page %s", async (pathname) => {
+    expect(await renderBubble(pathname)).not.toBeInTheDocument();
+  });
+});

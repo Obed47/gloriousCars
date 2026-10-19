@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { LocaleLink } from "@/i18n/locale-link";
 import { SITE } from "@/lib/site";
 
 /**
@@ -16,7 +16,7 @@ export function Logo({
   preload?: boolean;
 }) {
   return (
-    <Link
+    <LocaleLink
       href="/"
       aria-label={`${SITE.name} — home`}
       className={`group inline-flex items-center ${className}`}
@@ -31,6 +31,6 @@ export function Logo({
           className="object-contain object-center"
         />
       </span>
-    </Link>
+    </LocaleLink>
   );
 }

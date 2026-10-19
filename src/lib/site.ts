@@ -68,10 +68,12 @@ export const SITE = {
 
   /** PLACEHOLDER figures — replace with verified numbers or delete. */
   stats: [
-    { value: "150+", label: "Vehicles in stock" },
-    { value: "500+", label: "Happy clients" },
-    { value: "10+", label: "Years on the road" },
-    { value: "24/7", label: "WhatsApp assistance" },
+    // `key` picks the translated label from the dictionary's `stats`
+    // namespace; `label` is the English copy, kept byte-identical to it.
+    { key: "vehiclesInStock", value: "150+", label: "Vehicles in stock" },
+    { key: "happyClients", value: "500+", label: "Happy clients" },
+    { key: "yearsOnTheRoad", value: "10+", label: "Years on the road" },
+    { key: "whatsappAssistance", value: "24/7", label: "WhatsApp assistance" },
   ],
 } as const;
 

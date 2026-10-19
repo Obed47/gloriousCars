@@ -86,7 +86,7 @@ How it fits together:
   empty; if they are set and the query fails, the build/request fails rather
   than showing an empty catalogue.
 - **Public pages are prerendered** and refreshed on demand when staff save a
-  change (`revalidatePath` in `src/app/admin/actions.ts`), with a 5-minute
+  change (`revalidatePath` in `src/app/[lang]/admin/actions.ts`), with a 5-minute
   fallback (`revalidate` in `src/app/layout.tsx`) for rows edited directly in the
   Supabase dashboard.
 - **Access control** is layered: `src/proxy.ts` redirects signed-out visitors

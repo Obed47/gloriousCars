@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { LocaleLink } from "@/i18n/locale-link";
 import { ArrowRight } from "lucide-react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
@@ -114,14 +114,14 @@ export function Button(props: ButtonProps) {
       );
     }
     return (
-      <Link
+      <LocaleLink
         href={href}
         className={cls}
         aria-label={props["aria-label"]}
         title={props.title}
       >
         <Content withArrow={withArrow}>{children}</Content>
-      </Link>
+      </LocaleLink>
     );
   }
 
