@@ -10,6 +10,12 @@ const LANGUAGE_NAMES: Record<Locale, string> = {
   fr: "Français",
 };
 
+/** Short form shown instead, in `compact` mode, below the `sm` breakpoint. */
+const LANGUAGE_CODES: Record<Locale, string> = {
+  en: "EN",
+  fr: "FR",
+};
+
 function otherLocale(locale: Locale): Locale {
   return locale === "en" ? "fr" : "en";
 }
@@ -31,8 +37,27 @@ function otherLocalePath(pathname: string, locale: Locale): string {
  * current page. Setting the cookie on click (rather than relying on a
  * client-side transition) guarantees it's in place before `proxy` sees the
  * next request, so a full navigation — not Next's router — follows it.
+ *
+ * `compact`: below the `sm` breakpoint, show a two-letter code ("FR"/"EN")
+ * instead of the full name. The Navbar instance sits in an always-visible,
+ * icon-width row alongside the mobile menu button; at phone width, the full
+ * word ("Français"/"English") made that row wider than the viewport, pushing
+ * the menu button off-screen (confirmed via a real 375px-viewport layout
+ * trace — tests/e2e/smoke.spec.ts's "no public page scrolls sideways"
+ * check). The Footer's instance sits in its own block-level row with room to
+ * spare, so it keeps the full name at every width (the default, unchanged).
+ * Each span is excluded from the accessible name computation while its
+ * breakpoint's `display: none` applies, so the link's accessible name is
+ * still exactly one of "FR"/"EN" or "Français"/"English" at any given width
+ * — never both at once.
  */
-export function LanguageSwitcher({ locale }: { locale: Locale }) {
+export function LanguageSwitcher({
+  locale,
+  compact = false,
+}: {
+  locale: Locale;
+  compact?: boolean;
+}) {
   const pathname = usePathname();
   const dict = useDictionary();
   const target = otherLocale(locale);
@@ -53,7 +78,14 @@ export function LanguageSwitcher({ locale }: { locale: Locale }) {
         window.location.href = href;
       }}
     >
-      {LANGUAGE_NAMES[target]}
+      {compact ? (
+        <>
+          <span className="sm:hidden">{LANGUAGE_CODES[target]}</span>
+          <span className="hidden sm:inline">{LANGUAGE_NAMES[target]}</span>
+        </>
+      ) : (
+        LANGUAGE_NAMES[target]
+      )}
     </a>
   );
 }

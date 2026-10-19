@@ -203,7 +203,7 @@ export function Navbar() {
               </Button>
             </div>
 
-            <LanguageSwitcher locale={locale} />
+            <LanguageSwitcher locale={locale} compact />
 
             <button
               type="button"

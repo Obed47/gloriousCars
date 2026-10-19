@@ -53,7 +53,11 @@ test.describe("manual language switcher", () => {
       footerNav(page).getByRole("link", { name: "Cars", exact: true }),
     ).toBeVisible();
 
-    await primaryNav(page).getByRole("link", { name: "Français" }).click();
+    // The header switcher shows a compact "FR"/"EN" code below the `sm`
+    // breakpoint (to avoid overflowing the icon row on phones) and the full
+    // "Français"/"English" word above it, so its accessible name differs by
+    // viewport — match on the `title` attribute instead, which is constant.
+    await primaryNav(page).getByTitle("Switch to French").click();
     await expect(page).toHaveURL(`${ORIGIN}/fr`);
     await expect(
       footerNav(page).getByRole("link", { name: "Véhicules", exact: true }),
