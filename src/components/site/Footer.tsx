@@ -2,12 +2,7 @@ import { lang } from "next/root-params";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Logo } from "./Logo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import {
-  FacebookIcon,
-  InstagramIcon,
-  LinkedInIcon,
-  TikTokIcon,
-} from "@/components/ui/icons";
+import { FacebookIcon } from "@/components/ui/icons";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { LocaleLink } from "@/i18n/locale-link";
 import { DEFAULT_LOCALE, type Locale, isLocale } from "@/i18n/locales";
@@ -21,9 +16,6 @@ import { buildWhatsAppUrl, generalInquiryMessage } from "@/lib/whatsapp";
 
 const SOCIAL = [
   { href: SITE.social.facebook, label: "Facebook", Icon: FacebookIcon },
-  { href: SITE.social.instagram, label: "Instagram", Icon: InstagramIcon },
-  { href: SITE.social.tiktok, label: "TikTok", Icon: TikTokIcon },
-  { href: SITE.social.linkedin, label: "LinkedIn", Icon: LinkedInIcon },
 ];
 
 export async function Footer() {

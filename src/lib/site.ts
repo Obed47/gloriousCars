@@ -63,10 +63,7 @@ export const SITE = {
   ],
 
   social: {
-    facebook: "https://facebook.com",
-    instagram: "https://instagram.com",
-    tiktok: "https://tiktok.com",
-    linkedin: "https://linkedin.com",
+    facebook: "https://www.facebook.com/share/1CQZXAvgZc/",
   },
 
   /** PLACEHOLDER figures — replace with verified numbers or delete. */
