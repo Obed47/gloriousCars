@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/icons";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/i18n/locales";
-import { SITE } from "@/lib/site";
+import { SITE, SITE_COPY } from "@/lib/site";
 import { buildWhatsAppUrl, generalInquiryMessage } from "@/lib/whatsapp";
 
 // Footer is a Server Component: it reads the root `[lang]` param straight
@@ -58,7 +58,7 @@ export async function Footer() {
         <div className="flex flex-col gap-4">
           <Logo tone="light" />
           <p className="max-w-xs text-sm leading-relaxed text-silver/80">
-            {SITE.description}
+            {SITE_COPY[locale].description}
           </p>
           <div className="mt-2 flex gap-2">
             {SOCIAL.map(({ href, label, Icon }) => (

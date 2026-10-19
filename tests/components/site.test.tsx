@@ -1,13 +1,16 @@
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CompareProvider } from "@/components/providers/CompareProvider";
 import { FavoritesProvider } from "@/components/providers/FavoritesProvider";
 import { CompareTray } from "@/components/site/CompareTray";
 import { Footer } from "@/components/site/Footer";
+import { FloatingWhatsApp } from "@/components/site/FloatingWhatsApp";
 import { Navbar, POPULAR_SEARCHES } from "@/components/site/Navbar";
+import { SiteJsonLd } from "@/components/seo/SiteJsonLd";
 import { DictionaryProvider } from "@/i18n/dictionary-context";
 import { dictionaries } from "@/i18n/dictionaries";
+import { SITE_COPY } from "@/lib/site";
 import { toSummary } from "@/lib/repository";
 import { sampleCatalogue } from "../fixtures/vehicles";
 
@@ -182,6 +185,42 @@ describe("Footer", () => {
     render(await Footer());
     expect(screen.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/privacy");
     expect(screen.getByText("Monday – Friday")).toBeInTheDocument();
+  });
+
+  it("shows the French description under the French dictionary", async () => {
+    vi.mocked((await import("next/root-params")).lang).mockResolvedValue("fr");
+    render(await Footer());
+    expect(screen.getByText(SITE_COPY.fr.description)).toBeInTheDocument();
+  });
+});
+
+describe("FloatingWhatsApp", () => {
+  it("shows the French aria-label and tooltip text under the French dictionary", async () => {
+    vi.useFakeTimers();
+    try {
+      render(
+        <DictionaryProvider dictionary={dictionaries.fr}>
+          <FloatingWhatsApp />
+        </DictionaryProvider>,
+      );
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(900);
+      });
+      expect(
+        screen.getByRole("link", { name: "Discuter avec nous sur WhatsApp" }),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Discuter avec nous")).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
+describe("SiteJsonLd", () => {
+  it("renders the French SITE_COPY description when given the French locale", () => {
+    render(<SiteJsonLd locale="fr" />);
+    const script = document.querySelector('script[type="application/ld+json"]');
+    expect(script?.textContent).toContain(SITE_COPY.fr.description);
   });
 });
 

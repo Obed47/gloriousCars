@@ -12,6 +12,14 @@ import { CompareTray } from "@/components/site/CompareTray";
 import { SiteJsonLd } from "@/components/seo/SiteJsonLd";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { DictionaryProvider } from "@/i18n/dictionary-context";
+import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/i18n/locales";
+
+function isLocale(value: unknown): value is Locale {
+  return (
+    typeof value === "string" &&
+    (LOCALES as readonly string[]).includes(value)
+  );
+}
 
 // Self-hosted Montserrat (variable). Source: @fontsource-variable/montserrat.
 // The latin subset covers Latin-1 (é, è, ç, ã…) used across the content.
@@ -110,6 +118,7 @@ export default async function RootLayout({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
+  const locale: Locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
   const summaries = await getVehicleSummaries();
   const dictionary = await getDictionary();
 
@@ -127,7 +136,7 @@ export default async function RootLayout({
       >
         <Providers knownIds={summaries.map((s) => s.id)}>
           <DictionaryProvider dictionary={dictionary}>
-            <SiteJsonLd />
+            <SiteJsonLd locale={locale} />
             <a
               href="#main"
               className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"

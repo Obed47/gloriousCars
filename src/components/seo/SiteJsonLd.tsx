@@ -1,7 +1,9 @@
-import { SITE } from "@/lib/site";
+import { SITE, SITE_COPY } from "@/lib/site";
+import type { Locale } from "@/i18n/locales";
 
 /** Organization and website graph used by search engines to understand the business. */
-export function SiteJsonLd() {
+export function SiteJsonLd({ locale }: { locale: Locale }) {
+  const description = SITE_COPY[locale].description;
   const data = {
     "@context": "https://schema.org",
     "@graph": [
@@ -12,7 +14,7 @@ export function SiteJsonLd() {
         url: SITE.url,
         logo: `${SITE.url}/logo.png`,
         image: `${SITE.url}/logo.png`,
-        description: SITE.description,
+        description,
         telephone: SITE.phoneDisplay,
         email: SITE.email,
         priceRange: "$$",
@@ -69,7 +71,7 @@ export function SiteJsonLd() {
         "@id": `${SITE.url}#website`,
         name: SITE.name,
         url: SITE.url,
-        description: SITE.description,
+        description,
         publisher: { "@id": `${SITE.url}#dealer` },
         potentialAction: {
           "@type": "SearchAction",

@@ -1,3 +1,4 @@
+import type { Locale } from "@/i18n/locales";
 import type { Currency } from "./types";
 
 /**
@@ -75,3 +76,21 @@ export const SITE = {
 } as const;
 
 export type SiteConfig = typeof SITE;
+
+/**
+ * Locale-specific site copy. `SITE_COPY.en.tagline`/`.description` are
+ * byte-identical to `SITE.tagline`/`SITE.description` above, so anything
+ * that still reads those directly (just `src/app/manifest.ts`, which stays
+ * English-only per the plan) renders exactly as before without changes.
+ */
+export const SITE_COPY: Record<Locale, { tagline: string; description: string }> = {
+  en: {
+    tagline: SITE.tagline,
+    description: SITE.description,
+  },
+  fr: {
+    tagline: "Voitures à vendre à Yaoundé, Douala et au Cameroun.",
+    description:
+      "Achetez des voitures de qualité à vendre à Yaoundé, Douala et partout au Cameroun. Comparez des véhicules inspectés, consultez des prix transparents et réservez un essai de conduite chez Glorious Cars.",
+  },
+};

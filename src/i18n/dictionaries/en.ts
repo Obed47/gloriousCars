@@ -609,6 +609,35 @@ export const en = {
       },
     },
   },
+  errorPage: {
+    eyebrow: "Something went wrong",
+    title: "We hit a bump in the road",
+    description:
+      "We couldn't load this page right now. Please try again — if it keeps happening, reach out to our team.",
+    tryAgain: "Try again",
+  },
+  notFound: {
+    page: {
+      eyebrow: "Error 404",
+      title: "This page took a wrong turn",
+      description:
+        "The page you're looking for doesn't exist or may have been moved. Let's get you back on the road.",
+      backHome: "Back to home",
+      browseAllCars: "Browse all cars",
+    },
+    vehicle: {
+      eyebrow: "Vehicle unavailable",
+      title: "We couldn't find that vehicle",
+      description:
+        "It may have been sold or the link has changed. Browse our current stock to find your next car.",
+      browseAllCars: "Browse all cars",
+      metadataTitle: "Vehicle not found",
+    },
+  },
+  floatingWhatsapp: {
+    ariaLabel: "Chat with us on WhatsApp",
+    label: "Chat with us",
+  },
 };
 
 export type Dictionary = typeof en;

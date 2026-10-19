@@ -614,4 +614,33 @@ export const fr: Dictionary = {
       },
     },
   },
+  errorPage: {
+    eyebrow: "Un problème est survenu",
+    title: "On a heurté un nid de poule",
+    description:
+      "Nous n'avons pas pu charger cette page pour le moment. Veuillez réessayer — si le problème persiste, contactez notre équipe.",
+    tryAgain: "Réessayer",
+  },
+  notFound: {
+    page: {
+      eyebrow: "Erreur 404",
+      title: "Cette page a pris un mauvais virage",
+      description:
+        "La page que vous recherchez n'existe pas ou a peut-être été déplacée. Revenons sur la bonne route.",
+      backHome: "Retour à l'accueil",
+      browseAllCars: "Voir toutes les voitures",
+    },
+    vehicle: {
+      eyebrow: "Véhicule indisponible",
+      title: "Nous n'avons pas trouvé ce véhicule",
+      description:
+        "Il a peut-être été vendu ou le lien a changé. Parcourez notre stock actuel pour trouver votre prochaine voiture.",
+      browseAllCars: "Voir toutes les voitures",
+      metadataTitle: "Véhicule introuvable",
+    },
+  },
+  floatingWhatsapp: {
+    ariaLabel: "Discuter avec nous sur WhatsApp",
+    label: "Discuter avec nous",
+  },
 };

@@ -60,7 +60,7 @@ export async function generateMetadata({
   const locale: Locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
   const dict = dictionaries[locale];
   const vehicle = await getVehicleBySlugs(brand, slug);
-  if (!vehicle) return { title: "Vehicle not found" };
+  if (!vehicle) return { title: dict.notFound.vehicle.metadataTitle };
 
   const full = vehicleFullTitle(vehicle);
   const title = `${full} ${dict.vehicleDetail.metadata.forSaleSuffix}`;

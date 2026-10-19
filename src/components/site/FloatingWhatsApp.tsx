@@ -34,7 +34,7 @@ export function FloatingWhatsApp() {
           href={buildWhatsAppUrl(generalInquiryMessage(dict))}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Chat with us on WhatsApp"
+          aria-label={dict.floatingWhatsapp.ariaLabel}
           className={`group fixed right-4 z-50 flex items-center gap-0 overflow-hidden rounded-full bg-[#25D366] text-[#053019] shadow-lift transition-[gap,padding] duration-300 hover:gap-2 sm:right-6 ${
             raised ? "bottom-24 sm:bottom-6" : "bottom-5 sm:bottom-6"
           }`}
@@ -47,7 +47,7 @@ export function FloatingWhatsApp() {
             <WhatsAppIcon className="size-7" />
           </span>
           <span className="max-w-0 whitespace-nowrap pr-0 text-sm font-semibold opacity-0 transition-[max-width,padding,opacity] duration-300 group-hover:max-w-[10rem] group-hover:pr-5 group-hover:opacity-100">
-            Chat with us
+            {dict.floatingWhatsapp.label}
           </span>
         </motion.a>
       )}
