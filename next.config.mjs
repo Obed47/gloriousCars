@@ -13,6 +13,24 @@ if (isProduction && !process.env.NEXT_PUBLIC_SITE_URL) {
   );
 }
 
+// Server Actions (e.g. the admin "save vehicle" form) are rejected unless the
+// request's Origin matches the Host Next.js sees. Behind a reverse proxy
+// that doesn't forward the original Host header as-is (Hostinger's Node.js
+// hosting does this), the submit fails with a generic error even though the
+// page itself loads fine. Allow-listing the real domain fixes that without
+// loosening the check for any other origin.
+function siteOrigin() {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!raw) return null;
+  try {
+    return new URL(raw).host;
+  } catch {
+    return null;
+  }
+}
+
+const allowedOrigins = [siteOrigin()].filter(Boolean);
+
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
@@ -60,6 +78,9 @@ const nextConfig = {
 
   experimental: {
     globalNotFound: true,
+    ...(allowedOrigins.length
+      ? { serverActions: { allowedOrigins } }
+      : {}),
   },
 };
 

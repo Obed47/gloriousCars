@@ -31,3 +31,5 @@ export function imageRemotePatterns() {
 
   return patterns;
 }
+
+export { VEHICLE_IMAGE_BUCKET, STORAGE_PREFIX, supabaseUrl };
