@@ -41,7 +41,7 @@
     ".next-devtest/dev/types/**/*.ts",
     ".next-verify/types/**/*.ts",
     ".next-verify/dev/types/**/*.ts"
-  ],
+,     "next.config.mjs"  ],
   "exclude": [
     "node_modules"
   ]
