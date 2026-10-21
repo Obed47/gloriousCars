@@ -58,6 +58,7 @@ export const fr: Dictionary = {
     rightsReserved: "Tous droits réservés.",
     privacyPolicy: "Politique de confidentialité",
     terms: "Conditions générales",
+    staffLogin: "Personnel",
   },
   stats: {
     vehiclesInStock: "Véhicules en stock",

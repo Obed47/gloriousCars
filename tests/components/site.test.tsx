@@ -330,11 +330,13 @@ describe("Footer links under the French locale", () => {
       .map((a) => a.getAttribute("href") ?? "")
       .filter((href) => href.startsWith("/"));
     expect(internal.length).toBeGreaterThan(5);
-    // The language switcher is the one link that leaves the french site.
-    const french = internal.filter((href) => href !== "/about");
+    // The language switcher leaves the french site, and the staff link
+    // always points at the unprefixed, English-only /login.
+    const french = internal.filter((href) => href !== "/about" && href !== "/login");
     for (const href of french) expect(href).toMatch(/^\/fr(\/|#|$)/);
     expect(internal).toContain("/fr/services#sales");
     expect(internal).toContain("/fr/privacy");
+    expect(internal).toContain("/login");
   });
 });
 

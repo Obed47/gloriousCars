@@ -1,4 +1,5 @@
 import { lang } from "next/root-params";
+import Link from "next/link";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Logo } from "./Logo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -146,6 +147,10 @@ export async function Footer() {
               {dict.footer.terms}
             </LocaleLink>
             <LanguageSwitcher />
+            {/* Staff pages are English-only and never locale-prefixed. */}
+            <Link href="/login" className="text-silver/40 hover:text-silver/70">
+              {dict.footer.staffLogin}
+            </Link>
           </div>
         </div>
       </div>

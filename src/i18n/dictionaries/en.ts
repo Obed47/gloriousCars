@@ -58,6 +58,7 @@ export const en = {
     rightsReserved: "All rights reserved.",
     privacyPolicy: "Privacy Policy",
     terms: "Terms & Conditions",
+    staffLogin: "Staff",
   },
   /** Labels for `SITE.stats`, keyed by each entry's `key`. */
   stats: {
