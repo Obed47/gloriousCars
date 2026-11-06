@@ -22,6 +22,24 @@ export function Gallery({
   const pointerStart = useRef<number | null>(null);
   const lightboxRef = useRef<HTMLDivElement>(null);
 
+  const thumbRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateThumbScrollState = useCallback(() => {
+    const el = thumbRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  }, []);
+
+  function scrollThumbs(dir: number) {
+    thumbRef.current?.scrollBy({
+      left: dir * thumbRef.current.clientWidth * 0.8,
+      behavior: "smooth",
+    });
+  }
+
   const count = images.length;
   const go = useCallback(
     (dir: number) => {
@@ -51,6 +69,18 @@ export function Gallery({
     };
   }, [lightbox, go]);
 
+  useEffect(() => {
+    updateThumbScrollState();
+    const el = thumbRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateThumbScrollState, { passive: true });
+    window.addEventListener("resize", updateThumbScrollState);
+    return () => {
+      el.removeEventListener("scroll", updateThumbScrollState);
+      window.removeEventListener("resize", updateThumbScrollState);
+    };
+  }, [updateThumbScrollState, count]);
+
   function onPointerDown(e: React.PointerEvent) {
     pointerStart.current = e.clientX;
   }
@@ -71,7 +101,7 @@ export function Gallery({
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex min-w-0 flex-col gap-3">
       {/* Main image */}
       <div
         className="group relative aspect-4/3 overflow-hidden rounded-2xl bg-graphite sm:aspect-16/10"
@@ -150,30 +180,56 @@ export function Gallery({
 
       {/* Thumbnails */}
       {count > 1 && (
-        <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
-          {images.map((img, i) => (
+        <div className="relative min-w-0">
+          <div
+            ref={thumbRef}
+            className="no-scrollbar flex gap-2 overflow-x-auto pb-1"
+          >
+            {images.map((img, i) => (
+              <button
+                key={img.url + i}
+                type="button"
+                onClick={() => jump(i)}
+                aria-label={`${dict.vehicleDetail.gallery.viewPrefix} ${img.angle}`}
+                aria-current={i === index}
+                className={`relative aspect-4/3 w-24 shrink-0 overflow-hidden rounded-lg transition-all ${
+                  i === index
+                    ? "ring-2 ring-accent ring-offset-2 ring-offset-mist"
+                    : "opacity-60 hover:opacity-100"
+                }`}
+              >
+                <Image
+                  src={img.url}
+                  alt=""
+                  fill
+                  sizes="96px"
+                  loading="eager"
+                  className="object-cover"
+                />
+              </button>
+            ))}
+          </div>
+
+          {canScrollLeft && (
             <button
-              key={img.url + i}
               type="button"
-              onClick={() => jump(i)}
-              aria-label={`${dict.vehicleDetail.gallery.viewPrefix} ${img.angle}`}
-              aria-current={i === index}
-              className={`relative aspect-4/3 w-24 shrink-0 overflow-hidden rounded-lg transition-all ${
-                i === index
-                  ? "ring-2 ring-accent ring-offset-2 ring-offset-mist"
-                  : "opacity-60 hover:opacity-100"
-              }`}
+              onClick={() => scrollThumbs(-1)}
+              aria-label={dict.vehicleDetail.gallery.previousImage}
+              className="absolute left-0 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-full bg-surface text-ink shadow-md ring-1 ring-line hover:bg-mist"
             >
-              <Image
-                src={img.url}
-                alt=""
-                fill
-                sizes="96px"
-                loading="eager"
-                className="object-cover"
-              />
+              <ChevronLeft className="size-4" aria-hidden />
             </button>
-          ))}
+          )}
+          {canScrollRight && (
+            <button
+              type="button"
+              onClick={() => scrollThumbs(1)}
+              aria-label={dict.vehicleDetail.gallery.nextImage}
+              className="absolute right-0 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-full bg-surface text-ink shadow-md ring-1 ring-line hover:bg-mist"
+            >
+              <ChevronRight className="size-4" aria-hidden />
+            </button>
+          )}
         </div>
       )}
 

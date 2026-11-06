@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { CARS, carCards, trackErrors } from "./support/helpers";
+import { CARS, WHATSAPP_NUMBER, carCards, trackErrors } from "./support/helpers";
 
 test.describe("finding a car", () => {
   test("the home quick search leads to matching results", async ({ page }) => {
@@ -87,7 +87,7 @@ test.describe("a vehicle page", () => {
     await expect(page.getByText("XAF 68,500,000").first()).toBeVisible();
 
     const enquiry = page.getByRole("link", { name: "Order / Inquire on WhatsApp" });
-    await expect(enquiry.first()).toHaveAttribute("href", new RegExp(`^https://wa\\.me/237675938792\\?text=`));
+    await expect(enquiry.first()).toHaveAttribute("href", new RegExp(`^https://wa\\.me/${WHATSAPP_NUMBER}\\?text=`));
     const message = decodeURIComponent((await enquiry.first().getAttribute("href"))!.split("text=")[1]);
     expect(message).toContain(`Reference: ${CARS.bmwWhite.reference}`);
     expect(errors.filter((e) => !e.includes("/_next/image") && !e.includes("status of 4") && !e.includes("status of 5"))).toEqual([]);

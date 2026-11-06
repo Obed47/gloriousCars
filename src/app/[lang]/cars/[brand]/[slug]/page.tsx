@@ -150,7 +150,7 @@ export default async function VehicleDetailPage({
         </nav>
 
         {/* Gallery + summary */}
-        <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[1.35fr_1fr] lg:gap-12">
+        <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-12">
           <Gallery images={vehicle.images} title={full} />
 
           <div className="lg:sticky lg:top-24 lg:self-start">
