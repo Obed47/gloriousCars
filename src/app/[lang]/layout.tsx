@@ -44,7 +44,6 @@ export const metadata: Metadata = {
   },
   description: SITE.description,
   applicationName: SITE.name,
-  icons: { icon: "/icon.svg", shortcut: "/icon.svg", apple: "/icon.svg" },
   authors: [{ name: SITE.legalName }],
   keywords: [
     "cars for sale",
